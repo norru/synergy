@@ -39,6 +39,14 @@ Just use "hm conf" and "hm build" to compile (./hm.sh on Linux and Mac).
 
 
 
-
-
-
+Changes in this branch
+---
++ Free SSL.
++ Licensing crap removed.
++ With the latest commit for WIP Windows Unicode support I probably broke compatibility with previous protocol versions.
++ Print-Screen sends Print-Screen to Windows now and not Alt+Print-Screen. (Unknown if Alt+Print-Screen is possible to send to Windows)
++ Python 2 and 3 compatibility for the building scripts.
++ A few bugs fixed like the SSL fingerprint missing on the UI and OpenSSL compatibility with v1.1.x
++ (Untested) modern icons for OSX from @static inspired by @amandamcg
++ Windows binaries go into x64 and win32 folders.
++ <other stuff here like pull-requests that were merged>

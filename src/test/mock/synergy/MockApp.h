@@ -30,15 +30,15 @@ public:
 
 	MOCK_METHOD0(help, void());
 	MOCK_METHOD0(loadConfig, void());
-	MOCK_METHOD1(loadConfig, bool(const String&));
-	MOCK_CONST_METHOD0(daemonInfo, const char*());
-	MOCK_CONST_METHOD0(daemonName, const char*());
-	MOCK_METHOD2(parseArgs, void(int, const char* const*));
+	MOCK_METHOD1(loadConfig, bool(const nstring&));
+	MOCK_CONST_METHOD0(daemonInfo, const nchar*());
+	MOCK_CONST_METHOD0(daemonName, const nchar*());
+	MOCK_METHOD2(parseArgs, void(int, const nchar* const*));
 	MOCK_METHOD0(version, void());
-	MOCK_METHOD2(standardStartup, int(int, char**));
-	MOCK_METHOD4(runInner, int(int, char**, ILogOutputter*, StartupFunc));
+	MOCK_METHOD2(standardStartup, int(int, nchar**));
+	MOCK_METHOD4(runInner, int(int, nchar**, ILogOutputter*, StartupFunc));
 	MOCK_METHOD0(startNode, void());
 	MOCK_METHOD0(mainLoop, int());
-	MOCK_METHOD2(foregroundStartup, int(int, char**));
+	MOCK_METHOD2(foregroundStartup, int(int, nchar**));
 	MOCK_METHOD0(createScreen, synergy::Screen*());
 };

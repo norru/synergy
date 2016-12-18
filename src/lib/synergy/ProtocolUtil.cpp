@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,7 +33,7 @@ ProtocolUtil::writef(synergy::IStream* stream, const char* fmt, ...)
 {
 	assert(stream != NULL);
 	assert(fmt != NULL);
-	LOG((CLOG_DEBUG2 "writef(%s)", fmt));
+	LOG((CLOG_DEBUG2 _N("writef(%s)"), fmt));
 
 	va_list args;
 	va_start(args, fmt);
@@ -49,7 +49,7 @@ ProtocolUtil::readf(synergy::IStream* stream, const char* fmt, ...)
 {
 	assert(stream != NULL);
 	assert(fmt != NULL);
-	LOG((CLOG_DEBUG2 "readf(%s)", fmt));
+	LOG((CLOG_DEBUG2 _N("readf(%s)"), fmt));
 
 	bool result;
 	va_list args;
@@ -84,7 +84,7 @@ ProtocolUtil::vwritef(synergy::IStream* stream,
 	try {
 		// write buffer
 		stream->write(buffer, size);
-		LOG((CLOG_DEBUG2 "wrote %d bytes", size));
+		LOG((CLOG_DEBUG2 _N("wrote %d bytes"), size));
 
 		delete[] buffer;
 	}
@@ -121,7 +121,7 @@ ProtocolUtil::vreadf(synergy::IStream* stream, const char* fmt, va_list args)
 				case 1:
 					// 1 byte integer
 					*static_cast<UInt8*>(v) = buffer[0];
-					LOG((CLOG_DEBUG2 "readf: read %d byte integer: %d (0x%x)", len, *static_cast<UInt8*>(v), *static_cast<UInt8*>(v)));
+					LOG((CLOG_DEBUG2 _N("readf: read %d byte integer: %d (0x%x)"), len, *static_cast<UInt8*>(v), *static_cast<UInt8*>(v)));
 					break;
 
 				case 2:
@@ -130,7 +130,7 @@ ProtocolUtil::vreadf(synergy::IStream* stream, const char* fmt, va_list args)
 						static_cast<UInt16>(
 						(static_cast<UInt16>(buffer[0]) << 8) |
 						 static_cast<UInt16>(buffer[1]));
-					LOG((CLOG_DEBUG2 "readf: read %d byte integer: %d (0x%x)", len, *static_cast<UInt16*>(v), *static_cast<UInt16*>(v)));
+					LOG((CLOG_DEBUG2 _N("readf: read %d byte integer: %d (0x%x)"), len, *static_cast<UInt16*>(v), *static_cast<UInt16*>(v)));
 					break;
 
 				case 4:
@@ -140,7 +140,7 @@ ProtocolUtil::vreadf(synergy::IStream* stream, const char* fmt, va_list args)
 						(static_cast<UInt32>(buffer[1]) << 16) |
 						(static_cast<UInt32>(buffer[2]) <<  8) |
 						 static_cast<UInt32>(buffer[3]);
-					LOG((CLOG_DEBUG2 "readf: read %d byte integer: %d (0x%x)", len, *static_cast<UInt32*>(v), *static_cast<UInt32*>(v)));
+					LOG((CLOG_DEBUG2 _N("readf: read %d byte integer: %d (0x%x)"), len, *static_cast<UInt32*>(v), *static_cast<UInt32*>(v)));
 					break;
 				}
 				break;
@@ -167,7 +167,7 @@ ProtocolUtil::vreadf(synergy::IStream* stream, const char* fmt, va_list args)
 						read(stream, buffer, 1);
 						static_cast<std::vector<UInt8>*>(v)->push_back(
 							buffer[0]);
-						LOG((CLOG_DEBUG2 "readf: read %d byte integer[%d]: %d (0x%x)", len, i, static_cast<std::vector<UInt8>*>(v)->back(), static_cast<std::vector<UInt8>*>(v)->back()));
+						LOG((CLOG_DEBUG2 _N("readf: read %d byte integer[%d]: %d (0x%x)"), len, i, static_cast<std::vector<UInt8>*>(v)->back(), static_cast<std::vector<UInt8>*>(v)->back()));
 					}
 					break;
 
@@ -179,7 +179,7 @@ ProtocolUtil::vreadf(synergy::IStream* stream, const char* fmt, va_list args)
 							static_cast<UInt16>(
 							(static_cast<UInt16>(buffer[0]) << 8) |
 							 static_cast<UInt16>(buffer[1])));
-						LOG((CLOG_DEBUG2 "readf: read %d byte integer[%d]: %d (0x%x)", len, i, static_cast<std::vector<UInt16>*>(v)->back(), static_cast<std::vector<UInt16>*>(v)->back()));
+						LOG((CLOG_DEBUG2 _N("readf: read %d byte integer[%d]: %d (0x%x)"), len, i, static_cast<std::vector<UInt16>*>(v)->back(), static_cast<std::vector<UInt16>*>(v)->back()));
 					}
 					break;
 
@@ -192,7 +192,7 @@ ProtocolUtil::vreadf(synergy::IStream* stream, const char* fmt, va_list args)
 							(static_cast<UInt32>(buffer[1]) << 16) |
 							(static_cast<UInt32>(buffer[2]) <<  8) |
 							 static_cast<UInt32>(buffer[3]));
-						LOG((CLOG_DEBUG2 "readf: read %d byte integer[%d]: %d (0x%x)", len, i, static_cast<std::vector<UInt32>*>(v)->back(), static_cast<std::vector<UInt32>*>(v)->back()));
+						LOG((CLOG_DEBUG2 _N("readf: read %d byte integer[%d]: %d (0x%x)"), len, i, static_cast<std::vector<UInt32>*>(v)->back(), static_cast<std::vector<UInt32>*>(v)->back()));
 					}
 					break;
 				}
@@ -230,10 +230,10 @@ ProtocolUtil::vreadf(synergy::IStream* stream, const char* fmt, va_list args)
 					throw;
 				}
 
-				LOG((CLOG_DEBUG2 "readf: read %d byte string", len));
+				LOG((CLOG_DEBUG2 _N("readf: read %d byte string"), len));
 
 				// save the data
-				String* dst = va_arg(args, String*);
+				std::string* dst = va_arg(args, std::string*);
 				dst->assign((const char*)sBuffer, len);
 
 				// release the buffer
@@ -261,7 +261,7 @@ ProtocolUtil::vreadf(synergy::IStream* stream, const char* fmt, va_list args)
 
 			// verify match
 			if (buffer[0] != *fmt) {
-				LOG((CLOG_DEBUG2 "readf: format mismatch: %c vs %c", *fmt, buffer[0]));
+				LOG((CLOG_DEBUG2 _N("readf: format mismatch: %c vs %c"), *fmt, buffer[0]));
 				throw XIOReadMismatch();
 			}
 
@@ -305,7 +305,7 @@ ProtocolUtil::getLength(const char* fmt, va_list args)
 
 			case 's':
 				assert(len == 0);
-				len = (UInt32)(va_arg(args, String*))->size() + 4;
+				len = (UInt32)(va_arg(args, std::string*))->size() + 4;
 				(void)va_arg(args, UInt8*);
 				break;
 
@@ -439,7 +439,7 @@ ProtocolUtil::writef(void* buffer, const char* fmt, va_list args)
 
 			case 's': {
 				assert(len == 0);
-				const String* src = va_arg(args, String*);
+				const std::string* src = va_arg(args, std::string*);
 				const UInt32 len = (src != NULL) ? (UInt32)src->size() : 0;
 				*dst++ = static_cast<UInt8>((len >> 24) & 0xff);
 				*dst++ = static_cast<UInt8>((len >> 16) & 0xff);
@@ -522,7 +522,7 @@ ProtocolUtil::read(synergy::IStream* stream, void* vbuffer, UInt32 count)
 
 		// bail if stream has hungup
 		if (n == 0) {
-			LOG((CLOG_DEBUG2 "unexpected disconnect in readf(), %d bytes left", count));
+			LOG((CLOG_DEBUG2 _N("unexpected disconnect in readf(), %d bytes left"), count));
 			throw XIOEndOfStream();
 		}
 
@@ -537,8 +537,8 @@ ProtocolUtil::read(synergy::IStream* stream, void* vbuffer, UInt32 count)
 // XIOReadMismatch
 //
 
-String
+nstring
 XIOReadMismatch::getWhat() const throw()
 {
-	return format("XIOReadMismatch", "ProtocolUtil::readf() mismatch");
+	return format(_N("XIOReadMismatch"), _N("ProtocolUtil::readf() mismatch"));
 }

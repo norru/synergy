@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -79,27 +79,21 @@ App::~App()
 void
 App::version()
 {
-	char buffer[500];
-	sprintf(
-		buffer,
-		"%s %s, protocol version %d.%d\n%s",
+	nprintf(_N("%" _NF " %" _NF ", protocol version %d.%d\n%" _NF),
 		argsBase().m_pname,
 		kVersion,
 		kProtocolMajorVersion,
 		kProtocolMinorVersion,
-		kCopyright
-		);
-
-	std::cout << buffer << std::endl;
+		kCopyright);
 }
 
 int
-App::run(int argc, char** argv)
-{	
+App::run(int argc, nchar** argv)
+{
 #if MAC_OS_X_VERSION_10_7
 	// dock hide only supported on lion :(
 	ProcessSerialNumber psn = { 0, kCurrentProcess };
-	
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	GetCurrentProcess(&psn);
@@ -110,7 +104,7 @@ App::run(int argc, char** argv)
 
 	// install application in to arch
 	appUtil().adoptApp(this);
-	
+
 	// HACK: fail by default (saves us setting result in each catch)
 	int result = kExitFailed;
 
@@ -119,24 +113,24 @@ App::run(int argc, char** argv)
 	}
 	catch (XExitApp& e) {
 		// instead of showing a nasty error, just exit with the error code.
-		// not sure if i like this behaviour, but it's probably better than 
+		// not sure if i like this behaviour, but it's probably better than
 		// using the exit(int) function!
 		result = e.getCode();
 	}
 	catch (std::exception& e) {
-		LOG((CLOG_CRIT "An error occurred: %s\n", e.what()));
+		LOG((CLOG_CRIT _N("An error occurred: %s\n"), e.what()));
 	}
 	catch (...) {
-		LOG((CLOG_CRIT "An unknown error occurred.\n"));
+		LOG((CLOG_CRIT _N("An unknown error occurred.\n")));
 	}
 
 	appUtil().beforeAppExit();
-	
+
 	return result;
 }
 
 int
-App::daemonMainLoop(int, const char**)
+App::daemonMainLoop(int, const nchar**)
 {
 #if SYSAPI_WIN32
 	SystemLogger sysLogger(daemonName(), false);
@@ -146,46 +140,46 @@ App::daemonMainLoop(int, const char**)
 	return mainLoop();
 }
 
-void 
+void
 App::setupFileLogging()
 {
 	if (argsBase().m_logFile != NULL) {
 		m_fileLog = new FileLogOutputter(argsBase().m_logFile);
 		CLOG->insert(m_fileLog);
-		LOG((CLOG_DEBUG1 "logging to file (%s) enabled", argsBase().m_logFile));
+		LOG((CLOG_DEBUG1 _N("logging to file (%" _NF ") enabled"), argsBase().m_logFile));
 	}
 }
 
-void 
+void
 App::loggingFilterWarning()
 {
 	if (CLOG->getFilter() > CLOG->getConsoleMaxLevel()) {
 		if (argsBase().m_logFile == NULL) {
-			LOG((CLOG_WARN "log messages above %s are NOT sent to console (use file logging)", 
+			LOG((CLOG_WARN _N("log messages above %" _NF " are NOT sent to console (use file logging)"),
 				CLOG->getFilterName(CLOG->getConsoleMaxLevel())));
 		}
 	}
 }
 
-void 
-App::initApp(int argc, const char** argv)
+void
+App::initApp(int argc, const nchar** argv)
 {
 	// parse command line
 	parseArgs(argc, argv);
-	
+
 	ARCH->setProfileDirectory(argsBase().m_profileDirectory);
 	ARCH->setPluginDirectory(argsBase().m_pluginDirectory);
 
 	// set log filter
 	if (!CLOG->setFilter(argsBase().m_logFilter)) {
-		LOG((CLOG_PRINT "%s: unrecognized log level `%s'" BYE,
+		LOG((CLOG_PRINT _N("%" _NF ": unrecognized log level `%" _NF "'" BYE),
 			argsBase().m_pname, argsBase().m_logFilter, argsBase().m_pname));
 		m_bye(kExitArgs);
 	}
 	loggingFilterWarning();
-	
+
 	if (argsBase().m_enableDragDrop) {
-		LOG((CLOG_INFO "drag and drop enabled"));
+		LOG((CLOG_INFO _N("drag and drop enabled")));
 	}
 
 	// setup file logging after parsing args
@@ -231,7 +225,7 @@ App::handleIpcMessage(const Event& e, void*)
 {
 	IpcMessage* m = static_cast<IpcMessage*>(e.getDataObject());
 	if (m->type() == kIpcShutdown) {
-		LOG((CLOG_INFO "got ipc shutdown message"));
+		LOG((CLOG_INFO _N("got ipc shutdown message")));
 		m_events->addEvent(Event(Event::kQuit));
     }
 }
@@ -240,11 +234,11 @@ void
 App::runEventsLoop(void*)
 {
 	m_events->loop();
-	
+
 #if defined(MAC_OS_X_VERSION_10_7)
-	
+
 	stopCocoaLoop();
-	
+
 #endif
 }
 
@@ -264,13 +258,13 @@ MinimalApp::~MinimalApp()
 }
 
 int
-MinimalApp::standardStartup(int argc, char** argv)
+MinimalApp::standardStartup(int argc, nchar** argv)
 {
 	return 0;
 }
 
 int
-MinimalApp::runInner(int argc, char** argv, ILogOutputter* outputter, StartupFunc startup)
+MinimalApp::runInner(int argc, nchar** argv, ILogOutputter* outputter, StartupFunc startup)
 {
 	return 0;
 }
@@ -287,7 +281,7 @@ MinimalApp::mainLoop()
 }
 
 int
-MinimalApp::foregroundStartup(int argc, char** argv)
+MinimalApp::foregroundStartup(int argc, nchar** argv)
 {
 	return 0;
 }
@@ -304,24 +298,24 @@ MinimalApp::loadConfig()
 }
 
 bool
-MinimalApp::loadConfig(const String& pathname)
+MinimalApp::loadConfig(const nstring& pathname)
 {
 	return false;
 }
 
-const char*
+const nchar*
 MinimalApp::daemonInfo() const
 {
-	return "";
+	return _N("");
 }
 
-const char*
+const nchar*
 MinimalApp::daemonName() const
 {
-	return "";
+	return _N("");
 }
 
 void
-MinimalApp::parseArgs(int argc, const char* const* argv)
+MinimalApp::parseArgs(int argc, const nchar* const* argv)
 {
 }

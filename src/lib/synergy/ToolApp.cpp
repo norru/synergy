@@ -40,7 +40,7 @@ UInt32
 ToolApp::run(int argc, char** argv)
 {
 	if (argc <= 1) {
-		std::cerr << "no args" << std::endl;
+		std::ncerr << _N("no args") << std::endl;
 		return kErrorArgs;
 	}
 
@@ -55,36 +55,35 @@ ToolApp::run(int argc, char** argv)
 		if (m_args.m_printActiveDesktopName) {
 #if SYSAPI_WIN32
 			MSWindowsSession session;
-			String name = session.getActiveDesktopName();
+			nstring name = session.getActiveDesktopName();
 			if (name.empty()) {
-				LOG((CLOG_CRIT "failed to get active desktop name"));
+				LOG((CLOG_CRIT L"failed to get active desktop name"));
 				return kExitFailed;
 			}
 			else {
-				String output = synergy::string::sprintf("activeDesktop:%s", name.c_str());
-				LOG((CLOG_INFO "%s", output.c_str()));
+				LOG((CLOG_INFO L"activeDesktop: %ls", name.c_str()));
 			}
 #endif
 		}
 		else if (m_args.m_getInstalledDir) {
-			std::cout << ARCH->getInstalledDirectory() << std::endl;
+			std::ncout << ARCH->getInstalledDirectory() << std::endl;
 		}
 		else if (m_args.m_getProfileDir) {
-			std::cout << ARCH->getProfileDirectory() << std::endl;
+			std::ncout << ARCH->getProfileDirectory() << std::endl;
 		}
 		else if (m_args.m_getArch) {
-			std::cout << ARCH->getPlatformName() << std::endl;
+			std::ncout << ARCH->getPlatformName() << std::endl;
 		}
 		else {
-			throw XSynergy("Nothing to do");
+			throw XSynergy(_N("Nothing to do"));
 		}
 	}
 	catch (std::exception& e) {
-		LOG((CLOG_CRIT "An error occurred: %s\n", e.what()));
+		LOG((CLOG_CRIT _N("An error occurred: %s\n"), e.what()));
 		return kExitFailed;
 	}
 	catch (...) {
-		LOG((CLOG_CRIT "An unknown error occurred.\n"));
+		LOG((CLOG_CRIT _N("An unknown error occurred.\n")));
 		return kExitFailed;
 	}
 

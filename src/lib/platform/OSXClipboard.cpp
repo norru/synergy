@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -61,7 +61,7 @@ OSXClipboard::~OSXClipboard()
 	clearConverters();
 }
 
-	bool
+bool
 OSXClipboard::empty()
 {
 	LOG((CLOG_DEBUG "emptying clipboard"));
@@ -77,7 +77,7 @@ OSXClipboard::empty()
 	return true;
 }
 
-	bool
+bool
 OSXClipboard::synchronize()
 {
 	if (m_pboard == NULL)
@@ -90,10 +90,10 @@ OSXClipboard::synchronize()
 		return true;
 	}
 	return false;
-}    
+}
 
-	void
-OSXClipboard::add(EFormat format, const String & data)
+void
+OSXClipboard::add(EFormat format, const std::string& data)
 {
 	if (m_pboard == NULL)
 		return;
@@ -116,7 +116,7 @@ OSXClipboard::add(EFormat format, const String & data)
 
 		// skip converters for other formats
 		if (converter->getFormat() == format) {
-			String osXData = converter->fromIClipboard(data);
+			std::string osXData = converter->fromIClipboard(data);
 			CFStringRef flavorType = converter->getOSXFormat();
 			CFDataRef dataRef = CFDataCreate(kCFAllocatorDefault, (UInt8 *)osXData.data(), osXData.size());
 			PasteboardItemID itemID = 0;
@@ -127,15 +127,15 @@ OSXClipboard::add(EFormat format, const String & data)
                 flavorType,
                 dataRef,
                 kPasteboardFlavorNoFlags);
-            
+
             LOG((CLOG_DEBUG "added %d bytes to clipboard format: %d", data.size(), format));
         }
-        
+
 	}
 }
 
 bool
-OSXClipboard::open(Time time) const 
+OSXClipboard::open(Time time) const
 {
 	if (m_pboard == NULL)
 		return false;
@@ -185,12 +185,12 @@ OSXClipboard::has(EFormat format) const
 	return false;
 }
 
-String
+std::string
 OSXClipboard::get(EFormat format) const
 {
 	CFStringRef type;
 	PasteboardItemID item;
-	String result;
+	std::string result;
 
 	if (m_pboard == NULL)
 		return result;
@@ -216,7 +216,7 @@ OSXClipboard::get(EFormat format) const
 
 	// if no converter then we don't recognize any formats
 	if (converter == NULL) {
-		LOG((CLOG_DEBUG "Unable to find converter for data"));
+		LOG((CLOG_DEBUG L"Unable to find converter for data"));
 		return result;
 	}
 
@@ -229,7 +229,7 @@ OSXClipboard::get(EFormat format) const
 			throw err;
 		}
 
-		result = String((char *) CFDataGetBytePtr(buffer), CFDataGetLength(buffer));
+		result = std::string((char *) CFDataGetBytePtr(buffer), CFDataGetLength(buffer));
 	}
 	catch (OSStatus err) {
 		LOG((CLOG_DEBUG "exception thrown in OSXClipboard::get MacError (%d)", err));

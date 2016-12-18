@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2005 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -47,14 +47,14 @@ public:
 		virtual ~Condition();
 
 		virtual Condition*		clone() const = 0;
-		virtual String			format() const = 0;
+		virtual nstring			format() const = 0;
 
 		virtual EFilterStatus	match(const Event&) = 0;
 
 		virtual void			enablePrimary(PrimaryClient*);
 		virtual void			disablePrimary(PrimaryClient*);
 	};
-	
+
 	// KeystrokeCondition
 	class KeystrokeCondition : public Condition {
 	public:
@@ -67,7 +67,7 @@ public:
 
 		// Condition overrides
 		virtual Condition*		clone() const;
-		virtual String			format() const;
+		virtual nstring			format() const;
 		virtual EFilterStatus	match(const Event&);
 		virtual void			enablePrimary(PrimaryClient*);
 		virtual void			disablePrimary(PrimaryClient*);
@@ -91,7 +91,7 @@ public:
 
 		// Condition overrides
 		virtual Condition*		clone() const;
-		virtual String			format() const;
+		virtual nstring			format() const;
 		virtual EFilterStatus	match(const Event&);
 
 	private:
@@ -103,34 +103,34 @@ public:
 	// ScreenConnectedCondition
 	class ScreenConnectedCondition : public Condition {
 	public:
-		ScreenConnectedCondition(IEventQueue* events, const String& screen);
+		ScreenConnectedCondition(IEventQueue* events, const nstring& screen);
 		virtual ~ScreenConnectedCondition();
 
 		// Condition overrides
 		virtual Condition*		clone() const;
-		virtual String			format() const;
+		virtual nstring			format() const;
 		virtual EFilterStatus	match(const Event&);
 
 	private:
-		String					m_screen;
+		nstring					m_screen;
 		IEventQueue*			m_events;
 	};
 
 	// -------------------------------------------------------------------------
 	// Input Filter Action Classes
 	// -------------------------------------------------------------------------
-	
+
 	class Action {
     public:
 		Action();
 		virtual	~Action();
 
-		virtual Action*		clone() const = 0;
-		virtual String			format() const = 0;
+		virtual Action*			clone() const = 0;
+		virtual nstring			format() const = 0;
 
         virtual void			perform(const Event&) = 0;
     };
-	
+
 	// LockCursorToScreenAction
 	class LockCursorToScreenAction : public Action {
 	public:
@@ -141,32 +141,32 @@ public:
 		Mode					getMode() const;
 
 		// Action overrides
-		virtual Action*		clone() const;
-		virtual String			format() const;
+		virtual Action*			clone() const;
+		virtual nstring			format() const;
 		virtual void			perform(const Event&);
 
 	private:
 		Mode					m_mode;
 		IEventQueue*			m_events;
 	};
-	
+
 	// SwitchToScreenAction
 	class SwitchToScreenAction : public Action {
 	public:
-		SwitchToScreenAction(IEventQueue* events, const String& screen);
+		SwitchToScreenAction(IEventQueue* events, const nstring& screen);
 
-		String					getScreen() const;
+		nstring					getScreen() const;
 
 		// Action overrides
-		virtual Action*		clone() const;
-		virtual String			format() const;
+		virtual Action*			clone() const;
+		virtual nstring			format() const;
 		virtual void			perform(const Event&);
 
 	private:
-		String					m_screen;
+		nstring					m_screen;
 		IEventQueue*			m_events;
 	};
-	
+
 	// SwitchInDirectionAction
 	class SwitchInDirectionAction : public Action {
 	public:
@@ -175,34 +175,34 @@ public:
 		EDirection				getDirection() const;
 
 		// Action overrides
-		virtual Action*		clone() const;
-		virtual String			format() const;
+		virtual Action*			clone() const;
+		virtual nstring			format() const;
 		virtual void			perform(const Event&);
 
 	private:
 		EDirection				m_direction;
 		IEventQueue*			m_events;
 	};
-	
+
 	// KeyboardBroadcastAction
 	class KeyboardBroadcastAction : public Action {
 	public:
 		enum Mode { kOff, kOn, kToggle };
 
 		KeyboardBroadcastAction(IEventQueue* events, Mode = kToggle);
-		KeyboardBroadcastAction(IEventQueue* events, Mode, const std::set<String>& screens);
+		KeyboardBroadcastAction(IEventQueue* events, Mode, const std::set<nstring>& screens);
 
 		Mode					getMode() const;
-		std::set<String>		getScreens() const;
+		std::set<nstring>		getScreens() const;
 
 		// Action overrides
-		virtual Action*		clone() const;
-		virtual String			format() const;
+		virtual Action*			clone() const;
+		virtual nstring			format() const;
 		virtual void			perform(const Event&);
 
 	private:
 		Mode					m_mode;
-		String					m_screens;
+		nstring					m_screens;
 		IEventQueue*			m_events;
 	};
 
@@ -218,12 +218,12 @@ public:
 		bool					isOnPress() const;
 
 		// Action overrides
-		virtual Action*		clone() const;
-		virtual String			format() const;
+		virtual Action*			clone() const;
+		virtual nstring			format() const;
 		virtual void			perform(const Event&);
 
 	protected:
-		virtual const char*		formatName() const;
+		virtual const nchar*	formatName() const;
 
 	private:
 		IPlatformScreen::KeyInfo*	m_keyInfo;
@@ -244,12 +244,12 @@ public:
 		bool					isOnPress() const;
 
 		// Action overrides
-		virtual Action*		clone() const;
-		virtual String			format() const;
+		virtual Action*			clone() const;
+		virtual nstring			format() const;
 		virtual void			perform(const Event&);
 
 	protected:
-		virtual const char*		formatName() const;
+		virtual const nchar*		formatName() const;
 
 	private:
 		IPlatformScreen::ButtonInfo*	m_buttonInfo;
@@ -287,7 +287,7 @@ public:
 		bool			handleEvent(const Event&);
 
 		// convert rule to a string
-		String			format() const;
+		nstring			format() const;
 
 		// get the rule's condition
 		const Condition*
@@ -340,7 +340,7 @@ public:
 	virtual void		setPrimaryClient(PrimaryClient* client);
 
 	// convert rules to a string
-	String				format(const String& linePrefix) const;
+	nstring				format(const nstring& linePrefix) const;
 
 	// get number of rules
 	UInt32				getNumRules() const;

@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -56,17 +56,17 @@ public:
 	virtual void help() = 0;
 
 	// Parse command line arguments.
-	virtual void parseArgs(int argc, const char* const* argv) = 0;
-	
-	int run(int argc, char** argv);
+	virtual void parseArgs(int argc, const nchar* const* argv) = 0;
 
-	int daemonMainLoop(int, const char**);
+	int run(int argc, nchar** argv);
+
+	int daemonMainLoop(int, const nchar**);
 
 	virtual void loadConfig() = 0;
-	virtual bool loadConfig(const String& pathname) = 0;
+	virtual bool loadConfig(const nstring& pathname) = 0;
 
 	// A description of the daemon (used only on Windows).
-	virtual const char* daemonInfo() const = 0;
+	virtual const nchar* daemonInfo() const = 0;
 
 	// Function pointer for function to exit immediately.
 	// TODO: this is old C code - use inheritance to normalize
@@ -81,10 +81,10 @@ public:
 	void loggingFilterWarning();
 
 	// Parses args, sets up file logging, and loads the config.
-	void initApp(int argc, const char** argv);
+	void initApp(int argc, const nchar** argv);
 
 	// HACK: accept non-const, but make it const anyway
-	void initApp(int argc, char** argv) { initApp(argc, (const char**)argv); }
+	void initApp(int argc, nchar** argv) { initApp(argc, (const nchar**)argv); }
 
 	ARCH_APP_UTIL& appUtil() { return m_appUtil; }
 
@@ -92,7 +92,7 @@ public:
 
 	virtual void setByeFunc(void(*bye)(int)) { m_bye = bye; }
 	virtual void bye(int error) { m_bye(error); }
-	
+
 	virtual IEventQueue* getEvents() const { return m_events; }
 
 	void				setSocketMultiplexer(SocketMultiplexer* sm) { m_socketMultiplexer = sm; }
@@ -128,18 +128,18 @@ public:
 	virtual ~MinimalApp();
 
 	// IApp overrides
-	virtual int			standardStartup(int argc, char** argv);
-	virtual int			runInner(int argc, char** argv, ILogOutputter* outputter, StartupFunc startup);
+	virtual int			standardStartup(int argc, nchar** argv);
+	virtual int			runInner(int argc, nchar** argv, ILogOutputter* outputter, StartupFunc startup);
 	virtual void		startNode();
 	virtual int			mainLoop();
-	virtual int			foregroundStartup(int argc, char** argv);
-	virtual synergy::Screen*	
+	virtual int			foregroundStartup(int argc, nchar** argv);
+	virtual synergy::Screen*
 						createScreen();
 	virtual void		loadConfig();
-	virtual bool		loadConfig(const String& pathname);
-	virtual const char*	daemonInfo() const;
-	virtual const char* daemonName() const;
-	virtual void		parseArgs(int argc, const char* const* argv);
+	virtual bool		loadConfig(const nstring& pathname);
+	virtual const nchar* daemonInfo() const;
+	virtual const nchar* daemonName() const;
+	virtual void		parseArgs(int argc, const nchar* const* argv);
 
 private:
 	Arch				m_arch;
@@ -154,47 +154,47 @@ private:
 #endif
 
 #define HELP_COMMON_INFO_1 \
-	"  -d, --debug <level>      filter out log messages with priority below level.\n" \
-	"                             level may be: FATAL, ERROR, WARNING, NOTE, INFO,\n" \
-	"                             DEBUG, DEBUG1, DEBUG2.\n" \
-	"  -n, --name <screen-name> use screen-name instead the hostname to identify\n" \
-	"                             this screen in the configuration.\n" \
-	"  -1, --no-restart         do not try to restart on failure.\n" \
-	"*     --restart            restart the server automatically if it fails.\n" \
-	"  -l  --log <file>         write log messages to file.\n" \
-	"      --no-tray            disable the system tray icon.\n" \
-	"      --enable-drag-drop   enable file drag & drop.\n" \
-	"      --enable-crypto      enable the crypto (ssl) plugin.\n"
+	_N("  -d, --debug <level>      filter out log messages with priority below level.\n") \
+	_N("                             level may be: FATAL, ERROR, WARNING, NOTE, INFO,\n") \
+	_N("                             DEBUG, DEBUG1, DEBUG2.\n") \
+	_N("  -n, --name <screen-name> use screen-name instead the hostname to identify\n") \
+	_N("                             this screen in the configuration.\n") \
+	_N("  -1, --no-restart         do not try to restart on failure.\n") \
+	_N("*     --restart            restart the server automatically if it fails.\n") \
+	_N("  -l  --log <file>         write log messages to file.\n") \
+	_N("      --no-tray            disable the system tray icon.\n") \
+	_N("      --enable-drag-drop   enable file drag & drop.\n") \
+	_N("      --enable-crypto      enable the crypto (ssl) plugin.\n")
 
 #define HELP_COMMON_INFO_2 \
-	"  -h, --help               display this help and exit.\n" \
-	"      --version            display version information and exit.\n"
+	_N("  -h, --help               display this help and exit.\n") \
+	_N("      --version            display version information and exit.\n")
 
 #define HELP_COMMON_ARGS \
-	" [--name <screen-name>]" \
-	" [--restart|--no-restart]" \
-	" [--debug <level>]"
+	_N(" [--name <screen-name>]") \
+	_N(" [--restart|--no-restart]") \
+	_N(" [--debug <level>]")
 
 // system args (windows/unix)
 #if SYSAPI_UNIX
 
 // unix daemon mode args
 #  define HELP_SYS_ARGS \
-	" [--daemon|--no-daemon]"
+	_N(" [--daemon|--no-daemon]")
 #  define HELP_SYS_INFO \
-	"  -f, --no-daemon          run in the foreground.\n"	\
-	"*     --daemon             run as a daemon.\n"
+	_N("  -f, --no-daemon          run in the foreground.\n")	\
+	_N("*     --daemon             run as a daemon.\n")
 
 #elif SYSAPI_WIN32
 
 // windows args
 #  define HELP_SYS_ARGS \
-	" [--service <action>] [--relaunch] [--exit-pause]"
+	_N(" [--service <action>] [--relaunch] [--exit-pause]")
 #  define HELP_SYS_INFO \
-	"      --service <action>   manage the windows service, valid options are:\n" \
-	"                             install/uninstall/start/stop\n" \
-	"      --relaunch           persistently relaunches process in current user \n" \
-	"                             session (useful for vista and upward).\n" \
-	"      --exit-pause         wait for key press on exit, can be useful for\n" \
-	"                             reading error messages that occur on exit.\n"
+	_N("      --service <action>   manage the windows service, valid options are:\n") \
+	_N("                             install/uninstall/start/stop\n") \
+	_N("      --relaunch           persistently relaunches process in current user \n") \
+	_N("                             session (useful for vista and upward).\n") \
+	_N(_N("      --exit-pause         wait for key press on exit, can be useful for\n") \
+	_N("                             reading error messages that occur on exit.\n")
 #endif

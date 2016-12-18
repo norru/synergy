@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -75,7 +75,7 @@ ClientApp::~ClientApp()
 }
 
 void
-ClientApp::parseArgs(int argc, const char* const* argv)
+ClientApp::parseArgs(int argc, const nchar* const* argv)
 {
 	ArgParser argParser(this);
 	bool result = argParser.parseClientArgs(args(), argc, argv);
@@ -96,7 +96,7 @@ ClientApp::parseArgs(int argc, const char* const* argv)
 				// server.  a bad port will never get better.  patch by Brent
 				// Priddy.
 				if (!args().m_restartable || e.getError() == XSocketAddress::kBadPort) {
-					LOG((CLOG_PRINT "%s: %s" BYE,
+					LOG((CLOG_PRINT _N("%" _NF ": %" _NF BYE),
 						args().m_pname, e.what(), args().m_pname));
 					m_bye(kExitFailed);
 				}
@@ -110,60 +110,44 @@ ClientApp::help()
 {
 #if WINAPI_XWINDOWS
 #  define WINAPI_ARG \
-	" [--display <display>] [--no-xinitthreads]"
+	_N(" [--display <display>] [--no-xinitthreads]")
 #  define WINAPI_INFO \
-	"      --display <display>  connect to the X server at <display>\n" \
-	"      --no-xinitthreads    do not call XInitThreads()\n"
+	_N("      --display <display>  connect to the X server at <display>\n") \
+	_N("      --no-xinitthreads    do not call XInitThreads()\n")
 #else
 #  define WINAPI_ARG
 #  define WINAPI_INFO
 #endif
 
-	char buffer[2000];
-	sprintf(
-		buffer,
-		"Usage: %s"
-		" [--yscroll <delta>]"
-		WINAPI_ARG
-		HELP_SYS_ARGS
-		HELP_COMMON_ARGS
-		" <server-address>"
-		"\n\n"
-		"Connect to a synergy mouse/keyboard sharing server.\n"
-		"\n"
-		HELP_COMMON_INFO_1
-		WINAPI_INFO
-		HELP_SYS_INFO
+	LOG((CLOG_PRINT _N("Usage: %" _NF " [--yscroll <delta>]" WINAPI_ARG HELP_SYS_ARGS
+		HELP_COMMON_ARGS " <server-address>\n\n"
+		"Connect to a synergy mouse/keyboard sharing server.\n\n"
+		HELP_COMMON_INFO_1 WINAPI_INFO HELP_SYS_INFO
 		"      --yscroll <delta>    defines the vertical scrolling delta, which is\n"
 		"                             120 by default.\n"
 		HELP_COMMON_INFO_2
-		"\n"
-		"* marks defaults.\n"
-		"\n"
+		"\n* marks defaults.\n\n"
 		"The server address is of the form: [<hostname>][:<port>].  The hostname\n"
 		"must be the address or hostname of the server.  The port overrides the\n"
-		"default port, %d.\n",
-		args().m_pname, kDefaultPort
-	);
-
-	LOG((CLOG_PRINT "%s", buffer));
+		"default port, %d.\n"),
+		args().m_pname, kDefaultPort));
 }
 
-const char*
+const nchar*
 ClientApp::daemonName() const
 {
 #if SYSAPI_WIN32
-	return "Synergy Client";
+	return L"Synergy Client";
 #elif SYSAPI_UNIX
 	return "synergyc";
 #endif
 }
 
-const char*
+const nchar*
 ClientApp::daemonInfo() const
 {
 #if SYSAPI_WIN32
-	return "Allows another computer to share it's keyboard and mouse with this computer.";
+	return L"Allows another computer to share it's keyboard and mouse with this computer.";
 #elif SYSAPI_UNIX
 	return "";
 #endif
@@ -187,12 +171,12 @@ ClientApp::createScreen()
 void
 ClientApp::updateStatus()
 {
-	updateStatus("");
+	updateStatus(_N(""));
 }
 
 
 void
-ClientApp::updateStatus(const String& msg)
+ClientApp::updateStatus(const nstring& msg)
 {
 	if (m_taskBarReceiver)
 	{
@@ -235,7 +219,7 @@ ClientApp::nextRestartTimeout()
 void
 ClientApp::handleScreenError(const Event&, void*)
 {
-	LOG((CLOG_CRIT "error on screen"));
+	LOG((CLOG_CRIT _N("error on screen")));
 	m_events->addEvent(Event(Event::kQuit));
 }
 
@@ -281,7 +265,7 @@ void
 ClientApp::scheduleClientRestart(double retryTime)
 {
 	// install a timer and handler to retry later
-	LOG((CLOG_DEBUG "retry in %.0f seconds", retryTime));
+	LOG((CLOG_DEBUG _N("retry in %.0f seconds"), retryTime));
 	EventQueueTimer* timer = m_events->newOneShotTimer(retryTime, NULL);
 	m_events->adoptHandler(Event::kTimer, timer,
 		new TMethodEventJob<ClientApp>(this, &ClientApp::handleClientRestart, timer));
@@ -291,7 +275,7 @@ ClientApp::scheduleClientRestart(double retryTime)
 void
 ClientApp::handleClientConnected(const Event&, void*)
 {
-	LOG((CLOG_NOTE "connected to server"));
+	LOG((CLOG_NOTE _N("connected to server")));
 	resetRestartTimeout();
 	updateStatus();
 }
@@ -303,13 +287,13 @@ ClientApp::handleClientFailed(const Event& e, void*)
 	Client::FailInfo* info =
 		static_cast<Client::FailInfo*>(e.getData());
 
-	updateStatus(String("Failed to connect to server: ") + info->m_what);
+	updateStatus(nstring(_N("Failed to connect to server: ")) + info->m_what);
 	if (!args().m_restartable || !info->m_retry) {
-		LOG((CLOG_ERR "failed to connect to server: %s", info->m_what.c_str()));
+		LOG((CLOG_ERR _N("failed to connect to server: %" _NF), info->m_what.c_str()));
 		m_events->addEvent(Event(Event::kQuit));
 	}
 	else {
-		LOG((CLOG_WARN "failed to connect to server: %s", info->m_what.c_str()));
+		LOG((CLOG_WARN _N("failed to connect to server: %" _NF), info->m_what.c_str()));
 		if (!m_suspended) {
 			scheduleClientRestart(nextRestartTimeout());
 		}
@@ -321,7 +305,7 @@ ClientApp::handleClientFailed(const Event& e, void*)
 void
 ClientApp::handleClientDisconnected(const Event&, void*)
 {
-	LOG((CLOG_NOTE "disconnected from server"));
+	LOG((CLOG_NOTE _N("disconnected from server")));
 	if (!args().m_restartable) {
 		m_events->addEvent(Event(Event::kQuit));
 	}
@@ -332,7 +316,7 @@ ClientApp::handleClientDisconnected(const Event&, void*)
 }
 
 Client*
-ClientApp::openClient(const String& name, const NetworkAddress& address,
+ClientApp::openClient(const nstring& name, const NetworkAddress& address,
 				synergy::Screen* screen)
 {
 	Client* client = new Client(
@@ -401,7 +385,7 @@ ClientApp::startClient()
 			m_client     = openClient(args().m_name,
 				*m_serverAddress, clientScreen);
 			m_clientScreen  = clientScreen;
-			LOG((CLOG_NOTE "started client"));
+			LOG((CLOG_NOTE _N("started client")));
 		}
 
 		m_client->connect();
@@ -410,18 +394,18 @@ ClientApp::startClient()
 		return true;
 	}
 	catch (XScreenUnavailable& e) {
-		LOG((CLOG_WARN "secondary screen unavailable: %s", e.what()));
+		LOG((CLOG_WARN _N("secondary screen unavailable: %" _NF), e.what()));
 		closeClientScreen(clientScreen);
-		updateStatus(String("secondary screen unavailable: ") + e.what());
+		updateStatus(nstring(_N("secondary screen unavailable: ")) + e.what());
 		retryTime = e.getRetryTime();
 	}
 	catch (XScreenOpenFailure& e) {
-		LOG((CLOG_CRIT "failed to start client: %s", e.what()));
+		LOG((CLOG_CRIT _N("failed to start client: %" _NF), e.what()));
 		closeClientScreen(clientScreen);
 		return false;
 	}
 	catch (XBase& e) {
-		LOG((CLOG_CRIT "failed to start client: %s", e.what()));
+		LOG((CLOG_CRIT _N("failed to start client: %" _NF), e.what()));
 		closeClientScreen(clientScreen);
 		return false;
 	}
@@ -457,7 +441,7 @@ ClientApp::mainLoop()
 
 	// start client, etc
 	appUtil().startNode();
-	
+
 	// init ipc client after node start, since create a new screen wipes out
 	// the event queue (the screen ctors call adoptBuffer).
 	if (argsBase().m_enableIpc) {
@@ -468,31 +452,31 @@ ClientApp::mainLoop()
 	// later.  the timer installed by startClient() will take care of
 	// that.
 	DAEMON_RUNNING(true);
-	
+
 #if defined(MAC_OS_X_VERSION_10_7)
-	
+
 	Thread thread(
 		new TMethodJob<ClientApp>(
 			this, &ClientApp::runEventsLoop,
 			NULL));
-	
+
 	// wait until carbon loop is ready
 	OSXScreen* screen = dynamic_cast<OSXScreen*>(
 		m_clientScreen->getPlatformScreen());
 	screen->waitForCarbonLoop();
-	
+
 	runCocoaApp();
 #else
 	m_events->loop();
 #endif
-	
+
 	DAEMON_RUNNING(false);
 
 	// close down
-	LOG((CLOG_DEBUG1 "stopping client"));
+	LOG((CLOG_DEBUG1 _N("stopping client")));
 	stopClient();
 	updateStatus();
-	LOG((CLOG_NOTE "stopped client"));
+	LOG((CLOG_NOTE _N("stopped client")));
 
 	if (argsBase().m_enableIpc) {
 		cleanupIpcClient();
@@ -503,13 +487,13 @@ ClientApp::mainLoop()
 
 static
 int
-daemonMainLoopStatic(int argc, const char** argv)
+daemonMainLoopStatic(int argc, const nchar** argv)
 {
 	return ClientApp::instance().daemonMainLoop(argc, argv);
 }
 
 int
-ClientApp::standardStartup(int argc, char** argv)
+ClientApp::standardStartup(int argc, nchar** argv)
 {
 	initApp(argc, argv);
 
@@ -556,12 +540,12 @@ ClientApp::runInner(int argc, char** argv, ILogOutputter* outputter, StartupFunc
 	return result;
 }
 
-void 
+void
 ClientApp::startNode()
 {
 	// start the client.  if this return false then we've failed and
 	// we shouldn't retry.
-	LOG((CLOG_DEBUG1 "starting client"));
+	LOG((CLOG_DEBUG1 _N("starting client")));
 	if (!startClient()) {
 		m_bye(kExitFailed);
 	}

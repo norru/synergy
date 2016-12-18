@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -57,7 +57,7 @@ Clipboard::empty()
 }
 
 void
-Clipboard::add(EFormat format, const String& data)
+Clipboard::add(EFormat format, const std::string& data)
 {
 	assert(m_open);
 	assert(m_owner);
@@ -98,7 +98,7 @@ Clipboard::has(EFormat format) const
 	return m_added[format];
 }
 
-String
+std::string
 Clipboard::get(EFormat format) const
 {
 	assert(m_open);
@@ -106,12 +106,12 @@ Clipboard::get(EFormat format) const
 }
 
 void
-Clipboard::unmarshall(const String& data, Time time)
+Clipboard::unmarshall(const std::string& data, Time time)
 {
 	IClipboard::unmarshall(this, data, time);
 }
 
-String
+std::string
 Clipboard::marshall() const
 {
 	return IClipboard::marshall(this);

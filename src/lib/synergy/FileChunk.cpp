@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2015-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -32,7 +32,7 @@ FileChunk::FileChunk(size_t size) :
 }
 
 FileChunk*
-FileChunk::start(const String& size)
+FileChunk::start(const std::string& size)
 {
 	size_t sizeLength = size.size();
 	FileChunk* start = new FileChunk(sizeLength + FILE_CHUNK_META_SIZE);
@@ -68,11 +68,11 @@ FileChunk::end()
 }
 
 int
-FileChunk::assemble(synergy::IStream* stream, String& dataReceived, size_t& expectedSize)
+FileChunk::assemble(synergy::IStream* stream, std::string& dataReceived, size_t& expectedSize)
 {
 	// parse
 	UInt8 mark = 0;
-	String content;
+	std::string content;
 	static size_t receivedDataSize;
 	static double elapsedTime;
 	static Stopwatch stopwatch;
@@ -90,7 +90,7 @@ FileChunk::assemble(synergy::IStream* stream, String& dataReceived, size_t& expe
 		stopwatch.reset();
 
 		if (CLOG->getFilter() >= kDEBUG2) {
-			LOG((CLOG_DEBUG2 "recv file size=%s", content.c_str()));
+			LOG((CLOG_DEBUG2 _N("recv file size=%s"), content.c_str()));
 			stopwatch.start();
 		}
 		return kStart;
@@ -98,13 +98,13 @@ FileChunk::assemble(synergy::IStream* stream, String& dataReceived, size_t& expe
 	case kDataChunk:
 		dataReceived.append(content);
 		if (CLOG->getFilter() >= kDEBUG2) {
-				LOG((CLOG_DEBUG2 "recv file chunck size=%i", content.size()));
+				LOG((CLOG_DEBUG2 _N("recv file chunck size=%i"), content.size()));
 				double interval = stopwatch.getTime();
 				receivedDataSize += content.size();
-				LOG((CLOG_DEBUG2 "recv file interval=%f s", interval));
+				LOG((CLOG_DEBUG2 _N("recv file interval=%f s"), interval));
 				if (interval >= kIntervalThreshold) {
 					double averageSpeed = receivedDataSize / interval / 1000;
-					LOG((CLOG_DEBUG2 "recv file average speed=%f kb/s", averageSpeed));
+					LOG((CLOG_DEBUG2 _N("recv file average speed=%f kb/s"), averageSpeed));
 
 					receivedDataSize = 0;
 					elapsedTime += interval;
@@ -115,17 +115,17 @@ FileChunk::assemble(synergy::IStream* stream, String& dataReceived, size_t& expe
 
 	case kDataEnd:
 		if (expectedSize != dataReceived.size()) {
-			LOG((CLOG_ERR "corrupted clipboard data, expected size=%d actual size=%d", expectedSize, dataReceived.size()));
+			LOG((CLOG_ERR _N("corrupted clipboard data, expected size=%d actual size=%d"), expectedSize, dataReceived.size()));
 			return kError;
 		}
 
 		if (CLOG->getFilter() >= kDEBUG2) {
-			LOG((CLOG_DEBUG2 "file transfer finished"));
+			LOG((CLOG_DEBUG2 _N("file transfer finished")));
 			elapsedTime += stopwatch.getTime();
 			double averageSpeed = expectedSize / elapsedTime / 1000;
-			LOG((CLOG_DEBUG2 "file transfer finished: total time consumed=%f s", elapsedTime));
-			LOG((CLOG_DEBUG2 "file transfer finished: total data received=%i kb", expectedSize / 1000));
-			LOG((CLOG_DEBUG2 "file transfer finished: total average speed=%f kb/s", averageSpeed));
+			LOG((CLOG_DEBUG2 _N("file transfer finished: total time consumed=%f s"), elapsedTime));
+			LOG((CLOG_DEBUG2 _N("file transfer finished: total data received=%i kb"), expectedSize / 1000));
+			LOG((CLOG_DEBUG2 _N("file transfer finished: total average speed=%f kb/s"), averageSpeed));
 		}
 		return kFinish;
 	}
@@ -134,21 +134,21 @@ FileChunk::assemble(synergy::IStream* stream, String& dataReceived, size_t& expe
 }
 
 void
-FileChunk::send(synergy::IStream* stream, UInt8 mark, char* data, size_t dataSize)
+FileChunk::send(synergy::IStream* stream, UInt8 mark, const char* data, size_t dataSize)
 {
-	String chunk(data, dataSize);
+	std::string chunk(data, dataSize);
 
 	switch (mark) {
 	case kDataStart:
-		LOG((CLOG_DEBUG2 "sending file chunk start: size=%s", data));
+		LOG((CLOG_DEBUG2 _N("sending file chunk start: size=%s"), data));
 		break;
 
 	case kDataChunk:
-		LOG((CLOG_DEBUG2 "sending file chunk: size=%i", chunk.size()));
+		LOG((CLOG_DEBUG2 _N("sending file chunk: size=%i"), chunk.size()));
 		break;
 
 	case kDataEnd:
-		LOG((CLOG_DEBUG2 "sending file finished"));
+		LOG((CLOG_DEBUG2 _N("sending file finished")));
 		break;
 	}
 

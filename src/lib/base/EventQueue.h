@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -57,12 +57,12 @@ public:
 	virtual void		removeHandler(Event::Type type, void* target);
 	virtual void		removeHandlers(void* target);
 	virtual Event::Type
-						registerTypeOnce(Event::Type& type, const char* name);
+						registerTypeOnce(Event::Type& type, const nchar* name);
 	virtual bool		isEmpty() const;
 	virtual IEventJob*	getHandler(Event::Type type, void* target) const;
 	virtual const char*	getTypeName(Event::Type type);
 	virtual Event::Type
-						getRegisteredType(const String& name) const;
+						getRegisteredType(const nstring& name) const;
 	void*				getSystemTarget();
 	virtual void		waitForReady() const;
 
@@ -72,7 +72,7 @@ private:
 	bool				hasTimerExpired(Event& event);
 	double				getNextTimerTimeout() const;
 	void				addEventToBuffer(const Event& event);
-	
+
 private:
 	class Timer {
 	public:
@@ -106,8 +106,8 @@ private:
 	typedef PriorityQueue<Timer> TimerQueue;
 	typedef std::map<UInt32, Event> EventTable;
 	typedef std::vector<UInt32> EventIDList;
-	typedef std::map<Event::Type, const char*> TypeMap;
-	typedef std::map<String, Event::Type> NameMap;
+	typedef std::map<Event::Type, const nchar*> TypeMap;
+	typedef std::map<nstring, Event::Type> NameMap;
 	typedef std::map<Event::Type, IEventJob*> TypeHandlerTable;
 	typedef std::map<void*, TypeHandlerTable> HandlerTable;
 
@@ -124,7 +124,7 @@ private:
 
 	// saved events
 	EventTable			m_events;
-	EventIDList		m_oldEventIDs;
+	EventIDList			m_oldEventIDs;
 
 	// timers
 	Stopwatch			m_time;

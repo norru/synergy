@@ -38,7 +38,7 @@ ArgParser::ArgParser(App* app) :
 }
 
 bool
-ArgParser::parseServerArgs(ServerArgs& args, int argc, const char* const* argv)
+ArgParser::parseServerArgs(ServerArgs& args, int argc, const nchar* const* argv)
 {
 	setArgsBase(args);
 	updateCommonArgs(argv);
@@ -53,16 +53,16 @@ ArgParser::parseServerArgs(ServerArgs& args, int argc, const char* const* argv)
 		else if (parseDeprecatedArgs(argc, argv, i)) {
 			continue;
 		}
-		else if (isArg(i, argc, argv, "-a", "--address", 1)) {
+		else if (isArg(i, argc, argv, _N("-a"), _N("--address"), 1)) {
 			// save listen address
 			args.m_synergyAddress = argv[++i];
 		}
-		else if (isArg(i, argc, argv, "-c", "--config", 1)) {
+		else if (isArg(i, argc, argv, _N("-c"), _N("--config"), 1)) {
 			// save configuration file path
 			args.m_configFile = argv[++i];
 		}
 		else {
-			LOG((CLOG_PRINT "%s: unrecognized option `%s'" BYE, args.m_pname, argv[i], args.m_pname));
+			LOG((CLOG_PRINT _N("%" _NF ": unrecognized option `%" _NF "'" BYE), args.m_pname, argv[i], args.m_pname));
 			return false;
 		}
 	}
@@ -75,7 +75,7 @@ ArgParser::parseServerArgs(ServerArgs& args, int argc, const char* const* argv)
 }
 
 bool
-ArgParser::parseClientArgs(ClientArgs& args, int argc, const char* const* argv)
+ArgParser::parseClientArgs(ClientArgs& args, int argc, const nchar* const* argv)
 {
 	setArgsBase(args);
 	updateCommonArgs(argv);
@@ -91,13 +91,13 @@ ArgParser::parseClientArgs(ClientArgs& args, int argc, const char* const* argv)
 		else if (parseDeprecatedArgs(argc, argv, i)) {
 			continue;
 		}
-		else if (isArg(i, argc, argv, NULL, "--camp")) {
+		else if (isArg(i, argc, argv, NULL, _N("--camp"))) {
 			// ignore -- included for backwards compatibility
 		}
-		else if (isArg(i, argc, argv, NULL, "--no-camp")) {
+		else if (isArg(i, argc, argv, NULL, _N("--no-camp"))) {
 			// ignore -- included for backwards compatibility
 		}
-		else if (isArg(i, argc, argv, NULL, "--yscroll", 1)) {
+		else if (isArg(i, argc, argv, NULL, _N("--yscroll"), 1)) {
 			// define scroll
 			args.m_yscroll = atoi(argv[++i]);
 		}
@@ -107,14 +107,14 @@ ArgParser::parseClientArgs(ClientArgs& args, int argc, const char* const* argv)
 				return true;
 			}
 
-			LOG((CLOG_PRINT "%s: unrecognized option `%s'" BYE, args.m_pname, argv[i], args.m_pname));
+			LOG((CLOG_PRINT _N("%" _NF ": unrecognized option `%" _NF "'" BYE), args.m_pname, argv[i], args.m_pname));
 			return false;
 		}
 	}
 
 	// exactly one non-option argument (server-address)
 	if (i == argc) {
-		LOG((CLOG_PRINT "%s: a server address or name is required" BYE,
+		LOG((CLOG_PRINT _N("%" _NF ": a server address or name is required" BYE),
 			args.m_pname, args.m_pname));
 		return false;
 	}
@@ -127,17 +127,17 @@ ArgParser::parseClientArgs(ClientArgs& args, int argc, const char* const* argv)
 }
 
 bool
-ArgParser::parsePlatformArg(ArgsBase& argsBase, const int& argc, const char* const* argv, int& i)
+ArgParser::parsePlatformArg(ArgsBase& argsBase, const int& argc, const nchar* const* argv, int& i)
 {
 #if WINAPI_MSWINDOWS
-	if (isArg(i, argc, argv, NULL, "--service")) {
-		LOG((CLOG_WARN "obsolete argument --service, use synergyd instead."));
+	if (isArg(i, argc, argv, NULL, _N("--service"))) {
+		LOG((CLOG_WARN _N("obsolete argument --service, use synergyd instead.")));
 		argsBase.m_shouldExit = true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--exit-pause")) {
+	else if (isArg(i, argc, argv, NULL, _N("--exit-pause"))) {
 		argsBase.m_pauseOnExit = true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--stop-on-desk-switch")) {
+	else if (isArg(i, argc, argv, NULL, _N("--stop-on-desk-switch"))) {
 		argsBase.m_stopOnDeskSwitch = true;
 	}
 	else {
@@ -147,12 +147,12 @@ ArgParser::parsePlatformArg(ArgsBase& argsBase, const int& argc, const char* con
 
 	return true;
 #elif WINAPI_XWINDOWS
-	if (isArg(i, argc, argv, "-display", "--display", 1)) {
+	if (isArg(i, argc, argv, _N("-display"), _N("--display"), 1)) {
 		// use alternative display
 		argsBase.m_display = argv[++i];
 	}
 
-	else if (isArg(i, argc, argv, NULL, "--no-xinitthreads")) {
+	else if (isArg(i, argc, argv, NULL, _N("--no-xinitthreads"))) {
 		argsBase.m_disableXInitThreads = true;
 	}
 
@@ -169,22 +169,22 @@ ArgParser::parsePlatformArg(ArgsBase& argsBase, const int& argc, const char* con
 }
 
 bool
-ArgParser::parseToolArgs(ToolArgs& args, int argc, const char* const* argv)
+ArgParser::parseToolArgs(ToolArgs& args, int argc, const nchar* const* argv)
 {
 	for (int i = 1; i < argc; ++i) {
-		if (isArg(i, argc, argv, NULL, "--get-active-desktop", 0)) {
+		if (isArg(i, argc, argv, NULL, _N("--get-active-desktop"), 0)) {
 			args.m_printActiveDesktopName = true;
 			return true;
 		}
-		else if (isArg(i, argc, argv, NULL, "--get-installed-dir", 0)) {
+		else if (isArg(i, argc, argv, NULL, _N("--get-installed-dir"), 0)) {
 			args.m_getInstalledDir = true;
 			return true;
 		}
-		else if (isArg(i, argc, argv, NULL, "--get-profile-dir", 0)) {
+		else if (isArg(i, argc, argv, NULL, _N("--get-profile-dir"), 0)) {
 			args.m_getProfileDir = true;
 			return true;
 		}
-		else if (isArg(i, argc, argv, NULL, "--get-arch", 0)) {
+		else if (isArg(i, argc, argv, NULL, _N("--get-arch"), 0)) {
 			args.m_getArch = true;
 			return true;
 		}
@@ -197,72 +197,72 @@ ArgParser::parseToolArgs(ToolArgs& args, int argc, const char* const* argv)
 }
 
 bool
-ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
+ArgParser::parseGenericArgs(int argc, const nchar* const* argv, int& i)
 {
-	if (isArg(i, argc, argv, "-d", "--debug", 1)) {
+	if (isArg(i, argc, argv, _N("-d"), _N("--debug"), 1)) {
 		// change logging level
 		argsBase().m_logFilter = argv[++i];
 	}
-	else if (isArg(i, argc, argv, "-l", "--log", 1)) {
+	else if (isArg(i, argc, argv, _N("-l"), _N("--log"), 1)) {
 		argsBase().m_logFile = argv[++i];
 	}
-	else if (isArg(i, argc, argv, "-f", "--no-daemon")) {
+	else if (isArg(i, argc, argv, _N("-f"), _N("--no-daemon"))) {
 		// not a daemon
 		argsBase().m_daemon = false;
 	}
-	else if (isArg(i, argc, argv, NULL, "--daemon")) {
+	else if (isArg(i, argc, argv, NULL, _N("--daemon"))) {
 		// daemonize
 		argsBase().m_daemon = true;
 	}
-	else if (isArg(i, argc, argv, "-n", "--name", 1)) {
+	else if (isArg(i, argc, argv, _N("-n"), _N("--name"), 1)) {
 		// save screen name
 		argsBase().m_name = argv[++i];
 	}
-	else if (isArg(i, argc, argv, "-1", "--no-restart")) {
+	else if (isArg(i, argc, argv, _N("-1"), _N("--no-restart"))) {
 		// don't try to restart
 		argsBase().m_restartable = false;
 	}
-	else if (isArg(i, argc, argv, NULL, "--restart")) {
+	else if (isArg(i, argc, argv, NULL, _N("--restart"))) {
 		// try to restart
 		argsBase().m_restartable = true;
 	}
-	else if (isArg(i, argc, argv, "-z", NULL)) {
+	else if (isArg(i, argc, argv, _N("-z"), NULL)) {
 		argsBase().m_backend = true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--no-hooks")) {
+	else if (isArg(i, argc, argv, NULL, _N("--no-hooks"))) {
 		argsBase().m_noHooks = true;
 	}
-	else if (isArg(i, argc, argv, "-h", "--help")) {
+	else if (isArg(i, argc, argv, _N("-h"), _N("--help"))) {
 		if (m_app) {
 			m_app->help();
 		}
 		argsBase().m_shouldExit = true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--version")) {
+	else if (isArg(i, argc, argv, NULL, _N("--version"))) {
 		if (m_app) {
 			m_app->version();
 		}
 		argsBase().m_shouldExit = true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--no-tray")) {
+	else if (isArg(i, argc, argv, NULL, _N("--no-tray"))) {
 		argsBase().m_disableTray = true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--ipc")) {
+	else if (isArg(i, argc, argv, NULL, _N("--ipc"))) {
 		argsBase().m_enableIpc = true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--server")) {
+	else if (isArg(i, argc, argv, NULL, _N("--server"))) {
 		// HACK: stop error happening when using portable (synergyp)
 	}
-	else if (isArg(i, argc, argv, NULL, "--client")) {
+	else if (isArg(i, argc, argv, NULL, _N("--client"))) {
 		// HACK: stop error happening when using portable (synergyp)
 	}
-	else if (isArg(i, argc, argv, NULL, "--enable-drag-drop")) {
+	else if (isArg(i, argc, argv, NULL, _N("--enable-drag-drop"))) {
 		bool useDragDrop = true;
 
 #ifdef WINAPI_XWINDOWS
 
 		useDragDrop = false;
-		LOG((CLOG_INFO "ignoring --enable-drag-drop, not supported on linux."));
+		LOG((CLOG_INFO _N("ignoring --enable-drag-drop, not supported on linux.")));
 
 #endif
 
@@ -270,7 +270,7 @@ ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
 
 		if (!IsWindowsVistaOrGreater()) {
 			useDragDrop = false;
-			LOG((CLOG_INFO "ignoring --enable-drag-drop, not supported below vista."));
+			LOG((CLOG_INFO _N("ignoring --enable-drag-drop, not supported below vista.")));
 		}
 #endif
 
@@ -278,13 +278,13 @@ ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
 			argsBase().m_enableDragDrop = true;
 		}
 	}
-	else if (isArg(i, argc, argv, NULL, "--enable-crypto")) {
+	else if (isArg(i, argc, argv, NULL, _N("--enable-crypto"))) {
 		argsBase().m_enableCrypto = true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--profile-dir", 1)) {
+	else if (isArg(i, argc, argv, NULL, _N("--profile-dir"), 1)) {
 		argsBase().m_profileDirectory = argv[++i];
 	}
-	else if (isArg(i, argc, argv, NULL, "--plugin-dir", 1)) {
+	else if (isArg(i, argc, argv, NULL, _N("--plugin-dir"), 1)) {
 		argsBase().m_pluginDirectory = argv[++i];
 	}
 	else {
@@ -296,30 +296,30 @@ ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
 }
 
 bool
-ArgParser::parseDeprecatedArgs(int argc, const char* const* argv, int& i)
+ArgParser::parseDeprecatedArgs(int argc, const nchar* const* argv, int& i)
 {
-	if (isArg(i, argc, argv, NULL, "--crypto-pass")) {
-		LOG((CLOG_NOTE "--crypto-pass is deprecated"));
+	if (isArg(i, argc, argv, NULL, _N("--crypto-pass"))) {
+		LOG((CLOG_NOTE _N("--crypto-pass is deprecated")));
 		i++;
 		return true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--res-w")) {
-		LOG((CLOG_NOTE "--res-w is deprecated"));
+	else if (isArg(i, argc, argv, NULL, _N("--res-w"))) {
+		LOG((CLOG_NOTE _N("--res-w is deprecated")));
 		i++;
 		return true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--res-h")) {
-		LOG((CLOG_NOTE "--res-h is deprecated"));
+	else if (isArg(i, argc, argv, NULL, _N("--res-h"))) {
+		LOG((CLOG_NOTE _N("--res-h is deprecated")));
 		i++;
 		return true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--prm-wc")) {
-		LOG((CLOG_NOTE "--prm-wc is deprecated"));
+	else if (isArg(i, argc, argv, NULL, _N("--prm-wc"))) {
+		LOG((CLOG_NOTE _N("--prm-wc is deprecated")));
 		i++;
 		return true;
 	}
-	else if (isArg(i, argc, argv, NULL, "--prm-hc")) {
-		LOG((CLOG_NOTE "--prm-hc is deprecated"));
+	else if (isArg(i, argc, argv, NULL, _N("--prm-hc"))) {
+		LOG((CLOG_NOTE _N("--prm-hc is deprecated")));
 		i++;
 		return true;
 	}
@@ -329,15 +329,15 @@ ArgParser::parseDeprecatedArgs(int argc, const char* const* argv, int& i)
 
 bool
 ArgParser::isArg(
-	int argi, int argc, const char* const* argv,
-	const char* name1, const char* name2,
+	int argi, int argc, const nchar* const* argv,
+	const nchar* name1, const nchar* name2,
 	int minRequiredParameters)
 {
 	if ((name1 != NULL && strcmp(argv[argi], name1) == 0) ||
 		(name2 != NULL && strcmp(argv[argi], name2) == 0)) {
 			// match.  check args left.
 			if (argi + minRequiredParameters >= argc) {
-				LOG((CLOG_PRINT "%s: missing arguments for `%s'" BYE,
+				LOG((CLOG_PRINT _N("%" _NF ": missing arguments for `%" _NF "'" BYE),
 					argsBase().m_pname, argv[argi], argsBase().m_pname));
 				argsBase().m_shouldExit = true;
 				return false;
@@ -350,7 +350,7 @@ ArgParser::isArg(
 }
 
 void
-ArgParser::splitCommandString(String& command, std::vector<String>& argv)
+ArgParser::splitCommandString(nstring& command, std::vector<nstring>& argv)
 {
 	if (command.empty()) {
 		return ;
@@ -361,9 +361,9 @@ ArgParser::splitCommandString(String& command, std::vector<String>& argv)
 	searchDoubleQuotes(command, leftDoubleQuote, rightDoubleQuote);
 
 	size_t startPos = 0;
-	size_t space = command.find(" ", startPos);
+	size_t space = command.find(_N(" "), startPos);
 
-	while (space != String::npos) {
+	while (space != nstring::npos) {
 		bool ignoreThisSpace = false;
 
 		// check if the space is between two double quotes
@@ -375,7 +375,7 @@ ArgParser::splitCommandString(String& command, std::vector<String>& argv)
 		}
 
 		if (!ignoreThisSpace) {
-			String subString = command.substr(startPos, space - startPos);
+			nstring subString = command.substr(startPos, space - startPos);
 
 			removeDoubleQuotes(subString);
 			argv.push_back(subString);
@@ -383,30 +383,30 @@ ArgParser::splitCommandString(String& command, std::vector<String>& argv)
 
 		// find next space
 		if (ignoreThisSpace) {
-			space = command.find(" ", rightDoubleQuote + 1);
+			space = command.find(_N(" "), rightDoubleQuote + 1);
 		}
 		else {
 			startPos = space + 1;
-			space = command.find(" ", startPos);
+			space = command.find(_N(" "), startPos);
 		}
 	}
 
-	String subString = command.substr(startPos, command.size());
+	nstring subString = command.substr(startPos, command.size());
 	removeDoubleQuotes(subString);
 	argv.push_back(subString);
 }
 
 bool
-ArgParser::searchDoubleQuotes(String& command, size_t& left, size_t& right, size_t startPos)
+ArgParser::searchDoubleQuotes(nstring& command, size_t& left, size_t& right, size_t startPos)
 {
 	bool result = false;
-	left = String::npos;
-	right = String::npos;
+	left = nstring::npos;
+	right = nstring::npos;
 
-	left = command.find("\"", startPos);
-	if (left != String::npos) {
-		right = command.find("\"", left + 1);
-		if (right != String::npos) {
+	left = command.find(_N("\""), startPos);
+	if (left != nstring::npos) {
+		right = command.find(_N("\""), left + 1);
+		if (right != nstring::npos) {
 			result = true;
 		}
 	}
@@ -420,17 +420,17 @@ ArgParser::searchDoubleQuotes(String& command, size_t& left, size_t& right, size
 }
 
 void
-ArgParser::removeDoubleQuotes(String& arg)
+ArgParser::removeDoubleQuotes(nstring& arg)
 {
 	// if string is surrounded by double quotes, remove them
-	if (arg[0] == '\"' &&
-		arg[arg.size() - 1] == '\"') {
+	if (arg[0] == _N('\"') &&
+		arg[arg.size() - 1] == _N('\"')) {
 		arg = arg.substr(1, arg.size() - 2);
 	}
 }
 
 const char**
-ArgParser::getArgv(std::vector<String>& argsArray)
+ArgParser::getArgv(std::vector<nstring>& argsArray)
 {
 	size_t argc = argsArray.size();
 
@@ -447,21 +447,21 @@ ArgParser::getArgv(std::vector<String>& argsArray)
 	return argv;
 }
 
-String
-ArgParser::assembleCommand(std::vector<String>& argsArray,  String ignoreArg, int parametersRequired)
+nstring
+ArgParser::assembleCommand(std::vector<nstring>& argsArray,  nstring ignoreArg, int parametersRequired)
 {
-	String result;
+	nstring result;
 
-	for (std::vector<String>::iterator it = argsArray.begin(); it != argsArray.end(); ++it) {
+	for (std::vector<nstring>::iterator it = argsArray.begin(); it != argsArray.end(); ++it) {
 		if (it->compare(ignoreArg) == 0) {
 			it = it + parametersRequired;
 			continue;
 		}
 
 		// if there is a space in this arg, use double quotes surround it
-		if ((*it).find(" ") != String::npos) {
-			(*it).insert(0, "\"");
-			(*it).push_back('\"');
+		if ((*it).find(" ") != nstring::npos) {
+			(*it).insert(0, _N("\""));
+			(*it).push_back(_N('\"'));
 		}
 
 		result.append(*it);
@@ -478,7 +478,7 @@ ArgParser::assembleCommand(std::vector<String>& argsArray,  String ignoreArg, in
 }
 
 void
-ArgParser::updateCommonArgs(const char* const* argv)
+ArgParser::updateCommonArgs(const nchar* const* argv)
 {
 	argsBase().m_name = ARCH->getHostName();
 	argsBase().m_pname = ARCH->getBasename(argv[0]);
@@ -493,8 +493,8 @@ ArgParser::checkUnexpectedArgs()
 	// daemon mode.
 	if (argsBase().m_daemon) {
 		LOG((CLOG_ERR
-			"the --daemon argument is not supported on windows. "
-			"instead, install %s as a service (--service install)",
+			_N("the --daemon argument is not supported on windows. ")
+			_N("instead, install %" _NF " as a service (--service install)"),
 			argsBase().m_pname));
 		return true;
 	}

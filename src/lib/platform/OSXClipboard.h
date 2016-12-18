@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -36,12 +36,12 @@ public:
 
 	// IClipboard overrides
 	virtual bool		empty();
-	virtual void		add(EFormat, const String& data);
+	virtual void		add(EFormat, const std::string& data);
 	virtual bool		open(Time) const;
 	virtual void		close() const;
 	virtual Time		getTime() const;
 	virtual bool		has(EFormat) const;
-	virtual String		get(EFormat) const;
+	virtual std::String get(EFormat) const;
 
 	bool				synchronize();
 private:
@@ -82,14 +82,14 @@ public:
 	getFormat().  The return data will be in the scrap
 	format returned by getOSXFormat().
 	*/
-	virtual String		fromIClipboard(const String&) const = 0;
+	virtual std::string	fromIClipboard(const std::string&) const = 0;
 
 	//! Convert to IClipboard format
 	/*!
 	Convert from the carbon scrap format to the IClipboard format
 	(i.e., the reverse of fromIClipboard()).
 	*/
-	virtual String		toIClipboard(const String&) const = 0;
+	virtual std::string	toIClipboard(const std::string&) const = 0;
 
 	//@}
 };

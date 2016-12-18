@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -27,12 +27,12 @@
 //
 
 XBase::XBase() :
-	std::runtime_error("")
+	std::runtime_error(_N(""))
 {
 	// do nothing
 }
 
-XBase::XBase(const String& msg) :
+XBase::XBase(const nstring& msg) :
 	std::runtime_error(msg)
 {
 	// do nothing
@@ -43,10 +43,10 @@ XBase::~XBase() _NOEXCEPT
 	// do nothing
 }
 
-const char*
+const nchar*
 XBase::what() const _NOEXCEPT
 {
-	const char* what = std::runtime_error::what();
+	const nchar* what = std::runtime_error::what();
 	if (strlen(what) == 0) {
 		m_what = getWhat();
 		return m_what.c_str();
@@ -54,14 +54,14 @@ XBase::what() const _NOEXCEPT
 	return what;
 }
 
-String
-XBase::format(const char* /*id*/, const char* fmt, ...) const throw()
+nstring
+XBase::format(const nchar* /*id*/, const nchar* fmt, ...) const throw()
 {
 	// FIXME -- lookup message string using id as an index.  set
 	// fmt to that string if it exists.
 
 	// format
-	String result;
+	nstring result;
 	va_list args;
 	va_start(args, fmt);
 	try {

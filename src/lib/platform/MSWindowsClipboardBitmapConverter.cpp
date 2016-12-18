@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -47,7 +47,7 @@ MSWindowsClipboardBitmapConverter::getWin32Format() const
 }
 
 HANDLE
-MSWindowsClipboardBitmapConverter::fromIClipboard(const String& data) const
+MSWindowsClipboardBitmapConverter::fromIClipboard(const std::string& data) const
 {
 	// copy to memory handle
 	HGLOBAL gData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, data.size());
@@ -67,31 +67,31 @@ MSWindowsClipboardBitmapConverter::fromIClipboard(const String& data) const
 	return gData;
 }
 
-String
+std::string
 MSWindowsClipboardBitmapConverter::toIClipboard(HANDLE data) const
 {
 	// get datator
 	LPVOID src = GlobalLock(data);
 	if (src == NULL) {
-		return String();
+		return std::string();
 	}
 	UInt32 srcSize = (UInt32)GlobalSize(data);
 
 	// check image type
 	const BITMAPINFO* bitmap = static_cast<const BITMAPINFO*>(src);
-	LOG((CLOG_INFO "bitmap: %dx%d %d", bitmap->bmiHeader.biWidth, bitmap->bmiHeader.biHeight, (int)bitmap->bmiHeader.biBitCount));
+	LOG((CLOG_INFO L"bitmap: %dx%d %d", bitmap->bmiHeader.biWidth, bitmap->bmiHeader.biHeight, (int)bitmap->bmiHeader.biBitCount));
 	if (bitmap->bmiHeader.biPlanes == 1 &&
 		(bitmap->bmiHeader.biBitCount == 24 ||
 		bitmap->bmiHeader.biBitCount == 32) &&
 		bitmap->bmiHeader.biCompression == BI_RGB) {
 		// already in canonical form
-		String image(static_cast<char const*>(src), srcSize);
+		std::string image(static_cast<char const*>(src), srcSize);
 		GlobalUnlock(data);
 		return image;
 	}
 
 	// create a destination DIB section
-	LOG((CLOG_INFO "convert image from: depth=%d comp=%d", bitmap->bmiHeader.biBitCount, bitmap->bmiHeader.biCompression));
+	LOG((CLOG_INFO L"convert image from: depth=%d comp=%d", bitmap->bmiHeader.biBitCount, bitmap->bmiHeader.biCompression));
 	void* raw;
 	BITMAPINFOHEADER info;
 	LONG w               = bitmap->bmiHeader.biWidth;
@@ -138,7 +138,7 @@ MSWindowsClipboardBitmapConverter::toIClipboard(HANDLE data) const
 	GdiFlush();
 
 	// extract data
-	String image((const char*)&info, info.biSize);
+	std::string image((const char*)&info, info.biSize);
 	image.append((const char*)raw, 4 * w * h);
 
 	// clean up GDI

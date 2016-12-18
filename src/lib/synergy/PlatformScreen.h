@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -80,7 +80,7 @@ public:
 	virtual void		setDraggingStarted(bool started) { m_draggingStarted = started; }
 	virtual bool		isDraggingStarted();
 	virtual bool		isFakeDraggingStarted() { return m_fakeDraggingStarted; }
-	virtual String&	getDraggingFilename() { return m_draggingFilename; }
+	virtual nstring&	getDraggingFilename() { return m_draggingFilename; }
 	virtual void		clearDraggingFilename() { }
 
 	// IPlatformScreen overrides
@@ -97,10 +97,10 @@ public:
 	virtual void		setOptions(const OptionsList& options) = 0;
 	virtual void		setSequenceNumber(UInt32) = 0;
 	virtual bool		isPrimary() const = 0;
-	
+
 	virtual void		fakeDraggingFiles(DragFileList fileList) { throw std::runtime_error("fakeDraggingFiles not implemented"); }
-	virtual const String&
-						getDropTarget() const { throw std::runtime_error("getDropTarget not implemented"); }
+	virtual const nstring& getDropTarget() const
+		{ throw std::runtime_error("getDropTarget not implemented"); }
 
 protected:
 	//! Update mouse buttons
@@ -121,7 +121,7 @@ protected:
 	virtual void		handleSystemEvent(const Event& event, void*) = 0;
 
 protected:
-	String				m_draggingFilename;
+	nstring				m_draggingFilename;
 	bool				m_draggingStarted;
 	bool				m_fakeDraggingStarted;
 };

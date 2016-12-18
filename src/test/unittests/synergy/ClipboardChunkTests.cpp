@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2015-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -24,7 +24,7 @@ TEST(ClipboardChunkTests, start_formatStartChunk)
 {
 	ClipboardID id = 0;
 	UInt32 sequence = 0;
-	String mockDataSize("10");
+	std::string mockDataSize("10");
 	ClipboardChunk* chunk = ClipboardChunk::start(id, sequence, mockDataSize);
 
 	EXPECT_EQ(id, chunk->m_chunk[0]);
@@ -41,7 +41,7 @@ TEST(ClipboardChunkTests, data_formatDataChunk)
 {
 	ClipboardID id = 0;
 	UInt32 sequence = 1;
-	String mockData("mock data");
+	std::string mockData("mock data");
 	ClipboardChunk* chunk = ClipboardChunk::data(id, sequence, mockData);
 
 	EXPECT_EQ(id, chunk->m_chunk[0]);

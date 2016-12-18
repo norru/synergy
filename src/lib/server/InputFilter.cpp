@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2005 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -95,10 +95,10 @@ InputFilter::KeystrokeCondition::clone() const
 	return new KeystrokeCondition(m_events, m_key, m_mask);
 }
 
-String
+nstring
 InputFilter::KeystrokeCondition::format() const
 {
-	return synergy::string::sprintf("keystroke(%s)",
+	return synergy::string::sprintf(_N("keystroke(%" _NF ")"),
 							synergy::KeyMap::formatKey(m_key, m_mask).c_str());
 }
 
@@ -183,17 +183,17 @@ InputFilter::MouseButtonCondition::clone() const
 	return new MouseButtonCondition(m_events, m_button, m_mask);
 }
 
-String
+nstring
 InputFilter::MouseButtonCondition::format() const
 {
-	String key = synergy::KeyMap::formatKey(kKeyNone, m_mask);
+	nstring key = synergy::KeyMap::formatKey(kKeyNone, m_mask);
 	if (!key.empty()) {
-		key += "+";
+		key += '+';
 	}
-	return synergy::string::sprintf("mousebutton(%s%d)", key.c_str(), m_button);
+	return synergy::string::sprintf(_N("mousebutton(%" _NF "%d)"), key.c_str(), m_button);
 }
 
-InputFilter::EFilterStatus		
+InputFilter::EFilterStatus
 InputFilter::MouseButtonCondition::match(const Event& event)
 {
 	static const KeyModifierMask s_ignoreMask =
@@ -227,7 +227,7 @@ InputFilter::MouseButtonCondition::match(const Event& event)
 }
 
 InputFilter::ScreenConnectedCondition::ScreenConnectedCondition(
-		IEventQueue* events, const String& screen) :
+		IEventQueue* events, const nstring& screen) :
 	m_screen(screen),
 	m_events(events)
 {
@@ -245,17 +245,17 @@ InputFilter::ScreenConnectedCondition::clone() const
 	return new ScreenConnectedCondition(m_events, m_screen);
 }
 
-String
+nstring
 InputFilter::ScreenConnectedCondition::format() const
 {
-	return synergy::string::sprintf("connect(%s)", m_screen.c_str());
+	return synergy::string::sprintf(_N("connect(%" _NF ")"), m_screen.c_str());
 }
 
 InputFilter::EFilterStatus
 InputFilter::ScreenConnectedCondition::match(const Event& event)
 {
 	if (event.getType() == m_events->forServer().connected()) {
-		Server::ScreenConnectedInfo* info = 
+		Server::ScreenConnectedInfo* info =
 			static_cast<Server::ScreenConnectedInfo*>(event.getData());
 		if (m_screen == info->m_screen || m_screen.empty()) {
 			return kActivate;
@@ -298,12 +298,12 @@ InputFilter::LockCursorToScreenAction::clone() const
 	return new LockCursorToScreenAction(*this);
 }
 
-String
+nstring
 InputFilter::LockCursorToScreenAction::format() const
 {
-	static const char* s_mode[] = { "off", "on", "toggle" };
+	static const nchar* s_mode[] = { _N("off"), _N("on"), _N("toggle") };
 
-	return synergy::string::sprintf("lockCursorToScreen(%s)", s_mode[m_mode]);
+	return synergy::string::sprintf("lockCursorToScreen(%" _NF ")", s_mode[m_mode]);
 }
 
 void
@@ -316,7 +316,7 @@ InputFilter::LockCursorToScreenAction::perform(const Event& event)
 	};
 
 	// send event
-	Server::LockCursorToScreenInfo* info = 
+	Server::LockCursorToScreenInfo* info =
 		Server::LockCursorToScreenInfo::alloc(s_state[m_mode]);
 	m_events->addEvent(Event(m_events->forServer().lockCursorToScreen(),
 								event.getTarget(), info,
@@ -324,14 +324,14 @@ InputFilter::LockCursorToScreenAction::perform(const Event& event)
 }
 
 InputFilter::SwitchToScreenAction::SwitchToScreenAction(
-		IEventQueue* events, const String& screen) :
+		IEventQueue* events, const nstring& screen) :
 	m_screen(screen),
 	m_events(events)
 {
 	// do nothing
 }
 
-String
+nstring
 InputFilter::SwitchToScreenAction::getScreen() const
 {
 	return m_screen;
@@ -343,10 +343,10 @@ InputFilter::SwitchToScreenAction::clone() const
 	return new SwitchToScreenAction(*this);
 }
 
-String
+nstring
 InputFilter::SwitchToScreenAction::format() const
 {
-	return synergy::string::sprintf("switchToScreen(%s)", m_screen.c_str());
+	return synergy::string::sprintf(_N("switchToScreen(%s)"), m_screen.c_str());
 }
 
 void
@@ -354,9 +354,9 @@ InputFilter::SwitchToScreenAction::perform(const Event& event)
 {
 	// pick screen name.  if m_screen is empty then use the screen from
 	// event if it has one.
-	String screen = m_screen;
+	nstring screen = m_screen;
 	if (screen.empty() && event.getType() == m_events->forServer().connected()) {
-		Server::ScreenConnectedInfo* info = 
+		Server::ScreenConnectedInfo* info =
 			static_cast<Server::ScreenConnectedInfo*>(event.getData());
 		screen = info->m_screen;
 	}
@@ -389,18 +389,18 @@ InputFilter::SwitchInDirectionAction::clone() const
 	return new SwitchInDirectionAction(*this);
 }
 
-String
+nstring
 InputFilter::SwitchInDirectionAction::format() const
 {
-	static const char* s_names[] = {
-		"",
-		"left",
-		"right",
-		"up",
-		"down"
+	static const nchar* s_names[] = {
+		_N(""),
+		_N("left"),
+		_N("right"),
+		_N("up"),
+		_N("down")
 	};
 
-	return synergy::string::sprintf("switchInDirection(%s)", s_names[m_direction]);
+	return synergy::string::sprintf(_N("switchInDirection(%" _NF ")"), s_names[m_direction]);
 }
 
 void
@@ -424,7 +424,7 @@ InputFilter::KeyboardBroadcastAction::KeyboardBroadcastAction(
 InputFilter::KeyboardBroadcastAction::KeyboardBroadcastAction(
 		IEventQueue* events,
 		Mode mode,
-		const std::set<String>& screens) :
+		const std::set<nstring>& screens) :
 	m_mode(mode),
 	m_screens(IKeyState::KeyInfo::join(screens)),
 	m_events(events)
@@ -438,10 +438,10 @@ InputFilter::KeyboardBroadcastAction::getMode() const
 	return m_mode;
 }
 
-std::set<String>
+std::set<nstring>
 InputFilter::KeyboardBroadcastAction::getScreens() const
 {
-	std::set<String> screens;
+	std::set<nstring> screens;
 	IKeyState::KeyInfo::split(m_screens.c_str(), screens);
 	return screens;
 }
@@ -452,17 +452,17 @@ InputFilter::KeyboardBroadcastAction::clone() const
 	return new KeyboardBroadcastAction(*this);
 }
 
-String
+nstring
 InputFilter::KeyboardBroadcastAction::format() const
 {
-	static const char* s_mode[] = { "off", "on", "toggle" };
-	static const char* s_name = "keyboardBroadcast";
+	static const nchar* s_mode[] = { _N("off"), _N("on"), _N("toggle") };
+	static const nchar* s_name = _N("keyboardBroadcast");
 
-	if (m_screens.empty() || m_screens[0] == '*') {
-		return synergy::string::sprintf("%s(%s)", s_name, s_mode[m_mode]);
+	if (m_screens.empty() || m_screens[0] == _N('*')) {
+		return synergy::string::sprintf(_N("%" _NF "(%" _NF ")"), s_name, s_mode[m_mode]);
 	}
 	else {
-		return synergy::string::sprintf("%s(%s,%.*s)", s_name, s_mode[m_mode],
+		return synergy::string::sprintf(_N("%" _NF "(%" _NF ",%.*s)"), s_name, s_mode[m_mode],
 							m_screens.size() - 2,
 							m_screens.c_str() + 1);
 	}
@@ -478,7 +478,7 @@ InputFilter::KeyboardBroadcastAction::perform(const Event& event)
 	};
 
 	// send event
-	Server::KeyboardBroadcastInfo* info = 
+	Server::KeyboardBroadcastInfo* info =
 		Server::KeyboardBroadcastInfo::alloc(s_state[m_mode], m_screens);
 	m_events->addEvent(Event(m_events->forServer().keyboardBroadcast(),
 								event.getTarget(), info,
@@ -525,23 +525,23 @@ InputFilter::KeystrokeAction::clone() const
 	return new KeystrokeAction(m_events, info, m_press);
 }
 
-String
+nstring
 InputFilter::KeystrokeAction::format() const
 {
-	const char* type = formatName();
+	const nchar* type = formatName();
 
-	if (m_keyInfo->m_screens[0] == '\0') {
-		return synergy::string::sprintf("%s(%s)", type,
+	if (m_keyInfo->m_screens[0] == 0) {
+		return synergy::string::sprintf(_N("%" _NF "(%" _NF ")"), type,
 							synergy::KeyMap::formatKey(m_keyInfo->m_key,
 								m_keyInfo->m_mask).c_str());
 	}
-	else if (m_keyInfo->m_screens[0] == '*') {
-		return synergy::string::sprintf("%s(%s,*)", type,
+	else if (m_keyInfo->m_screens[0] == _N('*')) {
+		return synergy::string::sprintf(_N("%" _NF "(%" _NF ",*)"), type,
 							synergy::KeyMap::formatKey(m_keyInfo->m_key,
 								m_keyInfo->m_mask).c_str());
 	}
 	else {
-		return synergy::string::sprintf("%s(%s,%.*s)", type,
+		return synergy::string::sprintf(_N("%" _NF "(%" _NF ",%.*s)"), type,
 							synergy::KeyMap::formatKey(m_keyInfo->m_key,
 								m_keyInfo->m_mask).c_str(),
 							strlen(m_keyInfo->m_screens + 1) - 1,
@@ -555,7 +555,7 @@ InputFilter::KeystrokeAction::perform(const Event& event)
 	Event::Type type = m_press ?
 		m_events->forIKeyState().keyDown() :
 		m_events->forIKeyState().keyUp();
-	
+
 	m_events->addEvent(Event(m_events->forIPrimaryScreen().fakeInputBegin(),
 								event.getTarget(), NULL,
 								Event::kDeliverImmediately));
@@ -567,10 +567,10 @@ InputFilter::KeystrokeAction::perform(const Event& event)
 								Event::kDeliverImmediately));
 }
 
-const char*
+const nchar*
 InputFilter::KeystrokeAction::formatName() const
 {
-	return (m_press ? "keyDown" : "keyUp");
+	return (m_press ? _N("keyDown") : _N("keyUp"));
 }
 
 InputFilter::MouseButtonAction::MouseButtonAction(
@@ -607,14 +607,14 @@ InputFilter::MouseButtonAction::clone() const
 	return new MouseButtonAction(m_events, info, m_press);
 }
 
-String
+nstring
 InputFilter::MouseButtonAction::format() const
 {
-	const char* type = formatName();
+	const nchar* type = formatName();
 
-	String key = synergy::KeyMap::formatKey(kKeyNone, m_buttonInfo->m_mask);
-	return synergy::string::sprintf("%s(%s%s%d)", type,
-							key.c_str(), key.empty() ? "" : "+",
+	nstring key = synergy::KeyMap::formatKey(kKeyNone, m_buttonInfo->m_mask);
+	return synergy::string::sprintf(_N("%" _NF "(%" _NF "%" _NF "%d)"), type,
+							key.c_str(), key.empty() ? _N("") : _N("+"),
 							m_buttonInfo->m_button);
 }
 
@@ -641,10 +641,10 @@ InputFilter::MouseButtonAction::perform(const Event& event)
 								Event::kDontFreeData));
 }
 
-const char*
+const nchar*
 InputFilter::MouseButtonAction::formatName() const
 {
-	return (m_press ? "mouseDown" : "mouseUp");
+	return (m_press ? _N("mouseDown") : _N("mouseUp"));
 }
 
 //
@@ -801,40 +801,40 @@ InputFilter::Rule::handleEvent(const Event& event)
 
 	case kActivate:
 		actions = &m_activateActions;
-		LOG((CLOG_DEBUG1 "activate actions"));
+		LOG((CLOG_DEBUG1 _N("activate actions")));
 		break;
 
 	case kDeactivate:
 		actions = &m_deactivateActions;
-		LOG((CLOG_DEBUG1 "deactivate actions"));
+		LOG((CLOG_DEBUG1 _N("deactivate actions")));
 		break;
 	}
 
 	// perform actions
 	for (ActionList::const_iterator i = actions->begin();
 								i != actions->end(); ++i) {
-		LOG((CLOG_DEBUG1 "hotkey: %s", (*i)->format().c_str()));
+		LOG((CLOG_DEBUG1 _N("hotkey: %" _NF), (*i)->format().c_str()));
 		(*i)->perform(event);
 	}
 
 	return true;
 }
 
-String
+nstring
 InputFilter::Rule::format() const
 {
-	String s;
+	nstring s;
 	if (m_condition != NULL) {
 		// condition
 		s += m_condition->format();
-		s += " = ";
+		s += _N(" = ");
 
 		// activate actions
 		ActionList::const_iterator i = m_activateActions.begin();
 		if (i != m_activateActions.end()) {
 			s += (*i)->format();
 			while (++i != m_activateActions.end()) {
-				s += ", ";
+				s += _N(", ");
 				s += (*i)->format();
 			}
 		}
@@ -1019,15 +1019,15 @@ InputFilter::setPrimaryClient(PrimaryClient* client)
 	}
 }
 
-String
-InputFilter::format(const String& linePrefix) const
+nstring
+InputFilter::format(const nstring& linePrefix) const
 {
-	String s;
+	nstring s;
 	for (RuleList::const_iterator i = m_ruleList.begin();
 								i != m_ruleList.end(); ++i) {
 		s += linePrefix;
 		s += i->format();
-		s += "\n";
+		s += '\n';
 	}
 	return s;
 }
@@ -1048,7 +1048,7 @@ InputFilter::operator==(const InputFilter& x) const
 
 	// compare rule lists.  the easiest way to do that is to format each
 	// rule into a string, sort the strings, then compare the results.
-	std::vector<String> aList, bList;
+	std::vector<nstring> aList, bList;
 	for (RuleList::const_iterator i = m_ruleList.begin();
 								i != m_ruleList.end(); ++i) {
 		aList.push_back(i->format());

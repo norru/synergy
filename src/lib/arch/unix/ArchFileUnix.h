@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -38,10 +38,10 @@ public:
 	virtual std::string	getProfileDirectory();
 	virtual std::string	concatPath(const std::string& prefix,
 							const std::string& suffix);
-	virtual void		setProfileDirectory(const String& s);
-	virtual void		setPluginDirectory(const String& s);
+	virtual void		setProfileDirectory(const std::string& s);
+	virtual void		setPluginDirectory(const std::string& s);
 
 private:
-	String				m_profileDirectory;
-	String				m_pluginDirectory;
+	std::string			m_profileDirectory;
+	std::string			m_pluginDirectory;
 };

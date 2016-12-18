@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2012 Nick Bolton
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -44,11 +44,11 @@ public:
 	virtual ~IpcLogOutputter();
 
 	// ILogOutputter overrides
-	virtual void		open(const char* title);
+	virtual void		open(const nchar* title);
 	virtual void		close();
 	virtual void		show(bool showIfEmpty);
-	virtual bool		write(ELevel level, const char* message);
-	
+	virtual bool		write(ELevel level, const nchar* message);
+
 	//! @name manipulators
 	//@{
 
@@ -74,29 +74,29 @@ public:
 	when threaded mode is on.
 	*/
 	void				sendBuffer();
-	
+
 	//@}
-	
+
 	//! @name accessors
 	//@{
-	
+
 	//! Get the buffer size
 	/*!
 	Returns the maximum size of the buffer.
 	*/
 	UInt16				bufferMaxSize() const;
-	
+
 	//@}
 
 private:
 	void				init();
 	void				bufferThread(void*);
-	String				getChunk(size_t count);
-	void				appendBuffer(const String& text);
+	nstring				getChunk(size_t count);
+	void				appendBuffer(const nstring& text);
 	bool				isRunning();
 
 private:
-	typedef std::deque<String> Buffer;
+	typedef std::deque<nstring> Buffer;
 
 	IpcServer&			m_ipcServer;
 	Buffer				m_buffer;

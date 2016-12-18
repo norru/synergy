@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -54,7 +54,7 @@ public:
 	//@}
 
 protected:
-	virtual String		getWhat() const throw();
+	virtual nstring		getWhat() const throw();
 
 private:
 	int					m_major;
@@ -68,23 +68,22 @@ a client that is already connected.
 */
 class XDuplicateClient : public XSynergy {
 public:
-	XDuplicateClient(const String& name);
+	XDuplicateClient(const nstring& name);
 	virtual ~XDuplicateClient() _NOEXCEPT { }
 
 	//! @name accessors
 	//@{
 
 	//! Get client's name
-	virtual const String&
-						getName() const throw();
+	virtual const nstring& getName() const throw();
 
 	//@}
 
 protected:
-	virtual String		getWhat() const throw();
+	virtual nstring		getWhat() const throw();
 
 private:
-	String				m_name;
+	nstring				m_name;
 };
 
 //! Client not in map exception
@@ -94,29 +93,29 @@ unknown to the server.
 */
 class XUnknownClient : public XSynergy {
 public:
-	XUnknownClient(const String& name);
+	XUnknownClient(const nstring& name);
 	virtual ~XUnknownClient() _NOEXCEPT { }
 
 	//! @name accessors
 	//@{
 
 	//! Get the client's name
-	virtual const String&
+	virtual const nstring&
 						getName() const throw();
 
 	//@}
 
 protected:
-	virtual String		getWhat() const throw();
+	virtual nstring		getWhat() const throw();
 
 private:
-	String				m_name;
+	nstring				m_name;
 };
 
 //! Generic exit eception
 /*!
-Thrown when we want to abort, with the opportunity to clean up. This is a 
-little bit of a hack, but it's a better way of exiting, than just calling 
+Thrown when we want to abort, with the opportunity to clean up. This is a
+little bit of a hack, but it's a better way of exiting, than just calling
 exit(int).
 */
 class XExitApp : public XSynergy {
@@ -128,8 +127,8 @@ public:
 	int getCode() const throw();
 
 protected:
-	virtual String	getWhat() const throw();
-	
+	virtual nstring	getWhat() const throw();
+
 private:
 	int	m_code;
 };

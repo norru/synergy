@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2003 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -44,22 +44,22 @@ public:
 	public:
 		static KeyInfo* alloc(KeyID, KeyModifierMask, KeyButton, SInt32 count);
 		static KeyInfo* alloc(KeyID, KeyModifierMask, KeyButton, SInt32 count,
-							const std::set<String>& destinations);
+							const std::set<nstring>& destinations);
 		static KeyInfo* alloc(const KeyInfo&);
 
-		static bool isDefault(const char* screens);
-		static bool contains(const char* screens, const String& name);
+		static bool isDefault(const nchar* screens);
+		static bool contains(const nchar* screens, const nstring& name);
 		static bool equal(const KeyInfo*, const KeyInfo*);
-		static String join(const std::set<String>& destinations);
-		static void split(const char* screens, std::set<String>&);
+		static nstring join(const std::set<nstring>& destinations);
+		static void split(const nchar* screens, std::set<nstring>&);
 
 	public:
 		KeyID			m_key;
 		KeyModifierMask	m_mask;
 		KeyButton		m_button;
 		SInt32			m_count;
-		char*			m_screens;
-		char			m_screensBuffer[1];
+		nchar*			m_screens;
+		nchar			m_screensBuffer[1];
 	};
 
 	typedef std::set<KeyButton> KeyButtonSet;
@@ -122,14 +122,14 @@ public:
 	complete and false if normal key processing should continue.
 	*/
 	virtual bool		fakeCtrlAltDel() = 0;
-	
+
 	//! Fake a media key
 	/*!
 	 Synthesizes a media key down and up. Only Mac would implement this by
 	 use cocoa appkit framework.
 	 */
 	virtual bool		fakeMediaKey(KeyID id) = 0;
-	
+
 	//@}
 	//! @name accessors
 	//@{

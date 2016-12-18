@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2013-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -31,7 +31,7 @@
 // ClientProxy1_5
 //
 
-ClientProxy1_5::ClientProxy1_5(const String& name, synergy::IStream* stream, Server* server, IEventQueue* events) :
+ClientProxy1_5::ClientProxy1_5(const nstring& name, synergy::IStream* stream, Server* server, IEventQueue* events) :
 	ClientProxy1_4(name, stream, server, events),
 	m_events(events)
 {
@@ -48,9 +48,9 @@ ClientProxy1_5::~ClientProxy1_5()
 }
 
 void
-ClientProxy1_5::sendDragInfo(UInt32 fileCount, const char* info, size_t size)
+ClientProxy1_5::sendDragInfo(UInt32 fileCount, const nchar* info, size_t size)
 {
-	String data(info, size);
+	nstring data(info, size);
 
 	ProtocolUtil::writef(getStream(), kMsgDDragInfo, fileCount, &data);
 }
@@ -85,15 +85,15 @@ ClientProxy1_5::fileChunkReceived()
 					getStream(),
 					server->getReceivedFileData(),
 					server->getExpectedFileSize());
-	
+
 
 	if (result == kFinish) {
 		m_events->addEvent(Event(m_events->forFile().fileRecieveCompleted(), server));
 	}
 	else if (result == kStart) {
 		if (server->getFakeDragFileList().size() > 0) {
-			String filename = server->getFakeDragFileList().at(0).getFilename();
-			LOG((CLOG_DEBUG "start receiving %s", filename.c_str()));
+			nstring filename = server->getFakeDragFileList().at(0).getFilename();
+			LOG((CLOG_DEBUG _N("start receiving %" _NF), filename.c_str()));
 		}
 	}
 }
@@ -103,8 +103,8 @@ ClientProxy1_5::dragInfoReceived()
 {
 	// parse
 	UInt32 fileNum = 0;
-	String content;
+	nstring content;
 	ProtocolUtil::readf(getStream(), kMsgDDragInfo + 4, &fileNum, &content);
-	
+
 	m_server->dragInfoReceived(fileNum, content);
 }

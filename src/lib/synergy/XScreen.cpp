@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -22,10 +22,10 @@
 // XScreenOpenFailure
 //
 
-String
+nstring
 XScreenOpenFailure::getWhat() const throw()
 {
-	return format("XScreenOpenFailure", "unable to open screen");
+	return format(_N("XScreenOpenFailure"), _N("unable to open screen"));
 }
 
 
@@ -33,10 +33,10 @@ XScreenOpenFailure::getWhat() const throw()
 // XScreenXInputFailure
 //
 
-String
+nstring
 XScreenXInputFailure::getWhat() const throw()
 {
-	return "";
+	return _N("");
 }
 
 
@@ -61,8 +61,8 @@ XScreenUnavailable::getRetryTime() const
 	return m_timeUntilRetry;
 }
 
-String
+nstring
 XScreenUnavailable::getWhat() const throw()
 {
-	return format("XScreenUnavailable", "unable to open screen");
+	return format(_N("XScreenUnavailable"), _N("unable to open screen"));
 }

@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2012 Nick Bolton
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -68,14 +68,14 @@ mainLoopStatic()
 }
 
 int
-unixMainLoopStatic(int, const char**)
+unixMainLoopStatic(int, const nchar**)
 {
 	return mainLoopStatic();
 }
 
 #if SYSAPI_WIN32
 int
-winMainLoopStatic(int, const char**)
+winMainLoopStatic(int, const nchar**)
 {
 	return ArchMiscWindows::runDaemon(mainLoopStatic);
 }
@@ -98,13 +98,13 @@ DaemonApp::~DaemonApp()
 }
 
 int
-DaemonApp::run(int argc, char** argv)
+DaemonApp::run(int argc, nchar** argv)
 {
 #if SYSAPI_WIN32
 	// win32 instance needed for threading, etc.
 	ArchMiscWindows::setInstanceWin32(GetModuleHandle(NULL));
 #endif
-	
+
 	Arch arch;
 	arch.init();
 
@@ -121,8 +121,8 @@ DaemonApp::run(int argc, char** argv)
 #endif
 
 		// default log level to system setting.
-		string logLevel = arch.setting("LogLevel");
-		if (logLevel != "")
+		string logLevel = arch.setting(_N("LogLevel"));
+		if (!logLevel.empty())
 			log.setFilter(logLevel.c_str());
 
 		bool foreground = false;
@@ -130,23 +130,23 @@ DaemonApp::run(int argc, char** argv)
 		for (int i = 1; i < argc; ++i) {
 			string arg(argv[i]);
 
-			if (arg == "/f" || arg == "-f") {
+			if (arg == _N("/f") || arg == _N("-f")) {
 				foreground = true;
 			}
 #if SYSAPI_WIN32
-			else if (arg == "/install") {
+			else if (arg == _N("/install")) {
 				uninstall = true;
 				arch.installDaemon();
 				return kExitSuccess;
 			}
-			else if (arg == "/uninstall") {
+			else if (arg == _N("/uninstall")) {
 				arch.uninstallDaemon();
 				return kExitSuccess;
 			}
 #endif
 			else {
-				stringstream ss;
-				ss << "Unrecognized argument: " << arg;
+				nstringstream ss;
+				ss << _N("Unrecognized argument: ") << arg;
 				foregroundError(ss.str().c_str());
 				return kExitArgs;
 			}
@@ -159,17 +159,17 @@ DaemonApp::run(int argc, char** argv)
 		}
 		else {
 #if SYSAPI_WIN32
-			arch.daemonize("Synergy", winMainLoopStatic);
+			arch.daemonize(_N("Synergy"), winMainLoopStatic);
 #elif SYSAPI_UNIX
-			arch.daemonize("Synergy", unixMainLoopStatic);
+			arch.daemonize(_N("Synergy"), unixMainLoopStatic);
 #endif
 		}
 
 		return kExitSuccess;
 	}
 	catch (XArch& e) {
-		String message = e.what();
-		if (uninstall && (message.find("The service has not been started") != String::npos)) {
+		nstring message = e.what();
+		if (uninstall && (message.find(_N("The service has not been started")) != nstring::npos)) {
 			// TODO: if we're keeping this use error code instead (what is it?!).
 			// HACK: this message happens intermittently, not sure where from but
 			// it's quite misleading for the user. they thing something has gone
@@ -186,7 +186,7 @@ DaemonApp::run(int argc, char** argv)
 		return kExitFailed;
 	}
 	catch (...) {
-		foregroundError("Unrecognized error.");
+		foregroundError(_N("Unrecognized error."));
 		return kExitFailed;
 	}
 }
@@ -197,7 +197,7 @@ DaemonApp::mainLoop(bool logToFile)
 	try
 	{
 		DAEMON_RUNNING(true);
-		
+
 		if (logToFile) {
 			m_fileLogOutputter = new FileLogOutputter(logFilename().c_str());
 			CLOG->insert(m_fileLogOutputter);
@@ -213,27 +213,27 @@ DaemonApp::mainLoop(bool logToFile)
 		// send logging to gui via ipc, log system adopts outputter.
 		m_ipcLogOutputter = new IpcLogOutputter(*m_ipcServer, kIpcClientGui, true);
 		CLOG->insert(m_ipcLogOutputter);
-		
+
 #if SYSAPI_WIN32
 		m_watchdog = new MSWindowsWatchdog(false, *m_ipcServer, *m_ipcLogOutputter);
 		m_watchdog->setFileLogOutputter(m_fileLogOutputter);
 #endif
-		
+
 		m_events->adoptHandler(
 			m_events->forIpcServer().messageReceived(), m_ipcServer,
 			new TMethodEventJob<DaemonApp>(this, &DaemonApp::handleIpcMessage));
 
 		m_ipcServer->listen();
-		
+
 #if SYSAPI_WIN32
 
 		// install the platform event queue to handle service stop events.
 		m_events->adoptBuffer(new MSWindowsEventQueueBuffer(m_events));
-		
-		String command = ARCH->setting("Command");
-		bool elevate = ARCH->setting("Elevate") == "1";
-		if (command != "") {
-			LOG((CLOG_INFO "using last known command: %s", command.c_str()));
+
+		nstring command = ARCH->setting(L"Command");
+		bool elevate = ARCH->setting(L"Elevate" == L"1";
+		if (command != L"") {
+			LOG((CLOG_INFO L"using last known command: %ls"), command.c_str()));
 			m_watchdog->setCommand(command, elevate);
 		}
 
@@ -248,26 +248,26 @@ DaemonApp::mainLoop(bool logToFile)
 
 		m_events->removeHandler(
 			m_events->forIpcServer().messageReceived(), m_ipcServer);
-		
+
 		CLOG->remove(m_ipcLogOutputter);
 		delete m_ipcLogOutputter;
 		delete m_ipcServer;
-		
+
 		DAEMON_RUNNING(false);
 	}
 	catch (std::exception& e) {
-		LOG((CLOG_CRIT "An error occurred: %s", e.what()));
+		LOG((CLOG_CRIT _N("An error occurred: %" _NF), e.what()));
 	}
 	catch (...) {
-		LOG((CLOG_CRIT "An unknown error occurred.\n"));
+		LOG((CLOG_CRIT _N("An unknown error occurred.\n")));
 	}
 }
 
 void
-DaemonApp::foregroundError(const char* message)
+DaemonApp::foregroundError(const nchar* message)
 {
 #if SYSAPI_WIN32
-	MessageBox(NULL, message, "Synergy Service", MB_OK | MB_ICONERROR);
+	MessageBoxW(NULL, message, L"Synergy Service", MB_OK | MB_ICONERROR);
 #elif SYSAPI_UNIX
 	cerr << message << endl;
 #endif
@@ -277,10 +277,10 @@ std::string
 DaemonApp::logFilename()
 {
 	string logFilename;
-	logFilename = ARCH->setting("LogFilename");
+	logFilename = ARCH->setting(_N("LogFilename"));
 	if (logFilename.empty()) {
 		logFilename = ARCH->getLogDirectory();
-		logFilename.append("/");
+		logFilename.append(_N("/"));
 		logFilename.append(LOG_FILENAME);
 	}
 
@@ -294,24 +294,24 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 	switch (m->type()) {
 		case kIpcCommand: {
 			IpcCommandMessage* cm = static_cast<IpcCommandMessage*>(m);
-			String command = cm->command();
+			nstring command = cm->command();
 
 			// if empty quotes, clear.
-			if (command == "\"\"") {
+			if (command == _N("\"\"")) {
 				command.clear();
 			}
 
 			if (!command.empty()) {
-				LOG((CLOG_DEBUG "new command, elevate=%d command=%s", cm->elevate(), command.c_str()));
+				LOG((CLOG_DEBUG _N("new command, elevate=%d command=%" _NF), cm->elevate(), command.c_str()));
 
-				std::vector<String> argsArray;
+				std::vector<nstring> argsArray;
 				ArgParser::splitCommandString(command, argsArray);
 				ArgParser argParser(NULL);
-				const char** argv = argParser.getArgv(argsArray);
+				const nchar** argv = argParser.getArgv(argsArray);
 				ServerArgs serverArgs;
 				ClientArgs clientArgs;
 				int argc = static_cast<int>(argsArray.size());
-				bool server = argsArray[0].find("synergys") != String::npos ? true : false;
+				bool server = argsArray[0].find(_N("synergys")) != nstring::npos ? true : false;
 				ArgsBase* argBase = NULL;
 
 				if (server) {
@@ -324,29 +324,29 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 				}
 
 				delete[] argv;
-				
-				String logLevel(argBase->m_logFilter);
+
+				nstring logLevel(argBase->m_logFilter);
 				if (!logLevel.empty()) {
 					try {
 						// change log level based on that in the command string
 						// and change to that log level now.
-						ARCH->setting("LogLevel", logLevel);
+						ARCH->setting(_N("LogLevel"), logLevel);
 						CLOG->setFilter(logLevel.c_str());
 					}
 					catch (XArch& e) {
-						LOG((CLOG_ERR "failed to save LogLevel setting, %s", e.what()));
+						LOG((CLOG_ERR _N("failed to save LogLevel setting, %" _NF), e.what()));
 					}
 				}
 
 #if SYSAPI_WIN32
-				String logFilename;
+				std::wstring logFilename;
 				if (argBase->m_logFile != NULL) {
-					logFilename = String(argBase->m_logFile);
-					ARCH->setting("LogFilename", logFilename);
+					logFilename = std::string(argBase->m_logFile);
+					ARCH->setting(L"LogFilename", logFilename);
 					m_watchdog->setFileLogOutputter(m_fileLogOutputter);
-					command = ArgParser::assembleCommand(argsArray, "--log", 1);
-					LOG((CLOG_DEBUG "removed log file argument and filename %s from command ", logFilename.c_str()));
-					LOG((CLOG_DEBUG "new command, elevate=%d command=%s", cm->elevate(), command.c_str()));
+					command = ArgParser::assembleCommand(argsArray, L"--log", 1);
+					LOG((CLOG_DEBUG L"removed log file argument and filename %ls from command "), logFilename.c_str()));
+					LOG((CLOG_DEBUG L"new command, elevate=%d command=%ls"), cm->elevate(), command.c_str()));
 				}
 				else {
 					m_watchdog->setFileLogOutputter(NULL);
@@ -356,19 +356,19 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 #endif
 			}
 			else {
-				LOG((CLOG_DEBUG "empty command, elevate=%d", cm->elevate()));
+				LOG((CLOG_DEBUG _N("empty command, elevate=%d"), cm->elevate()));
 			}
 
 			try {
 				// store command in system settings. this is used when the daemon
 				// next starts.
-				ARCH->setting("Command", command);
+				ARCH->setting(_N("Command"), command);
 
 				// TODO: it would be nice to store bools/ints...
-				ARCH->setting("Elevate", String(cm->elevate() ? "1" : "0"));
+				ARCH->setting(_N("Elevate"), nstring(cm->elevate() ? _N("1") : _N("0")));
 			}
 			catch (XArch& e) {
-				LOG((CLOG_ERR "failed to save settings, %s", e.what()));
+				LOG((CLOG_ERR _N("failed to save settings, %" _NF), e.what()));
 			}
 
 #if SYSAPI_WIN32
@@ -382,18 +382,18 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 
 		case kIpcHello:
 			IpcHelloMessage* hm = static_cast<IpcHelloMessage*>(m);
-			String type;
+			nstring type;
 			switch (hm->clientType()) {
-				case kIpcClientGui: type = "gui"; break;
-				case kIpcClientNode: type = "node"; break;
-				default: type = "unknown"; break;
+				case kIpcClientGui: type = _N("gui"); break;
+				case kIpcClientNode: type = _N("node"); break;
+				default: type = _N("unknown"); break;
 			}
 
-			LOG((CLOG_DEBUG "ipc hello, type=%s", type.c_str()));
+			LOG((CLOG_DEBUG _N("ipc hello, type=%" _NF), type.c_str()));
 
 #if SYSAPI_WIN32
-			String watchdogStatus = m_watchdog->isProcessActive() ? "ok" : "error";
-			LOG((CLOG_INFO "watchdog status: %s", watchdogStatus.c_str()));
+			nstring watchdogStatus = m_watchdog->isProcessActive() ? _N("ok") : _N("error");
+			LOG((CLOG_INFO _N("watchdog status: %" _NF), watchdogStatus.c_str()));
 #endif
 
 			m_ipcLogOutputter->notifyBuffer();

@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -26,17 +26,16 @@
 #include "base/TMethodJob.h"
 
 #include <malloc.h>
-#include <tchar.h>
 
 #if !defined(SPI_GETSCREENSAVERRUNNING)
 #define SPI_GETSCREENSAVERRUNNING 114
 #endif
 
-static const TCHAR* g_isSecureNT = "ScreenSaverIsSecure";
-static const TCHAR* g_isSecure9x = "ScreenSaveUsePassword";
-static const TCHAR* const g_pathScreenSaverIsSecure[] = {
-	"Control Panel",
-	"Desktop",
+static const wchar_t* g_isSecureNT = L"ScreenSaverIsSecure";
+static const wchar_t* g_isSecure9x = L"ScreenSaveUsePassword";
+static const wchar_t* const g_pathScreenSaverIsSecure[] = {
+	L"Control Panel",
+	L"Desktop",
 	NULL
 };
 
@@ -93,7 +92,7 @@ MSWindowsScreenSaver::checkStarted(UINT msg, WPARAM wParam, LPARAM lParam)
 	// we first check that the screen saver is indeed active
 	// before watching for it to stop.
 	if (!isActive()) {
-		LOG((CLOG_DEBUG2 "can't open screen saver desktop"));
+		LOG((CLOG_DEBUG2 L"can't open screen saver desktop"));
 		return false;
 	}
 
@@ -157,7 +156,7 @@ MSWindowsScreenSaver::deactivate()
 	bool killed = false;
 
 	// NT runs screen saver in another desktop
-	HDESK desktop = OpenDesktop("Screen-saver", 0, FALSE,
+	HDESK desktop = OpenDesktopW(L"Screen-saver", 0, FALSE,
 							DESKTOP_READOBJECTS | DESKTOP_WRITEOBJECTS);
 	if (desktop != NULL) {
 		EnumDesktopWindows(desktop,
@@ -169,10 +168,10 @@ MSWindowsScreenSaver::deactivate()
 	// if above failed or wasn't tried, try the windows 95 way
 	if (!killed) {
 		// find screen saver window and close it
-		HWND hwnd = FindWindow("WindowsScreenSaverClass", NULL);
+		HWND hwnd = FindWindowW(L"WindowsScreenSaverClass", NULL);
 		if (hwnd == NULL) {
 			// win2k may use a different class
-			hwnd = FindWindow("Default Screen Saver", NULL);
+			hwnd = FindWindowW(L"Default Screen Saver", NULL);
 		}
 		if (hwnd != NULL) {
 			PostMessage(hwnd, WM_CLOSE, 0, 0);
@@ -218,7 +217,7 @@ MSWindowsScreenSaver::watchDesktop()
 	unwatchProcess();
 
 	// watch desktop in another thread
-	LOG((CLOG_DEBUG "watching screen saver desktop"));
+	LOG((CLOG_DEBUG L"watching screen saver desktop"));
 	m_active = true;
 	m_watch  = new Thread(new TMethodJob<MSWindowsScreenSaver>(this,
 								&MSWindowsScreenSaver::watchDesktopThread));
@@ -232,7 +231,7 @@ MSWindowsScreenSaver::watchProcess(HANDLE process)
 
 	// watch new process in another thread
 	if (process != NULL) {
-		LOG((CLOG_DEBUG "watching screen saver process"));
+		LOG((CLOG_DEBUG L"watching screen saver process"));
 		m_process = process;
 		m_active  = true;
 		m_watch   = new Thread(new TMethodJob<MSWindowsScreenSaver>(this,
@@ -244,7 +243,7 @@ void
 MSWindowsScreenSaver::unwatchProcess()
 {
 	if (m_watch != NULL) {
-		LOG((CLOG_DEBUG "stopped watching screen saver process/desktop"));
+		LOG((CLOG_DEBUG L"stopped watching screen saver process/desktop"));
 		m_watch->cancel();
 		m_watch->wait();
 		delete m_watch;
@@ -287,7 +286,7 @@ MSWindowsScreenSaver::watchProcessThread(void*)
 		Thread::testCancel();
 		if (WaitForSingleObject(m_process, 50) == WAIT_OBJECT_0) {
 			// process terminated
-			LOG((CLOG_DEBUG "screen saver died"));
+			LOG((CLOG_DEBUG L"screen saver died"));
 
 			// send screen saver deactivation message
 			m_active = false;
@@ -310,7 +309,7 @@ MSWindowsScreenSaver::setSecure(bool secure, bool saveSecureAsInt)
 		ArchMiscWindows::setValue(hkey, g_isSecureNT, secure ? 1 : 0);
 	}
 	else {
-		ArchMiscWindows::setValue(hkey, g_isSecureNT, secure ? "1" : "0");
+		ArchMiscWindows::setValue(hkey, g_isSecureNT, secure ? L"1" : L"0");
 	}
 
 	ArchMiscWindows::closeKey(hkey);
@@ -343,10 +342,10 @@ MSWindowsScreenSaver::isSecure(bool* wasSecureFlagAnInt) const
 	}
 
 	case ArchMiscWindows::kSTRING: {
-		std::string value =
+		std::wstring value =
 			ArchMiscWindows::readValueString(hkey, g_isSecureNT);
 		*wasSecureFlagAnInt = false;
-		result = (value != "0");
+		result = (value != L"0");
 		break;
 	}
 	}

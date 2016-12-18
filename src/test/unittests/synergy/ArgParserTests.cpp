@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2014-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -24,8 +24,8 @@ TEST(ArgParserTests, isArg_abbreviationsArg_returnTrue)
 {
 	int i = 1;
 	const int argc = 2;
-	const char* argv[argc] = { "stub", "-t" };
-	bool result = ArgParser::isArg(i, argc, argv, "-t", NULL);
+	const char* argv[argc] = { _N("stub"), _N("-t") };
+	bool result = ArgParser::isArg(i, argc, argv, _N("-t"), NULL);
 
 	EXPECT_EQ(true, result);
 }
@@ -34,8 +34,8 @@ TEST(ArgParserTests, isArg_fullArg_returnTrue)
 {
 	int i = 1;
 	const int argc = 2;
-	const char* argv[argc] = { "stub", "--test" };
-	bool result = ArgParser::isArg(i, argc, argv, NULL, "--test");
+	const char* argv[argc] = { _N("stub"), _N("--test") };
+	bool result = ArgParser::isArg(i, argc, argv, NULL, _N("--test"));
 
 	EXPECT_EQ(true, result);
 }
@@ -44,12 +44,12 @@ TEST(ArgParserTests, isArg_missingArgs_returnFalse)
 {
 	int i = 1;
 	const int argc = 2;
-	const char* argv[argc] = { "stub", "-t" };
+	const char* argv[argc] = { _N("stub"), _N("-t") };
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
 	argParser.setArgsBase(argsBase);
 
-	bool result = ArgParser::isArg(i, argc, argv, "-t", NULL, 1);
+	bool result = ArgParser::isArg(i, argc, argv, _N("-t"), NULL, 1);
 
 	EXPECT_FALSE(result);
 	EXPECT_EQ(true, argsBase.m_shouldExit);
@@ -57,7 +57,7 @@ TEST(ArgParserTests, isArg_missingArgs_returnFalse)
 
 TEST(ArgParserTests, searchDoubleQuotes_doubleQuotedArg_returnTrue)
 {
-	String command("\"stub\"");
+	nstring command(_N("\"stub\""));
 	size_t left = 0;
 	size_t right = 0;
 
@@ -70,7 +70,7 @@ TEST(ArgParserTests, searchDoubleQuotes_doubleQuotedArg_returnTrue)
 
 TEST(ArgParserTests, searchDoubleQuotes_noDoubleQuotedArg_returnfalse)
 {
-	String command("stub");
+	nstring command(_N("stub"));
 	size_t left = 0;
 	size_t right = 0;
 
@@ -83,7 +83,7 @@ TEST(ArgParserTests, searchDoubleQuotes_noDoubleQuotedArg_returnfalse)
 
 TEST(ArgParserTests, searchDoubleQuotes_oneDoubleQuoteArg_returnfalse)
 {
-	String command("\"stub");
+	nstring command(_N("\"stub"));
 	size_t left = 0;
 	size_t right = 0;
 
@@ -96,112 +96,112 @@ TEST(ArgParserTests, searchDoubleQuotes_oneDoubleQuoteArg_returnfalse)
 
 TEST(ArgParserTests, splitCommandString_oneArg_returnArgv)
 {
-	String command("stub");
-	std::vector<String> argv;
+	nstring command(_N("stub"));
+	std::vector<nstring> argv;
 
 	ArgParser::splitCommandString(command, argv);
 
 	EXPECT_EQ(1, argv.size());
-	EXPECT_EQ("stub", argv.at(0));
+	EXPECT_EQ(_N("stub"), argv.at(0));
 }
 
 TEST(ArgParserTests, splitCommandString_twoArgs_returnArgv)
 {
-	String command("stub1 stub2");
-	std::vector<String> argv;
+	nstring command(_N("stub1 stub2"));
+	std::vector<nstring> argv;
 
 	ArgParser::splitCommandString(command, argv);
 
 	EXPECT_EQ(2, argv.size());
-	EXPECT_EQ("stub1", argv.at(0));
-	EXPECT_EQ("stub2", argv.at(1));
+	EXPECT_EQ(_N("stub1"), argv.at(0));
+	EXPECT_EQ(_N("stub2"), argv.at(1));
 }
 
 TEST(ArgParserTests, splitCommandString_doubleQuotedArgs_returnArgv)
 {
-	String command("\"stub1\" stub2 \"stub3\"");
-	std::vector<String> argv;
+	nstring command(_N("\"stub1\" stub2 \"stub3\""));
+	std::vector<nstring> argv;
 
 	ArgParser::splitCommandString(command, argv);
 
 	EXPECT_EQ(3, argv.size());
-	EXPECT_EQ("stub1", argv.at(0));
-	EXPECT_EQ("stub2", argv.at(1));
-	EXPECT_EQ("stub3", argv.at(2));
+	EXPECT_EQ(_N("stub1"), argv.at(0));
+	EXPECT_EQ(_N("stub2"), argv.at(1));
+	EXPECT_EQ(_N("stub3"), argv.at(2));
 }
 
 TEST(ArgParserTests, splitCommandString_spaceDoubleQuotedArgs_returnArgv)
 {
-	String command("\"stub1\" stub2 \"stub3 space\"");
-	std::vector<String> argv;
+	nstring command(_N("\"stub1\" stub2 \"stub3 space\""));
+	std::vector<nstring> argv;
 
 	ArgParser::splitCommandString(command, argv);
 
 	EXPECT_EQ(3, argv.size());
-	EXPECT_EQ("stub1", argv.at(0));
-	EXPECT_EQ("stub2", argv.at(1));
-	EXPECT_EQ("stub3 space", argv.at(2));
+	EXPECT_EQ(_N("stub1"), argv.at(0));
+	EXPECT_EQ(_N("stub2"), argv.at(1));
+	EXPECT_EQ(_N("stub3 space"), argv.at(2));
 }
 
 TEST(ArgParserTests, getArgv_stringArray_return2DArray)
 {
-	std::vector<String> argArray;
-	argArray.push_back("stub1");
-	argArray.push_back("stub2");
-	argArray.push_back("stub3 space");
-	const char** argv = ArgParser::getArgv(argArray);
+	std::vector<nstring> argArray;
+	argArray.push_back(_N("stub1"));
+	argArray.push_back(_N("stub2"));
+	argArray.push_back(_N("stub3 space"));
+	const nchar** argv = ArgParser::getArgv(argArray);
 
-	String row1(argv[0]);
-	String row2(argv[1]);
-	String row3(argv[2]);
+	nstring row1(argv[0]);
+	nstring row2(argv[1]);
+	nstring row3(argv[2]);
 
-	EXPECT_EQ("stub1", row1);
-	EXPECT_EQ("stub2", row2);
-	EXPECT_EQ("stub3 space", row3);
+	EXPECT_EQ(_N("stub1"), row1);
+	EXPECT_EQ(_N("stub2"), row2);
+	EXPECT_EQ(_N("stub3 space"), row3);
 
 	delete[] argv;
 }
 
 TEST(ArgParserTests, assembleCommand_stringArray_returnCommand)
 {
-	std::vector<String> argArray;
-	argArray.push_back("stub1");
-	argArray.push_back("stub2");
-	String command = ArgParser::assembleCommand(argArray);
+	std::vector<nstring> argArray;
+	argArray.push_back(_N("stub1"));
+	argArray.push_back(_N("stub2"));
+	nstring command = ArgParser::assembleCommand(argArray);
 
-	EXPECT_EQ("stub1 stub2", command);
+	EXPECT_EQ(_N("stub1 stub2"), command);
 }
 
 TEST(ArgParserTests, assembleCommand_ignoreSecondArg_returnCommand)
 {
-	std::vector<String> argArray;
-	argArray.push_back("stub1");
-	argArray.push_back("stub2");
-	String command = ArgParser::assembleCommand(argArray, "stub2");
+	std::vector<nstring> argArray;
+	argArray.push_back(_N("stub1"));
+	argArray.push_back(_N("stub2"));
+	nstring command = ArgParser::assembleCommand(argArray, _N("stub2"));
 
-	EXPECT_EQ("stub1", command);
+	EXPECT_EQ(_N("stub1"), command);
 }
 
 TEST(ArgParserTests, assembleCommand_ignoreSecondArgWithOneParameter_returnCommand)
 {
-	std::vector<String> argArray;
-	argArray.push_back("stub1");
-	argArray.push_back("stub2");
-	argArray.push_back("stub3");
-	argArray.push_back("stub4");
-	String command = ArgParser::assembleCommand(argArray, "stub2", 1);
+	std::vector<nstring> argArray;
+	argArray.push_back(_N("stub1"));
+	argArray.push_back(_N("stub2"));
+	argArray.push_back(_N("stub3"));
+	argArray.push_back(_N("stub4"));
+	nstring command = ArgParser::assembleCommand(argArray, _N("stub2"), 1);
 
-	EXPECT_EQ("stub1 stub4", command);
+	EXPECT_EQ(_N("stub1 stub4"), command);
 }
 
 TEST(ArgParserTests, assembleCommand_stringArrayWithSpace_returnCommand)
 {
-	std::vector<String> argArray;
-	argArray.push_back("stub1 space");
-	argArray.push_back("stub2");
-	argArray.push_back("stub3 space");
-	String command = ArgParser::assembleCommand(argArray);
+	std::vector<nstring> argArray;
+	argArray.push_back(_N("stub1 space"));
+	argArray.push_back(_N("stub2"));
+	argArray.push_back(_N("stub3 space"));
+	nstring command = ArgParser::assembleCommand(argArray);
 
-	EXPECT_EQ("\"stub1 space\" stub2 \"stub3 space\"", command);
+	EXPECT_EQ(_N("\"stub1 space\" stub2 \"stub3 space\""), command);
 }
 

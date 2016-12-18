@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2011 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -25,7 +25,7 @@ class Server;
 //! Proxy for client implementing protocol version 1.4
 class ClientProxy1_4 : public ClientProxy1_3 {
 public:
-	ClientProxy1_4(const String& name, synergy::IStream* adoptedStream, Server* server, IEventQueue* events);
+	ClientProxy1_4(const nstring& name, synergy::IStream* adoptedStream, Server* server, IEventQueue* events);
 	~ClientProxy1_4();
 
 	//! @name accessors

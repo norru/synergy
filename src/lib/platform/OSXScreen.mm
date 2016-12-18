@@ -848,7 +848,7 @@ OSXScreen::leave()
     hideCursor();
 
 	if (isDraggingStarted()) {
-		String& fileList = getDraggingFilename();
+		std::string& fileList = getDraggingFilename();
 
 		if (!m_isPrimary) {
 			if (fileList.empty() == false) {
@@ -859,7 +859,7 @@ OSXScreen::leave()
 				di.setFilename(fileList);
 				DragFileList dragFileList;
 				dragFileList.push_back(di);
-				String info;
+				std::string info;
 				UInt32 fileCount = DragInformation::setupDragInfo(
 					dragFileList, info);
 				client->sendDragInfo(fileCount, info, info.size());
@@ -2041,7 +2041,7 @@ void
 OSXScreen::fakeDraggingFiles(DragFileList fileList)
 {
 	m_fakeDraggingStarted = true;
-	String fileExt;
+	std::string fileExt;
 	if (fileList.size() == 1) {
 		fileExt = DragInformation::getDragFileExtension(
 			fileList.at(0).getFilename());
@@ -2054,7 +2054,7 @@ OSXScreen::fakeDraggingFiles(DragFileList fileList)
 #endif
 }
 
-String&
+std::string&
 OSXScreen::getDraggingFilename()
 {
 	if (m_draggingStarted) {
@@ -2067,7 +2067,7 @@ OSXScreen::getDraggingFilename()
 		else {
 			LOG((CLOG_DEBUG "drag info: %s", info));
 			CFRelease(dragInfo);
-			String fileList(info);
+			std::string fileList(info);
 			m_draggingFilename = fileList;
 		}
 

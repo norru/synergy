@@ -28,8 +28,8 @@ class CurlFacade {
 public:
 	CurlFacade();
 	~CurlFacade();
-	String				get(const String& url);
-	String				urlEncode(const String& url);
+	std::string			get(const std::string& url);
+	std::string			urlEncode(const std::string& url);
 
 private:
 	CURL*				m_curl;
@@ -39,15 +39,15 @@ private:
 // ArchInternetUnix
 //
 
-String
-ArchInternetUnix::get(const String& url)
+std::string
+ArchInternetUnix::get(const std::string& url)
 {
 	CurlFacade curl;
 	return curl.get(url);
 }
 
-String
-ArchInternetUnix::urlEncode(const String& url)
+std::string
+ArchInternetUnix::urlEncode(const std::string& url)
 {
 	CurlFacade curl;
 	return curl.urlEncode(url);
@@ -87,8 +87,8 @@ CurlFacade::~CurlFacade()
 	curl_global_cleanup();
 }
 
-String
-CurlFacade::get(const String& url)
+std::string
+CurlFacade::get(const std::string& url)
 {
 	curl_easy_setopt(m_curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, curlWriteCallback);
@@ -97,28 +97,28 @@ CurlFacade::get(const String& url)
 	userAgent << "Synergy ";
 	userAgent << kVersion;
 	curl_easy_setopt(m_curl, CURLOPT_USERAGENT, userAgent.str().c_str());
-	
+
 	std::string result;
 	curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &result);
-			
+
 	CURLcode code = curl_easy_perform(m_curl);
 	if (code != CURLE_OK) {
 		LOG((CLOG_ERR "curl perform error: %s", curl_easy_strerror(code)));
 		throw XArch("CURL perform failed.");
 	}
-	
+
     return result;
 }
 
-String
-CurlFacade::urlEncode(const String& url)
+std::string
+CurlFacade::urlEncode(const std::string& url)
 {
 	char* resultCStr = curl_easy_escape(m_curl, url.c_str(), 0);
 
 	if (resultCStr == NULL) {
 		throw XArch("CURL escape failed.");
 	}
-	
+
 	std::string result(resultCStr);
 	curl_free(resultCStr);
 

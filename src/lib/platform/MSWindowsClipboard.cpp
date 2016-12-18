@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -66,13 +66,13 @@ MSWindowsClipboard::setFacade(IMSWindowsClipboardFacade& facade)
 bool
 MSWindowsClipboard::emptyUnowned()
 {
-	LOG((CLOG_DEBUG "empty clipboard"));
+	LOG((CLOG_DEBUG L"empty clipboard"));
 
 	// empty the clipboard (and take ownership)
 	if (!EmptyClipboard()) {
-		// unable to cause this in integ tests, but this error has never 
+		// unable to cause this in integ tests, but this error has never
 		// actually been reported by users.
-		LOG((CLOG_DEBUG "failed to grab clipboard"));
+		LOG((CLOG_DEBUG L"failed to grab clipboard"));
 		return false;
 	}
 
@@ -94,9 +94,9 @@ MSWindowsClipboard::empty()
 }
 
 void
-MSWindowsClipboard::add(EFormat format, const String& data)
+MSWindowsClipboard::add(EFormat format, const std::string& data)
 {
-	LOG((CLOG_DEBUG "add %d bytes to clipboard format: %d", data.size(), format));
+	LOG((CLOG_DEBUG L"add %d bytes to clipboard format: %d", data.size(), format));
 
 	// convert data to win32 form
 	for (ConverterList::const_iterator index = m_converters.begin();
@@ -117,14 +117,14 @@ MSWindowsClipboard::add(EFormat format, const String& data)
 bool
 MSWindowsClipboard::open(Time time) const
 {
-	LOG((CLOG_DEBUG "open clipboard"));
+	LOG((CLOG_DEBUG L"open clipboard"));
 
 	if (!OpenClipboard(m_window)) {
 		// unable to cause this in integ tests; but this can happen!
 		// * http://symless.com/pm/issues/86
 		// * http://symless.com/pm/issues/1256
 		// logging improved to see if we can catch more info next time.
-		LOG((CLOG_WARN "failed to open clipboard: %d", GetLastError()));
+		LOG((CLOG_WARN L"failed to open clipboard: %d", GetLastError()));
 		return false;
 	}
 
@@ -136,7 +136,7 @@ MSWindowsClipboard::open(Time time) const
 void
 MSWindowsClipboard::close() const
 {
-	LOG((CLOG_DEBUG "close clipboard"));
+	LOG((CLOG_DEBUG L"close clipboard"));
 	CloseClipboard();
 }
 
@@ -161,7 +161,7 @@ MSWindowsClipboard::has(EFormat format) const
 	return false;
 }
 
-String
+std::string
 MSWindowsClipboard::get(EFormat format) const
 {
 	// find the converter for the first clipboard format we can handle
@@ -178,8 +178,8 @@ MSWindowsClipboard::get(EFormat format) const
 
 	// if no converter then we don't recognize any formats
 	if (converter == NULL) {
-		LOG((CLOG_WARN "no converter for format %d", format));
-		return String();
+		LOG((CLOG_WARN L"no converter for format %d", format));
+		return std::string();
 	}
 
 	// get a handle to the clipboard data
@@ -188,7 +188,7 @@ MSWindowsClipboard::get(EFormat format) const
 		// nb: can't cause this using integ tests; this is only caused when
 		// the selected converter returns an invalid format -- which you
 		// cannot cause using public functions.
-		return String();
+		return std::string();
 	}
 
 	// convert

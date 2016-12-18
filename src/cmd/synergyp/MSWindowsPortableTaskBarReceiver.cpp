@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2003 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -89,16 +89,16 @@ MSWindowsPortableTaskBarReceiver::showStatus()
 	lock();
 
 	// get the current status
-	std::string status = getToolTip();
+	nstring status = getToolTip();
 
 	// done getting status
 	unlock();
 
 	// update dialog
 	HWND child = GetDlgItem(m_window, IDC_TASKBAR_STATUS_STATUS);
-	SendMessage(child, WM_SETTEXT, 0, (LPARAM)status.c_str());
+	SendMessageW(child, WM_SETTEXT, 0, (LPARAM)status.c_str());
 	child = GetDlgItem(m_window, IDC_TASKBAR_STATUS_CLIENTS);
-	SendMessage(child, LB_RESETCONTENT, 0, 0);
+	SendMessageW(child, LB_RESETCONTENT, 0, 0);
 
 	if (!IsWindowVisible(m_window)) {
 		// position it by the mouse
@@ -246,11 +246,11 @@ MSWindowsPortableTaskBarReceiver::copyLog() const
 {
 	if (m_logBuffer != NULL) {
 		// collect log buffer
-		String data;
+		std::string data;
 		for (BufferedLogOutputter::const_iterator index = m_logBuffer->begin();
 								index != m_logBuffer->end(); ++index) {
 			data += *index;
-			data += "\n";
+			data += '\n';
 		}
 
 		// copy log to clipboard

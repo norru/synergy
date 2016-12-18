@@ -34,11 +34,11 @@ public:
 						getOSXFormat() const;
 
 	// OSXClipboardAnyBMPConverter overrides
-	virtual String		fromIClipboard(const String&) const;
-	virtual String		toIClipboard(const String&) const;
+	virtual std::string	fromIClipboard(const std::string&) const;
+	virtual std::string	toIClipboard(const std::string&) const;
 
 	// generic encoding converter
-	static String		convertString(const String& data,
+	static std::string	convertString(const std::string& data,
 							CFStringEncoding fromEncoding,
 							CFStringEncoding toEncoding);
 };

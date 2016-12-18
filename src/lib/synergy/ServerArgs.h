@@ -27,6 +27,6 @@ public:
 	ServerArgs();
 
 public:
-	String				m_configFile;
+	nstring				m_configFile;
 	Config*				m_config;
 };

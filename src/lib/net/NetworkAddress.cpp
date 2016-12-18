@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -57,19 +57,19 @@ NetworkAddress::NetworkAddress(const NetworkAddress& addr) :
 	// do nothing
 }
 
-NetworkAddress::NetworkAddress(const String& hostname, int port) :
+NetworkAddress::NetworkAddress(const std::string& hostname, int port) :
 	m_address(NULL),
 	m_hostname(hostname),
 	m_port(port)
 {
 	// check for port suffix
-	String::size_type i = m_hostname.rfind(':');
-	if (i != String::npos && i + 1 < m_hostname.size()) {
+	std::string::size_type i = m_hostname.rfind(':');
+	if (i != std::string::npos && i + 1 < m_hostname.size()) {
 		// found a colon.  see if it looks like an IPv6 address.
 		bool colonNotation = false;
 		bool dotNotation   = false;
 		bool doubleColon   = false;
-		for (String::size_type j = 0; j < i; ++j) {
+		for (std::string::size_type j = 0; j < i; ++j) {
 			if (m_hostname[j] == ':') {
 				colonNotation = true;
 				dotNotation   = false;
@@ -198,7 +198,7 @@ NetworkAddress::getPort() const
 	return m_port;
 }
 
-String
+std::string
 NetworkAddress::getHostname() const
 {
 	return m_hostname;

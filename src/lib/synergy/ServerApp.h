@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -51,9 +51,9 @@ class ServerApp : public App {
 public:
 	ServerApp(IEventQueue* events, CreateTaskBarReceiverFunc createTaskBarReceiver);
 	virtual ~ServerApp();
-	
+
 	// Parse server specific command line arguments.
-	void parseArgs(int argc, const char* const* argv);
+	void parseArgs(int argc, const nchar* const* argv);
 
 	// Prints help specific to server.
 	void help();
@@ -69,7 +69,7 @@ public:
 
 	void reloadConfig(const Event&, void*);
 	void loadConfig();
-	bool loadConfig(const String& pathname);
+	bool loadConfig(const nstring& pathname);
 	void forceReconnect(const Event&, void*);
 	void resetServer(const Event&, void*);
 	void handleClientConnected(const Event&, void* vlistener);
@@ -77,7 +77,7 @@ public:
 	void closeServer(Server* server);
 	void stopRetryTimer();
 	void updateStatus();
-	void updateStatus(const String& msg);
+	void updateStatus(const nstring& msg);
 	void closeClientListener(ClientListener* listen);
 	void stopServer();
 	void closePrimaryClient(PrimaryClient* primaryClient);
@@ -87,7 +87,7 @@ public:
 	void retryHandler(const Event&, void*);
 	synergy::Screen* openServerScreen();
 	synergy::Screen* createScreen();
-	PrimaryClient* openPrimaryClient(const String& name, synergy::Screen* screen);
+	PrimaryClient* openPrimaryClient(const nstring& name, synergy::Screen* screen);
 	void handleScreenError(const Event&, void*);
 	void handleSuspend(const Event&, void*);
 	void handleResume(const Event&, void*);
@@ -96,15 +96,15 @@ public:
 	void handleNoClients(const Event&, void*);
 	bool startServer();
 	int mainLoop();
-	int runInner(int argc, char** argv, ILogOutputter* outputter, StartupFunc startup);
-	int standardStartup(int argc, char** argv);
-	int foregroundStartup(int argc, char** argv);
+	int runInner(int argc, nchar** argv, ILogOutputter* outputter, StartupFunc startup);
+	int standardStartup(int argc, nchar** argv);
+	int foregroundStartup(int argc, nchar** argv);
 	void startNode();
 
 	static ServerApp& instance() { return (ServerApp&)App::instance(); }
 
 	Server* getServerPtr() { return m_server; }
-	
+
 	Server*				m_server;
 	EServerState		m_serverState;
 	synergy::Screen*	m_serverScreen;
@@ -119,8 +119,8 @@ private:
 
 // configuration file name
 #if SYSAPI_WIN32
-#define USR_CONFIG_NAME "synergy.sgc"
-#define SYS_CONFIG_NAME "synergy.sgc"
+#define USR_CONFIG_NAME L"synergy.sgc"
+#define SYS_CONFIG_NAME L"synergy.sgc"
 #elif SYSAPI_UNIX
 #define USR_CONFIG_NAME ".synergy.conf"
 #define SYS_CONFIG_NAME "synergy.conf"

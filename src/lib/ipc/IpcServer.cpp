@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2012 Nick Bolton
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -83,7 +83,7 @@ IpcServer::~IpcServer()
 	m_clients.empty();
 	ARCH->unlockMutex(m_clientsMutex);
 	ARCH->closeMutex(m_clientsMutex);
-	
+
 	m_events->removeHandler(m_events->forIListenSocket().connecting(), m_socket);
 }
 
@@ -101,7 +101,7 @@ IpcServer::handleClientConnecting(const Event&, void*)
 		return;
 	}
 
-	LOG((CLOG_DEBUG "accepted ipc client connection"));
+	LOG((CLOG_DEBUG _N("accepted ipc client connection")));
 
 	ARCH->lockMutex(m_clientsMutex);
 	IpcClientProxy* proxy = new IpcClientProxy(*stream, m_events);
@@ -131,7 +131,7 @@ IpcServer::handleClientDisconnected(const Event& e, void*)
 	m_clients.remove(proxy);
 	deleteClient(proxy);
 
-	LOG((CLOG_DEBUG "ipc client proxy removed, connected=%d", m_clients.size()));
+	LOG((CLOG_DEBUG _N("ipc client proxy removed, connected=%d"), m_clients.size()));
 }
 
 void

@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -29,19 +29,19 @@ public:
 	virtual ~ArchFileWindows();
 
 	// IArchFile overrides
-	virtual const char*	getBasename(const char* pathname);
-	virtual std::string	getUserDirectory();
-	virtual std::string	getSystemDirectory();
-	virtual std::string	getInstalledDirectory();
-	virtual std::string	getLogDirectory();
-	virtual std::string	getPluginDirectory();
-	virtual std::string	getProfileDirectory();
-	virtual std::string	concatPath(const std::string& prefix,
-							const std::string& suffix);
-	virtual void		setProfileDirectory(const String& s);
-	virtual void		setPluginDirectory(const String& s);
+	virtual const wchar_t*	getBasename(const wchar_t* pathname);
+	virtual std::wstring getUserDirectory();
+	virtual std::wstring getSystemDirectory();
+	virtual std::wstring getInstalledDirectory();
+	virtual std::wstring getLogDirectory();
+	virtual std::wstring getPluginDirectory();
+	virtual std::wstring getProfileDirectory();
+	virtual std::wstring concatPath(const std::wstring& prefix,
+							const std::wstring& suffix);
+	virtual void		setProfileDirectory(const std::wstring& s);
+	virtual void		setPluginDirectory(const std::wstring& s);
 
 private:
-	String				m_profileDirectory;
-	String				m_pluginDirectory;
+	std::wstring		m_profileDirectory;
+	std::wstring		m_pluginDirectory;
 };

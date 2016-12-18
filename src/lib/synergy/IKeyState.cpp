@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -44,25 +44,25 @@ IKeyState::KeyInfo::alloc(KeyID id,
 	info->m_button           = button;
 	info->m_count            = count;
 	info->m_screens          = NULL;
-	info->m_screensBuffer[0] = '\0';
+	info->m_screensBuffer[0] = 0;
 	return info;
 }
 
 IKeyState::KeyInfo*
 IKeyState::KeyInfo::alloc(KeyID id,
 				KeyModifierMask mask, KeyButton button, SInt32 count,
-				const std::set<String>& destinations)
+				const std::set<nstring>& destinations)
 {
-	String screens = join(destinations);
+	nstring screens = join(destinations);
 
 	// build structure
-	KeyInfo* info  = (KeyInfo*)malloc(sizeof(KeyInfo) + screens.size());
+	KeyInfo* info  = (KeyInfo*)malloc(sizeof(KeyInfo) + screens.size() * sizeof(nchar));
 	info->m_key     = id;
 	info->m_mask    = mask;
 	info->m_button  = button;
 	info->m_count   = count;
 	info->m_screens = info->m_screensBuffer;
-	strcpy(info->m_screensBuffer, screens.c_str());
+	nstrcpy(info->m_screensBuffer, screens.c_str());
 	return info;
 }
 
@@ -70,40 +70,39 @@ IKeyState::KeyInfo*
 IKeyState::KeyInfo::alloc(const KeyInfo& x)
 {
 	KeyInfo* info  = (KeyInfo*)malloc(sizeof(KeyInfo) +
-										strlen(x.m_screensBuffer));
+										nstrlen(x.m_screensBuffer));
 	info->m_key     = x.m_key;
 	info->m_mask    = x.m_mask;
 	info->m_button  = x.m_button;
 	info->m_count   = x.m_count;
 	info->m_screens = x.m_screens ? info->m_screensBuffer : NULL;
-	strcpy(info->m_screensBuffer, x.m_screensBuffer);
+	nstrcpy(info->m_screensBuffer, x.m_screensBuffer);
 	return info;
 }
 
 bool
-IKeyState::KeyInfo::isDefault(const char* screens)
+IKeyState::KeyInfo::isDefault(const nchar* screens)
 {
-	return (screens == NULL || screens[0] == '\0');
+	return (screens == NULL || screens[0] == 0);
 }
 
 bool
-IKeyState::KeyInfo::contains(const char* screens, const String& name)
+IKeyState::KeyInfo::contains(const nchar* screens, const nstring& name)
 {
 	// special cases
 	if (isDefault(screens)) {
 		return false;
 	}
-	if (screens[0] == '*') {
+	if (screens[0] == _N('*')) {
 		return true;
 	}
 
-	// search
-	String match;
-	match.reserve(name.size() + 2);
-	match += ":";
-	match += name;
-	match += ":";
-	return (strstr(screens, match.c_str()) != NULL);
+	const nchar* match = nstrstr(screens, name.c_str());
+	if (match && match > screens) {
+		return match[name.length()] == _N(':');
+	}
+
+	return false;
 }
 
 bool
@@ -116,46 +115,46 @@ IKeyState::KeyInfo::equal(const KeyInfo* a, const KeyInfo* b)
 			strcmp(a->m_screensBuffer, b->m_screensBuffer) == 0);
 }
 
-String
-IKeyState::KeyInfo::join(const std::set<String>& destinations)
+nstring
+IKeyState::KeyInfo::join(const std::set<nstring>& destinations)
 {
 	// collect destinations into a string.  names are surrounded by ':'
 	// which makes searching easy.  the string is empty if there are no
 	// destinations and "*" means all destinations.
-	String screens;
-	for (std::set<String>::const_iterator i = destinations.begin();
+	nstring screens;
+	for (std::set<nstring>::const_iterator i = destinations.begin();
 								i != destinations.end(); ++i) {
-		if (*i == "*") {
-			screens = "*";
+		if (*i == _N("*")) {
+			screens = _N("*");
 			break;
 		}
 		else {
 			if (screens.empty()) {
-				screens = ":";
+				screens = _N(":");
 			}
 			screens += *i;
-			screens += ":";
+			screens += _N(":");
 		}
 	}
 	return screens;
 }
 
 void
-IKeyState::KeyInfo::split(const char* screens, std::set<String>& dst)
+IKeyState::KeyInfo::split(const nchar* screens, std::set<nstring>& dst)
 {
 	dst.clear();
 	if (isDefault(screens)) {
 		return;
 	}
-	if (screens[0] == '*') {
-		dst.insert("*");
+	if (screens[0] == _N('*')) {
+		dst.insert(_N("*"));
 		return;
 	}
 
 	const char* i = screens + 1;
-	while (*i != '\0') {
-		const char* j = strchr(i, ':');
-		dst.insert(String(i, j - i));
+	while (*i) {
+		const nchar* j = strchr(i, _N(':'));
+		dst.insert(nstring(i, j - i));
 		i = j + 1;
 	}
 }

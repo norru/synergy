@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -52,14 +52,14 @@ XWindowsClipboardUTF8Converter::getDataSize() const
 	return 8;
 }
 
-String
-XWindowsClipboardUTF8Converter::fromIClipboard(const String& data) const
+std::string
+XWindowsClipboardUTF8Converter::fromIClipboard(const std::string& data) const
 {
 	return data;
 }
 
-String
-XWindowsClipboardUTF8Converter::toIClipboard(const String& data) const
+std::string
+XWindowsClipboardUTF8Converter::toIClipboard(const std::string& data) const
 {
 	return data;
 }

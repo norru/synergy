@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2006 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -30,7 +30,7 @@
 // ClientProxy1_3
 //
 
-ClientProxy1_3::ClientProxy1_3(const String& name, synergy::IStream* stream, IEventQueue* events) :
+ClientProxy1_3::ClientProxy1_3(const nstring& name, synergy::IStream* stream, IEventQueue* events) :
 	ClientProxy1_2(name, stream, events),
 	m_keepAliveRate(kKeepAliveRate),
 	m_keepAliveTimer(NULL),
@@ -48,7 +48,7 @@ ClientProxy1_3::~ClientProxy1_3()
 void
 ClientProxy1_3::mouseWheel(SInt32 xDelta, SInt32 yDelta)
 {
-	LOG((CLOG_DEBUG2 "send mouse wheel to \"%s\" %+d,%+d", getName().c_str(), xDelta, yDelta));
+	LOG((CLOG_DEBUG2 _N("send mouse wheel to \"%" _NF "\" %+d,%+d"), getName().c_str(), xDelta, yDelta));
 	ProtocolUtil::writef(getStream(), kMsgDMouseWheel, xDelta, yDelta);
 }
 

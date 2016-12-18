@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -31,7 +31,7 @@ public:
 	/*!
 	\c name is the name of the client.
 	*/
-	ClientProxy(const String& name, synergy::IStream* adoptedStream);
+	ClientProxy(const nstring& name, synergy::IStream* adoptedStream);
 	~ClientProxy();
 
 	//! @name manipulators
@@ -82,7 +82,7 @@ public:
 	virtual void		screensaver(bool activate) = 0;
 	virtual void		resetOptions() = 0;
 	virtual void		setOptions(const OptionsList& options) = 0;
-	virtual void		sendDragInfo(UInt32 fileCount, const char* info,
+	virtual void		sendDragInfo(UInt32 fileCount, const nchar* info,
 							size_t size) = 0;
 	virtual void		fileChunkSending(UInt8 mark, char* data, size_t dataSize) = 0;
 

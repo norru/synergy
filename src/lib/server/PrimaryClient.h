@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -34,7 +34,7 @@ public:
 	/*!
 	\c name is the name of the server and \p screen is primary screen.
 	*/
-	PrimaryClient(const String& name, synergy::Screen* screen);
+	PrimaryClient(const nstring& name, synergy::Screen* screen);
 	~PrimaryClient();
 
 #ifdef TEST_ENV
@@ -96,12 +96,12 @@ public:
 	the edges of the screen, typically the center.
 	*/
 	void				getCursorCenter(SInt32& x, SInt32& y) const;
-	
+
 	//! Get toggle key state
 	/*!
 	Returns the primary screen's current toggle modifier key state.
 	*/
-	virtual KeyModifierMask		
+	virtual KeyModifierMask
 						getToggleMask() const;
 
 	//! Get screen lock state
@@ -143,7 +143,7 @@ public:
 	virtual void		screensaver(bool activate);
 	virtual void		resetOptions();
 	virtual void		setOptions(const OptionsList& options);
-	virtual void		sendDragInfo(UInt32 fileCount, const char* info, size_t size);
+	virtual void		sendDragInfo(UInt32 fileCount, const nchar* info, size_t size);
 	virtual void		fileChunkSending(UInt8 mark, char* data, size_t dataSize);
 
 	virtual synergy::IStream*

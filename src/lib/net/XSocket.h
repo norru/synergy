@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -41,7 +41,7 @@ public:
 		kBadPort		//!< The port is invalid
 	};
 
-	XSocketAddress(EError, const String& hostname, int port) _NOEXCEPT;
+	XSocketAddress(EError, const std::string& hostname, int port) _NOEXCEPT;
 	virtual ~XSocketAddress() _NOEXCEPT { }
 
 	//! @name accessors
@@ -50,7 +50,7 @@ public:
 	//! Get the error code
 	EError				getError() const throw();
 	//! Get the hostname
-	String				getHostname() const throw();
+	std::string			getHostname() const throw();
 	//! Get the port
 	int					getPort() const throw();
 
@@ -58,11 +58,11 @@ public:
 
 protected:
 	// XBase overrides
-	virtual String		getWhat() const throw();
+	virtual nstring		getWhat() const throw();
 
 private:
 	EError				m_error;
-	String				m_hostname;
+	std::string			m_hostname;
 	int					m_port;
 };
 

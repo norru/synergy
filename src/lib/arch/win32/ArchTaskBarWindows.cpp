@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2003 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -249,13 +249,14 @@ ArchTaskBarWindows::modifyIconNoLock(
 				const_cast<IArchTaskBarReceiver::Icon>(receiver->getIcon()));
 
 	// get tool tip
-	std::string toolTip = receiver->getToolTip();
+	nstring toolTip = receiver->getToolTip();
 
 	// done querying
 	receiver->unlock();
 
 	// prepare to add icon
 	NOTIFYICONDATA data;
+	memset(&data, 0, sizeof(data));
 	data.cbSize           = sizeof(NOTIFYICONDATA);
 	data.hWnd             = m_hwnd;
 	data.uID              = id;
@@ -266,16 +267,16 @@ ArchTaskBarWindows::modifyIconNoLock(
 		data.uFlags |= NIF_ICON;
 	}
 	if (!toolTip.empty()) {
-		strncpy(data.szTip, toolTip.c_str(), sizeof(data.szTip));
-		data.szTip[sizeof(data.szTip) - 1] = '\0';
-		data.uFlags                       |= NIF_TIP;
+		wstrncpy(data.szTip, toolTip.c_str(), sizeof(data.szTip));
+		data.szTip[sizeof(data.szTip) - 1] = 0;
+		data.uFlags |= NIF_TIP;
 	}
 	else {
-		data.szTip[0] = '\0';
+		data.szTip[0] = 0;
 	}
 
 	// add icon
-	if (Shell_NotifyIcon(taskBarMessage, &data) == 0) {
+	if (Shell_NotifyIconW(taskBarMessage, &data) == 0) {
 		// failed
 	}
 }

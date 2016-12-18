@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -27,7 +27,7 @@
 // ClientProxy
 //
 
-ClientProxy::ClientProxy(const String& name, synergy::IStream* stream) :
+ClientProxy::ClientProxy(const nstring& name, synergy::IStream* stream) :
 	BaseClientProxy(name),
 	m_stream(stream)
 {
@@ -41,7 +41,7 @@ ClientProxy::~ClientProxy()
 void
 ClientProxy::close(const char* msg)
 {
-	LOG((CLOG_DEBUG1 "send close \"%s\" to \"%s\"", msg, getName().c_str()));
+	LOG((CLOG_DEBUG1 _N("send close \"%s\" to \"%" _NF "\""), msg, getName().c_str()));
 	ProtocolUtil::writef(getStream(), msg);
 
 	// force the close to be sent before we return

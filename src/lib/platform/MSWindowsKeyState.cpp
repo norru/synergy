@@ -812,7 +812,7 @@ MSWindowsKeyState::fakeCtrlAltDel()
 	// or hooks.  so start a new thread to do the real work.
 	HANDLE hEvtSendSas = OpenEvent(EVENT_MODIFY_STATE, FALSE, "Global\\SendSAS");
 	if (hEvtSendSas) {
-		LOG((CLOG_DEBUG "found the SendSAS event - signaling my launcher to simulate ctrl+alt+del"));
+		LOG((CLOG_DEBUG L"found the SendSAS event - signaling my launcher to simulate ctrl+alt+del"));
 		SetEvent(hEvtSendSas);
 		CloseHandle(hEvtSendSas);
 	}
@@ -835,12 +835,12 @@ MSWindowsKeyState::ctrlAltDelThread(void*)
 						MAKELPARAM(MOD_CONTROL | MOD_ALT, VK_DELETE));
 		}
 		else {
-			LOG((CLOG_DEBUG "can't switch to Winlogon desk: %d", GetLastError()));
+			LOG((CLOG_DEBUG L"can't switch to Winlogon desk: %d", GetLastError()));
 		}
 		CloseDesktop(desk);
 	}
 	else {
-		LOG((CLOG_DEBUG "can't open Winlogon desk: %d", GetLastError()));
+		LOG((CLOG_DEBUG L"can't open Winlogon desk: %d", GetLastError()));
 	}
 }
 
@@ -892,7 +892,7 @@ MSWindowsKeyState::pollActiveGroup() const
 	// get group
 	GroupMap::const_iterator i = m_groupMap.find(hkl);
 	if (i == m_groupMap.end()) {
-		LOG((CLOG_DEBUG1 "can't find keyboard layout %08x", hkl));
+		LOG((CLOG_DEBUG1 L"can't find keyboard layout %08x", hkl));
 		return 0;
 	}
 
@@ -904,7 +904,7 @@ MSWindowsKeyState::pollPressedKeys(KeyButtonSet& pressedKeys) const
 {
 	BYTE keyState[256];
 	if (!GetKeyboardState(keyState)) {
-		LOG((CLOG_ERR "GetKeyboardState returned false on pollPressedKeys"));
+		LOG((CLOG_ERR L"GetKeyboardState returned false on pollPressedKeys"));
 		return;
 	}
 	for (KeyButton i = 1; i < 256; ++i) {
@@ -1235,13 +1235,15 @@ MSWindowsKeyState::fakeKey(const Keystroke& keystroke)
 {
 	switch (keystroke.m_type) {
 	case Keystroke::kButton: {
-		LOG((CLOG_DEBUG1 "  %03x (%08x) %s", keystroke.m_data.m_button.m_button, keystroke.m_data.m_button.m_client, keystroke.m_data.m_button.m_press ? "down" : "up"));
+		LOG((CLOG_DEBUG1 L"  %03x (%08x) %ls", keystroke.m_data.m_button.m_button,
+			keystroke.m_data.m_button.m_client
+			keystroke.m_data.m_button.m_press ? L"down" : L"up"));
 		KeyButton scanCode = keystroke.m_data.m_button.m_button;
 
 		// windows doesn't send key ups for key repeats
 		if (keystroke.m_data.m_button.m_repeat &&
 			!keystroke.m_data.m_button.m_press) {
-			LOG((CLOG_DEBUG1 "  discard key repeat release"));
+			LOG((CLOG_DEBUG1 L"  discard key repeat release"));
 			break;
 		}
 
@@ -1251,18 +1253,18 @@ MSWindowsKeyState::fakeKey(const Keystroke& keystroke)
 
 		if (keystroke.m_data.m_button.m_press == false)
 			flags |= KEYEVENTF_KEYUP;
-		
+
 		// special handling of VK_SNAPSHOT
 		if (vk == VK_SNAPSHOT)
 			scanCode = (getActiveModifiers() & KeyModifierAlt) ? 0x54 : 0x137;
-		
+
 		if (scanCode & 0x100)
 			flags |= KEYEVENTF_EXTENDEDKEY;
 
 		//vk,sc,flags,keystroke.m_data.m_button.m_repeat
-		
+
 		m_desks->fakeKeyEvent(vk, scanCode, flags, keystroke.m_data.m_button.m_repeat);
-		
+
 		// synthesize event
 		//m_desks->fakeKeyEvent(button, vk,
 		//						keystroke.m_data.m_button.m_press,
@@ -1276,11 +1278,11 @@ MSWindowsKeyState::fakeKey(const Keystroke& keystroke)
 		// key events.
 		if (!keystroke.m_data.m_group.m_restore) {
 			if (keystroke.m_data.m_group.m_absolute) {
-				LOG((CLOG_DEBUG1 "  group %d", keystroke.m_data.m_group.m_group));
+				LOG((CLOG_DEBUG1 L"  group %d", keystroke.m_data.m_group.m_group));
 				setWindowGroup(keystroke.m_data.m_group.m_group);
 			}
 			else {
-				LOG((CLOG_DEBUG1 "  group %+d", keystroke.m_data.m_group.m_group));
+				LOG((CLOG_DEBUG1 L"  group %+d", keystroke.m_data.m_group.m_group));
 				setWindowGroup(getEffectiveGroup(pollActiveGroup(),
 									keystroke.m_data.m_group.m_group));
 			}
@@ -1306,13 +1308,13 @@ MSWindowsKeyState::getGroups(GroupList& groups) const
 	// get keyboard layouts
 	UInt32 newNumLayouts = GetKeyboardLayoutList(0, NULL);
 	if (newNumLayouts == 0) {
-		LOG((CLOG_DEBUG1 "can't get keyboard layouts"));
+		LOG((CLOG_DEBUG1 L"can't get keyboard layouts"));
 		return false;
 	}
 	HKL* newLayouts = new HKL[newNumLayouts];
 	newNumLayouts = GetKeyboardLayoutList(newNumLayouts, newLayouts);
 	if (newNumLayouts == 0) {
-		LOG((CLOG_DEBUG1 "can't get keyboard layouts"));
+		LOG((CLOG_DEBUG1 L"can't get keyboard layouts"));
 		delete[] newLayouts;
 		return false;
 	}

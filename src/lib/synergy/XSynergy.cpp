@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -23,7 +23,7 @@
 // XBadClient
 //
 
-String
+std::string
 XBadClient::getWhat() const throw()
 {
 	return "XBadClient";
@@ -53,12 +53,12 @@ XIncompatibleClient::getMinor() const throw()
 	return m_minor;
 }
 
-String
+nstring
 XIncompatibleClient::getWhat() const throw()
 {
-	return format("XIncompatibleClient", "incompatible client %{1}.%{2}",
-								synergy::string::sprintf("%d", m_major).c_str(),
-								synergy::string::sprintf("%d", m_minor).c_str());
+	return format(_N("XIncompatibleClient"), _N("incompatible client %{1}.%{2}"),
+							synergy::string::sprintf(_N("%d"), m_major).c_str(),
+							synergy::string::sprintf(_N("%d"), m_minor).c_str());
 }
 
 
@@ -66,22 +66,22 @@ XIncompatibleClient::getWhat() const throw()
 // XDuplicateClient
 //
 
-XDuplicateClient::XDuplicateClient(const String& name) :
+XDuplicateClient::XDuplicateClient(const nstring& name) :
 	m_name(name)
 {
 	// do nothing
 }
 
-const String&
+const nstring&
 XDuplicateClient::getName() const throw()
 {
 	return m_name;
 }
 
-String
+nstring
 XDuplicateClient::getWhat() const throw()
 {
-	return format("XDuplicateClient", "duplicate client %{1}", m_name.c_str());
+	return format(_N("XDuplicateClient"), _N("duplicate client %{1}"), m_name.c_str());
 }
 
 
@@ -89,22 +89,22 @@ XDuplicateClient::getWhat() const throw()
 // XUnknownClient
 //
 
-XUnknownClient::XUnknownClient(const String& name) :
+XUnknownClient::XUnknownClient(const nstring& name) :
 	m_name(name)
 {
 	// do nothing
 }
 
-const String&
+const nstring&
 XUnknownClient::getName() const throw()
 {
 	return m_name;
 }
 
-String
+nstring
 XUnknownClient::getWhat() const throw()
 {
-	return format("XUnknownClient", "unknown client %{1}", m_name.c_str());
+	return format(_N("XUnknownClient"), _N("unknown client %{1}"), m_name.c_str());
 }
 
 
@@ -124,10 +124,10 @@ XExitApp::getCode() const throw()
 	return m_code;
 }
 
-String
+nstring
 XExitApp::getWhat() const throw()
 {
 	return format(
-		"XExitApp", "exiting with code %{1}", 
-		synergy::string::sprintf("%d", m_code).c_str());
+		_N("XExitApp"), _N("exiting with code %{1}"),
+		synergy::string::sprintf(_N("%d"), m_code).c_str());
 }

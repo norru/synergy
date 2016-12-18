@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -101,8 +101,8 @@ XWindowsClipboardBMPConverter::getDataSize() const
 	return 8;
 }
 
-String
-XWindowsClipboardBMPConverter::fromIClipboard(const String& bmp) const
+std::string
+XWindowsClipboardBMPConverter::fromIClipboard(const std::string& bmp) const
 {
 	// create BMP image
 	UInt8 header[14];
@@ -113,21 +113,21 @@ XWindowsClipboardBMPConverter::fromIClipboard(const String& bmp) const
 	toLE(dst, static_cast<UInt16>(0));
 	toLE(dst, static_cast<UInt16>(0));
 	toLE(dst, static_cast<UInt32>(14 + 40));
-	return String(reinterpret_cast<const char*>(header), 14) + bmp;
+	return std::string(reinterpret_cast<const char*>(header), 14) + bmp;
 }
 
-String
-XWindowsClipboardBMPConverter::toIClipboard(const String& bmp) const
+std::string
+XWindowsClipboardBMPConverter::toIClipboard(const std::string& bmp) const
 {
 	// make sure data is big enough for a BMP file
 	if (bmp.size() <= 14 + 40) {
-		return String();
+		return std::string();
 	}
 
 	// check BMP file header
 	const UInt8* rawBMPHeader = reinterpret_cast<const UInt8*>(bmp.data());
 	if (rawBMPHeader[0] != 'B' || rawBMPHeader[1] != 'M') {
-		return String();
+		return std::string();
 	}
 
 	// get offset to image data

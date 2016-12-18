@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2014-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -20,7 +20,7 @@
 #include "common/common.h"
 #include "common/stdvector.h"
 
-#include <cctype>
+//#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -30,35 +30,36 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <locale>
 
 namespace synergy {
 namespace string {
 
-String
-format(const char* fmt, ...)
+nstring
+format(const nchar* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	String result = vformat(fmt, args);
+	nstring result = vformat(fmt, args);
 	va_end(args);
 	return result;
 }
 
-String
-vformat(const char* fmt, va_list args)
+nstring
+vformat(const nchar* fmt, va_list args)
 {
 	// find highest indexed substitution and the locations of substitutions
 	std::vector<size_t> pos;
 	std::vector<size_t> width;
 	std::vector<int> index;
 	int maxIndex = 0;
-	for (const char* scan = fmt; *scan != '\0'; ++scan) {
-		if (*scan == '%') {
+	for (const nchar* scan = fmt; *scan; ++scan) {
+		if (*scan == _N('%')) {
 			++scan;
-			if (*scan == '\0') {
+			if (*scan == 0) {
 				break;
 			}
-			else if (*scan == '%') {
+			else if (*scan == _N('%')) {
 				// literal
 				index.push_back(0);
 				pos.push_back(static_cast<int>(scan - 1 - fmt));
@@ -66,9 +67,9 @@ vformat(const char* fmt, va_list args)
 			}
 			else if (*scan == '{') {
 				// get argument index
-				char* end;
+				nchar* end;
 				int i = static_cast<int>(strtol(scan + 1, &end, 10));
-				if (*end != '}') {
+				if (*end != _N('}')) {
 					// invalid index -- ignore
 					scan = end - 1;
 				}
@@ -89,19 +90,19 @@ vformat(const char* fmt, va_list args)
 	}
 
 	// get args
-	std::vector<const char*> value;
+	std::vector<const nchar*> value;
 	std::vector<size_t> length;
-	value.push_back("%");
+	value.push_back(_N("%"));
 	length.push_back(1);
 	for (int i = 0; i < maxIndex; ++i) {
-		const char* arg = va_arg(args, const char*);
+		const nchar* arg = va_arg(args, const nchar*);
 		size_t len = strlen(arg);
 		value.push_back(arg);
 		length.push_back(len);
 	}
 
 	// compute final length
-	size_t resultLength = strlen(fmt);
+	size_t resultLength = nstrlen(fmt);
 	const int n = static_cast<int>(pos.size());
 	for (int i = 0; i < n; ++i) {
 		resultLength -= width[i];
@@ -109,7 +110,7 @@ vformat(const char* fmt, va_list args)
 	}
 
 	// substitute
-	String result;
+	nstring result;
 	result.reserve(resultLength);
 	size_t src = 0;
 	for (int i = 0; i < n; ++i) {
@@ -122,13 +123,13 @@ vformat(const char* fmt, va_list args)
 	return result;
 }
 
-String
-sprintf(const char* fmt, ...)
+nstring
+sprintf(const nchar* fmt, ...)
 {
-	char tmp[1024];
-	char* buffer = tmp;
-	int len      = (int)(sizeof(tmp) / sizeof(tmp[0]));
-	String result;
+	nchar tmp[1024];
+	nchar* buffer = tmp;
+	int len = (int)(sizeof(tmp) / sizeof(tmp[0]));
+	nstring result;
 	while (buffer != NULL) {
 		// try printing into the buffer
 		va_list args;
@@ -141,8 +142,8 @@ sprintf(const char* fmt, ...)
 			if (buffer != tmp) {
 				delete[] buffer;
 			}
-			len   *= 2;
-			buffer = new char[len];
+			len *= 2;
+			buffer = new nchar[len];
 		}
 
 		// if it was big enough then save the string and don't try again
@@ -160,79 +161,101 @@ sprintf(const char* fmt, ...)
 
 void
 findReplaceAll(
-	String& subject,
-	const String& find,
-	const String& replace)
+	nstring& subject,
+	const nstring& find,
+	const nstring& replace)
 {
 	size_t pos = 0;
-	while ((pos = subject.find(find, pos)) != String::npos) {
-		 subject.replace(pos, find.length(), replace);
-		 pos += replace.length();
+	while ((pos = subject.find(find, pos)) != nstring::npos) {
+		subject.replace(pos, find.length(), replace);
+		pos += replace.length();
 	}
 }
 
-String
-removeFileExt(String filename)
+nstring
+removeFileExt(nstring filename)
 {
-	size_t dot = filename.find_last_of('.');
+	size_t dot = filename.find_last_of(_N('.'));
 
-	if (dot == String::npos) {
+	if (dot == nstring::npos) {
 		return filename;
 	}
 
 	return filename.substr(0, dot);
 }
 
+#ifdef SYSAPI_WIN32
 void
-toHex(String& subject, int width, const char fill)
+toHex(std::string& subject, int width, const char fill)
 {
 	std::stringstream ss;
 	ss << std::hex;
 	for (unsigned int i = 0; i < subject.length(); i++) {
-		ss << std::setw(width) << std::setfill(fill) << (int)(unsigned char)subject[i];
+		ss << std::setw(width) << std::setfill(fill) << (int)(unsigned nchar)subject[i];
+	}
+
+	subject = ss.str();
+}
+#endif
+
+void
+toHex(nstring& subject, int width, const nchar fill)
+{
+	nstringstream ss;
+	ss << std::hex;
+	for (unsigned int i = 0; i < subject.length(); i++) {
+		ss << std::setw(width) << std::setfill(fill) << (int)(unsigned nchar)subject[i];
 	}
 
 	subject = ss.str();
 }
 
+#ifdef SYSAPI_WIN32
 void
-uppercase(String& subject)
+uppercase(std::string& subject)
 {
-	std::transform(subject.begin(), subject.end(), subject.begin(), ::toupper);
+	std::transform(subject.begin(), subject.end(), subject.begin(), toupper);
+}
+#endif
+
+void
+uppercase(nstring& subject)
+{
+	std::transform(subject.begin(), subject.end(), subject.begin(), tonupper);
 }
 
 void
-removeChar(String& subject, const char c)
+removeChar(nstring& subject, const nchar c)
 {
 	subject.erase(std::remove(subject.begin(), subject.end(), c), subject.end());
 }
 
-String
+nstring
 sizeTypeToString(size_t n)
 {
-	std::stringstream ss;
+	nstringstream ss;
 	ss << n;
 	return ss.str();
 }
 
 size_t
-stringToSizeType(String string)
+stringToSizeType(nstring string)
 {
-	std::istringstream iss(string);
+	nistringstream iss(string);
 	size_t value;
 	iss >> value;
 	return value;
 }
 
-std::vector<String>
-splitString(String string, const char c)
+std::vector<nstring>
+splitString(nstring string, const nchar c)
 {
-	std::vector<String> results;
+	std::vector<nstring> results;
 
 	size_t head = 0;
 	size_t separator = string.find(c);
-	while (separator != String::npos) {
-		if (head!=separator) {
+	while (separator != nstring::npos) {
+		if (head != separator) {
 			results.push_back(string.substr(head, separator - head));
 		}
 		head = separator + 1;
@@ -246,30 +269,70 @@ splitString(String string, const char c)
 	return results;
 }
 
+nstring toNative(const char* s)
+{
+#ifdef SYSAPI_WIN32
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.from_bytes(s);
+#else
+	return std::string(s);
+#endif
+}
+
+nstring toNative(std::string s)
+{
+#ifdef SYSAPI_WIN32
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.from_bytes(s);
+#else
+	return s;
+#endif
+}
+
+std::string nativeToUtf8(const nchar* s)
+{
+#ifdef SYSAPI_WIN32
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.to_bytes(s);
+#else
+	return s;
+#endif
+}
+
+std::string nativeToUtf8(nstring s)
+{
+#ifdef SYSAPI_WIN32
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.to_bytes(s);
+#else
+	return s;
+#endif
+}
+
 //
 // CaselessCmp
 //
 
 bool
 CaselessCmp::cmpEqual(
-	const String::value_type& a,
-	const String::value_type& b)
+	const nstring::value_type& a,
+	const nstring::value_type& b)
 {
 	// should use std::tolower but not in all versions of libstdc++ have it
-	return tolower(a) == tolower(b);
+	return tonlower(a) == tonlower(b);
 }
 
 bool
 CaselessCmp::cmpLess(
-	const String::value_type& a,
-	const String::value_type& b)
+	const nstring::value_type& a,
+	const nstring::value_type& b)
 {
 	// should use std::tolower but not in all versions of libstdc++ have it
-	return tolower(a) < tolower(b);
+	return tonlower(a) < tonlower(b);
 }
 
 bool
-CaselessCmp::less(const String& a, const String& b)
+CaselessCmp::less(const nstring& a, const nstring& b)
 {
 	return std::lexicographical_compare(
 		a.begin(), a.end(),
@@ -278,13 +341,13 @@ CaselessCmp::less(const String& a, const String& b)
 }
 
 bool
-CaselessCmp::equal(const String& a, const String& b)
+CaselessCmp::equal(const nstring& a, const nstring& b)
 {
 	return !(less(a, b) || less(b, a));
 }
 
 bool
-CaselessCmp::operator()(const String& a, const String& b) const
+CaselessCmp::operator()(const nstring& a, const nstring& b) const
 {
 	return less(a, b);
 }

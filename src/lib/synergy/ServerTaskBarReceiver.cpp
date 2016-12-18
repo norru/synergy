@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2003 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -41,7 +41,7 @@ ServerTaskBarReceiver::~ServerTaskBarReceiver()
 }
 
 void
-ServerTaskBarReceiver::updateStatus(Server* server, const String& errorMsg)
+ServerTaskBarReceiver::updateStatus(Server* server, const nstring& errorMsg)
 {
 	{
 		// update our status
@@ -79,7 +79,7 @@ ServerTaskBarReceiver::getStatus() const
 	return m_state;
 }
 
-const String&
+const nstring&
 ServerTaskBarReceiver::getErrorMessage() const
 {
 	return m_errorMessage;
@@ -115,24 +115,24 @@ ServerTaskBarReceiver::unlock() const
 	// do nothing
 }
 
-std::string
+nstring
 ServerTaskBarReceiver::getToolTip() const
 {
 	switch (m_state) {
 	case kNotRunning:
-		return synergy::string::sprintf("%s:  Not running", kAppVersion);
+		return synergy::string::sprintf(_N("%s:  Not running"), kAppVersion);
 
 	case kNotWorking:
-		return synergy::string::sprintf("%s:  %s",
+		return synergy::string::sprintf(_N("%s:  %s"),
 								kAppVersion, m_errorMessage.c_str());
-						
+
 	case kNotConnected:
-		return synergy::string::sprintf("%s:  Waiting for clients", kAppVersion);
+		return synergy::string::sprintf(_N("%s:  Waiting for clients"), kAppVersion);
 
 	case kConnected:
-		return synergy::string::sprintf("%s:  Connected", kAppVersion);
+		return synergy::string::sprintf(_N("%s:  Connected"), kAppVersion);
 
 	default:
-		return "";
+		return _N("");
 	}
 }

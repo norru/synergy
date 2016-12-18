@@ -25,19 +25,19 @@
 #include <Shlwapi.h>
 
 struct WinINetUrl {
-	String				m_scheme;
-	String				m_host;
-	String				m_path;
+	std::string			m_scheme;
+	std::string			m_host;
+	std::string			m_path;
 	INTERNET_PORT		m_port;
 	DWORD				m_flags;
 };
 
 class WinINetRequest {
 public:
-	WinINetRequest(const String& url);
+	WinINetRequest(const std::string& url);
 	~WinINetRequest();
 
-	String				send();
+	std::string			send();
 	void				openSession();
 	void				connect();
 	void				openRequest();
@@ -54,15 +54,15 @@ private:
 // ArchInternetWindows
 //
 
-String
-ArchInternetWindows::get(const String& url)
+std::string
+ArchInternetWindows::get(const std::string& url)
 {
 	WinINetRequest request(url);
 	return request.send();
 }
 
-String
-ArchInternetWindows::urlEncode(const String& url)
+std::string
+ArchInternetWindows::urlEncode(const std::string& url)
 {
 	TCHAR buffer[1024];
 	DWORD bufferSize = sizeof(buffer);
@@ -71,13 +71,14 @@ ArchInternetWindows::urlEncode(const String& url)
 		throw XArch(new XArchEvalWindows());
 	}
 
-	String result(buffer);
+	std::string result(buffer);
 
+	// FIXME: (when we need to use internet requests again)
 	// the win32 url encoding funcitons are pretty useless (to us) and only
 	// escape "unsafe" chars, but not + or =, so we need to replace these
 	// manually (and probably many other chars).
-	synergy::string::findReplaceAll(result, "+", "%2B");
-	synergy::string::findReplaceAll(result, "=", "%3D");
+	//synergy::string::findReplaceAll(result, "+", "%2B");
+	//synergy::string::findReplaceAll(result, "=", "%3D");
 
 	return result;
 }
@@ -86,9 +87,9 @@ ArchInternetWindows::urlEncode(const String& url)
 // WinINetRequest
 //
 
-static WinINetUrl parseUrl(const String& url);
+static WinINetUrl parseUrl(const std::string& url);
 
-WinINetRequest::WinINetRequest(const String& url) :
+WinINetRequest::WinINetRequest(const std::string& url) :
 	m_session(NULL),
 	m_connect(NULL),
 	m_request(NULL),
@@ -112,7 +113,7 @@ WinINetRequest::~WinINetRequest()
 	}
 }
 
-String
+std::string
 WinINetRequest::send()
 {
 	if (m_used) {
@@ -123,14 +124,14 @@ WinINetRequest::send()
 	openSession();
 	connect();
 	openRequest();
-	
-	String headers("Content-Type: text/html");
+
+	std::string headers("Content-Type: text/html");
 	if (!HttpSendRequest(m_request, headers.c_str(), (DWORD)headers.length(), NULL, NULL)) {
 		throw XArch(new XArchEvalWindows());
 	}
-	
+
 	std::stringstream result;
-	CHAR buffer[1025];
+	char buffer[1025];
     DWORD read = 0;
 
 	while (InternetReadFile(m_request, buffer, sizeof(buffer) - 1, &read) && (read != 0)) {
@@ -173,7 +174,7 @@ WinINetRequest::connect()
 		INTERNET_SERVICE_HTTP,
 		NULL,
 		NULL);
-	
+
 	if (m_connect == NULL) {
 		throw XArch(new XArchEvalWindows());
 	}
@@ -201,7 +202,7 @@ WinINetRequest::openRequest()
 // work. here's some (less robust) code to split the url into components.
 // this works fine with simple urls, but doesn't consider the full url spec.
 static WinINetUrl
-parseUrl(const String& url)
+parseUrl(const std::string& url)
 {
 	WinINetUrl parsed;
 
@@ -215,7 +216,7 @@ parseUrl(const String& url)
 	parsed.m_port = INTERNET_DEFAULT_HTTP_PORT;
 	parsed.m_flags = 0;
 
-	if (parsed.m_scheme.find("https") != String::npos) {
+	if (parsed.m_scheme.find("https") != std::string::npos) {
 		parsed.m_port = INTERNET_DEFAULT_HTTPS_PORT;
 		parsed.m_flags = INTERNET_FLAG_SECURE;
 	}

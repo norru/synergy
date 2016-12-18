@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -46,9 +46,9 @@ class Client : public IClient, public INode {
 public:
 	class FailInfo {
 	public:
-		FailInfo(const char* what) : m_retry(false), m_what(what) { }
+		FailInfo(const nchar* what) : m_retry(false), m_what(what) { }
 		bool			m_retry;
-		String			m_what;
+		nstring			m_what;
 	};
 
 public:
@@ -57,7 +57,7 @@ public:
 	as its name and \p address as the server's address and \p factory
 	to create the socket.  \p screen is	the local screen.
 	*/
-	Client(IEventQueue* events, const String& name,
+	Client(IEventQueue* events, const nstring& name,
 		   const NetworkAddress& address, ISocketFactory* socketFactory,
 		   synergy::Screen* screen, ClientArgs const& args);
 
@@ -77,7 +77,7 @@ public:
 	/*!
 	Disconnects from the server with an optional error message.
 	*/
-	void				disconnect(const char* msg);
+	void				disconnect(const nchar* msg);
 
 	//! Notify of handshake complete
 	/*!
@@ -86,15 +86,15 @@ public:
 	virtual void		handshakeComplete();
 
 	//! Received drag information
-	void				dragInfoReceived(UInt32 fileNum, String data);
+	void				dragInfoReceived(UInt32 fileNum, std::string data);
 
 	//! Create a new thread and use it to send file to Server
-	void				sendFileToServer(const char* filename);
-	
-	//! Send dragging file information back to server
-	void				sendDragInfo(UInt32 fileCount, String& info, size_t size);
+	void				sendFileToServer(const nchar* filename);
 
-	
+	//! Send dragging file information back to server
+	void				sendDragInfo(UInt32 fileCount, nstring& info, size_t size);
+
+
 	//@}
 	//! @name accessors
 	//@{
@@ -118,7 +118,7 @@ public:
 	to connect) to.
 	*/
 	NetworkAddress		getServerAddress() const;
-	
+
 	//! Return true if recieved file size is valid
 	bool				isReceivedFileSizeValid();
 
@@ -126,7 +126,7 @@ public:
 	size_t&				getExpectedFileSize() { return m_expectedFileSize; }
 
 	//! Return received file data
-	String&				getReceivedFileData() { return m_receivedFileData; }
+	std::string&		getReceivedFileData() { return m_receivedFileData; }
 
 	//! Return drag file list
 	DragFileList		getDragFileList() { return m_dragFileList; }
@@ -160,12 +160,12 @@ public:
 	virtual void		screensaver(bool activate);
 	virtual void		resetOptions();
 	virtual void		setOptions(const OptionsList& options);
-	virtual String		getName() const;
+	virtual nstring		getName() const;
 
 private:
 	void				sendClipboard(ClipboardID);
 	void				sendEvent(Event::Type, void*);
-	void				sendConnectionFailedEvent(const char* msg);
+	void				sendConnectionFailedEvent(const nchar* msg);
 	void				sendFileChunk(const void* data);
 	void				sendFileThread(void*);
 	void				writeToDropDirThread(void*);
@@ -198,7 +198,7 @@ public:
 	bool				m_mock;
 
 private:
-	String				m_name;
+	nstring				m_name;
 	NetworkAddress		m_serverAddress;
 	ISocketFactory*		m_socketFactory;
 	synergy::Screen*	m_screen;
@@ -212,12 +212,12 @@ private:
 	bool				m_ownClipboard[kClipboardEnd];
 	bool				m_sentClipboard[kClipboardEnd];
 	IClipboard::Time	m_timeClipboard[kClipboardEnd];
-	String				m_dataClipboard[kClipboardEnd];
+	std::string			m_dataClipboard[kClipboardEnd];
 	IEventQueue*		m_events;
 	std::size_t			m_expectedFileSize;
-	String				m_receivedFileData;
+	std::string			m_receivedFileData;
 	DragFileList		m_dragFileList;
-	String				m_dragFileExt;
+	nstring				m_dragFileExt;
 	Thread*				m_sendFileThread;
 	Thread*				m_writeToDropDirThread;
 	TCPSocket*			m_socket;

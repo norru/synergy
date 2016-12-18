@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -46,15 +46,15 @@ MSWindowsClipboardHTMLConverter::getWin32Format() const
 	return m_format;
 }
 
-String
-MSWindowsClipboardHTMLConverter::doFromIClipboard(const String& data) const
+std::string
+MSWindowsClipboardHTMLConverter::doFromIClipboard(const std::string& data) const
 {
 	// prepare to CF_HTML format prefix and suffix
-	String prefix("Version:0.9\r\nStartHTML:0000000105\r\n"
+	std::string prefix("Version:0.9\r\nStartHTML:0000000105\r\n"
 					"EndHTML:ZZZZZZZZZZ\r\n"
 					"StartFragment:XXXXXXXXXX\r\nEndFragment:YYYYYYYYYY\r\n"
 					"<!DOCTYPE><HTML><BODY><!--StartFragment-->");
-	String suffix("<!--EndFragment--></BODY></HTML>\r\n");
+	std::string suffix("<!--EndFragment--></BODY></HTML>\r\n");
 
 	// Get byte offsets for header
 	UInt32 StartFragment = (UInt32)prefix.size();
@@ -75,12 +75,12 @@ MSWindowsClipboardHTMLConverter::doFromIClipboard(const String& data) const
 	return prefix;
 }
 
-String
-MSWindowsClipboardHTMLConverter::doToIClipboard(const String& data) const
+std::string
+MSWindowsClipboardHTMLConverter::doToIClipboard(const std::string& data) const
 {
 	// get fragment start/end args
-	String startArg = findArg(data, "StartFragment");
-	String endArg   = findArg(data, "EndFragment");
+	std::string startArg = findArg(data, "StartFragment");
+	std::string endArg   = findArg(data, "EndFragment");
 	if (startArg.empty() || endArg.empty()) {
 		return String();
 	}
@@ -96,9 +96,9 @@ MSWindowsClipboardHTMLConverter::doToIClipboard(const String& data) const
 	return data.substr(start, end - start);
 }
 
-String
+std::string
 MSWindowsClipboardHTMLConverter::findArg(
-				const String& data, const String& name) const
+				const std::string& data, const std::string& name) const
 {
 	String::size_type i = data.find(name);
 	if (i == String::npos) {

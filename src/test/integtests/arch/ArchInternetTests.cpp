@@ -19,19 +19,21 @@
 
 #include "test/global/gtest.h"
 
+#if 0
 #define TEST_URL "https://symless.com/tests/?testString"
 //#define TEST_URL "http://localhost/synergy/tests/?testString"
 
 TEST(ArchInternetTests, get)
 {
 	ARCH_INTERNET internet;
-	String result = internet.get(TEST_URL);
+	std::string result = internet.get(TEST_URL);
 	ASSERT_EQ("Hello world!", result);
 }
 
 TEST(ArchInternetTests, urlEncode)
 {
 	ARCH_INTERNET internet;
-	String result = internet.urlEncode("hello=+&world");
+	std::string result = internet.urlEncode("hello=+&world");
 	ASSERT_EQ("hello%3D%2B%26world", result);
 }
+#endif

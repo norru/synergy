@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2003 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -41,7 +41,7 @@ ClientTaskBarReceiver::~ClientTaskBarReceiver()
 }
 
 void
-ClientTaskBarReceiver::updateStatus(Client* client, const String& errorMsg)
+ClientTaskBarReceiver::updateStatus(Client* client, const nstring& errorMsg)
 {
 	{
 		// update our status
@@ -82,7 +82,7 @@ ClientTaskBarReceiver::getStatus() const
 	return m_state;
 }
 
-const String&
+const nstring&
 ClientTaskBarReceiver::getErrorMessage() const
 {
 	return m_errorMessage;
@@ -112,30 +112,30 @@ ClientTaskBarReceiver::unlock() const
 	// do nothing
 }
 
-std::string
+nstring
 ClientTaskBarReceiver::getToolTip() const
 {
 	switch (m_state) {
 	case kNotRunning:
-		return synergy::string::sprintf("%s:  Not running", kAppVersion);
+		return synergy::string::sprintf(_N("%s:  Not running"), kAppVersion);
 
 	case kNotWorking:
-		return synergy::string::sprintf("%s:  %s",
+		return synergy::string::sprintf(_N("%s:  %s"),
 								kAppVersion, m_errorMessage.c_str());
 
 	case kNotConnected:
-		return synergy::string::sprintf("%s:  Not connected:  %s",
+		return synergy::string::sprintf(_N("%s:  Not connected:  %s"),
 								kAppVersion, m_errorMessage.c_str());
 
 	case kConnecting:
-		return synergy::string::sprintf("%s:  Connecting to %s...",
+		return synergy::string::sprintf(_N("%s:  Connecting to %s..."),
 								kAppVersion, m_server.c_str());
 
 	case kConnected:
-		return synergy::string::sprintf("%s:  Connected to %s",
+		return synergy::string::sprintf(_N("%s:  Connected to %s"),
 								kAppVersion, m_server.c_str());
 
 	default:
-		return "";
+		return _N("");
 	}
 }

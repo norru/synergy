@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -40,15 +40,15 @@ OSXClipboardAnyTextConverter::getFormat() const
 	return IClipboard::kText;
 }
 
-String
-OSXClipboardAnyTextConverter::fromIClipboard(const String& data) const
+std::string
+OSXClipboardAnyTextConverter::fromIClipboard(const std::string& data) const
 {
 	// convert linefeeds and then convert to desired encoding
 	return doFromIClipboard(convertLinefeedToMacOS(data));
 }
 
-String
-OSXClipboardAnyTextConverter::toIClipboard(const String& data) const
+std::string
+OSXClipboardAnyTextConverter::toIClipboard(const std::string& data) const
 {
 	// convert text then newlines
 	return convertLinefeedToUnix(doToIClipboard(data));
@@ -68,21 +68,21 @@ isCR(char ch)
     return (ch == '\r');
 }
 
-String
-OSXClipboardAnyTextConverter::convertLinefeedToMacOS(const String& src)
+std::string
+OSXClipboardAnyTextConverter::convertLinefeedToMacOS(const std::string& src)
 {
 	// note -- we assume src is a valid UTF-8 string
-    String copy = src;
+    std::string copy = src;
 
     std::replace_if(copy.begin(), copy.end(), isLF, '\r');
 
 	return copy;
 }
 
-String
-OSXClipboardAnyTextConverter::convertLinefeedToUnix(const String& src)
+std::string
+OSXClipboardAnyTextConverter::convertLinefeedToUnix(const std::string& src)
 {
-    String copy = src;
+    std::string copy = src;
 
     std::replace_if(copy.begin(), copy.end(), isCR, '\n');
 

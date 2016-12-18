@@ -29,18 +29,18 @@
 #include <ctime>
 
 // names of priorities
-static const char*		g_priority[] = {
-	"FATAL",
-	"ERROR",
-	"WARNING",
-	"NOTE",
-	"INFO",
-	"DEBUG",
-	"DEBUG1",
-	"DEBUG2",
-	"DEBUG3",
-	"DEBUG4",
-	"DEBUG5"
+static const nchar*		g_priority[] = {
+	_N("FATAL"),
+	_N("ERROR"),
+	_N("WARNING"),
+	_N("NOTE"),
+	_N("INFO"),
+	_N("DEBUG"),
+	_N("DEBUG1"),
+	_N("DEBUG2"),
+	_N("DEBUG3"),
+	_N("DEBUG4"),
+	_N("DEBUG5")
 };
 
 // number of priorities
@@ -100,32 +100,32 @@ Log::getInstance()
 	return s_log;
 }
 
-const char*
+const nchar*
 Log::getFilterName() const
 {
 	return getFilterName(getFilter());
 }
 
-const char*
+const nchar*
 Log::getFilterName(int level) const
 {
 	if (level < 0) {
-		return "Message";
+		return _N("Message");
 	}
 	return g_priority[level];
 }
 
 void
-Log::print(const char* file, int line, const char* fmt, ...)
+Log::print(const nchar* file, int line, const nchar* fmt, ...)
 {
 	// check if fmt begins with a priority argument
 	ELevel priority = kINFO;
-	if ((strlen(fmt) > 2) && (fmt[0] == '%' && fmt[1] == 'z')) {
+	if ((strlen(fmt) > 2) && (fmt[0] == _N('%') && fmt[1] == _N('z'))) {
 
 		// 060 in octal is 0 (48 in decimal), so subtracting this converts ascii
 		// number it a true number. we could use atoi instead, but this is how
 		// it was done originally.
-		priority = (ELevel)(fmt[2] - '\060');
+		priority = (ELevel)(fmt[2] - _N('\060'));
 
 		// move the pointer on past the debug priority char
 		fmt += 3;
@@ -137,14 +137,14 @@ Log::print(const char* file, int line, const char* fmt, ...)
 	}
 
 	// compute prefix padding length
-	char stack[1024];
+	nchar stack[1024];
 
 	// compute suffix padding length
 	int sPad = m_maxNewlineLength;
 
 	// print to buffer, leaving space for a newline at the end and prefix
 	// at the beginning.
-	char* buffer = stack;
+	nchar* buffer = stack;
 	int len			= (int)(sizeof(stack) / sizeof(stack[0]));
 	while (true) {
 		// try printing into the buffer
@@ -159,7 +159,7 @@ Log::print(const char* file, int line, const char* fmt, ...)
 				delete[] buffer;
 			}
 			len	 *= 2;
-			buffer = new char[len];
+			buffer = new nchar[len];
 		}
 
 		// if the buffer was big enough then continue
@@ -173,28 +173,32 @@ Log::print(const char* file, int line, const char* fmt, ...)
 	if (priority != kPRINT) {
 
 		struct tm *tm;
-		char timestamp[50];
+		nchar timestamp[50];
 		time_t t;
 		time(&t);
 		tm = localtime(&t);
-		sprintf(timestamp, "%04i-%02i-%02iT%02i:%02i:%02i", tm->tm_year + 1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+		nsprintf(timestamp, _N("%04i-%02i-%02iT%02i:%02i:%02i"),
+			tm->tm_year + 1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour,
+			tm->tm_min, tm->tm_sec);
 
 		// square brackets, spaces, comma and null terminator take about 10
 		size_t size = 10;
-		size += strlen(timestamp);
-		size += strlen(g_priority[priority]);
-		size += strlen(buffer);
+		size += nstrlen(timestamp);
+		size += nstrlen(g_priority[priority]);
+		size += nstrlen(buffer);
 #ifndef NDEBUG
-		size += strlen(file);
+		size += nstrlen(file);
 		// assume there is no file contains over 100k lines of code
 		size += 6;
 #endif
-		char* message = new char[size];
+		nchar* message = new nchar[size];
 
 #ifndef NDEBUG
-		sprintf(message, "[%s] %s: %s\n\t%s,%d", timestamp, g_priority[priority], buffer, file, line);
+		nsprintf(message, _N("[%s] %s: %s\n\t%s,%d"),
+			timestamp, g_priority[priority], buffer, file, line);
 #else
-		sprintf(message, "[%s] %s: %s", timestamp, g_priority[priority], buffer);
+		nsprintf(message, _N("[%s] %s: %s"),
+			timestamp, g_priority[priority], buffer);
 #endif
 
 		output(priority, message);
@@ -254,11 +258,11 @@ Log::pop_front(bool alwaysAtHead)
 }
 
 bool
-Log::setFilter(const char* maxPriority)
+Log::setFilter(const nchar* maxPriority)
 {
 	if (maxPriority != NULL) {
 		for (int i = 0; i < g_numPriority; ++i) {
-			if (strcmp(maxPriority, g_priority[i]) == 0) {
+			if (nstrcmp(maxPriority, g_priority[i]) == 0) {
 				setFilter(i);
 				return true;
 			}
@@ -283,7 +287,7 @@ Log::getFilter() const
 }
 
 void
-Log::output(ELevel priority, char* msg)
+Log::output(ELevel priority, const nchar* msg)
 {
 	assert(priority >= -1 && priority < g_numPriority);
 	assert(msg != NULL);

@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -423,7 +423,7 @@ KeyState::onKey(KeyButton button, bool down, KeyModifierMask newState)
 {
 	// update modifier state
 	m_mask = newState;
-	LOG((CLOG_DEBUG1 "new mask: 0x%04x", m_mask));
+	LOG((CLOG_DEBUG1 _N("new mask: 0x%04x"), m_mask));
 
 	// ignore bogus buttons
 	button &= kButtonMask;
@@ -516,7 +516,7 @@ KeyState::updateKeyState()
 												m_activeModifiers);
 	m_keyMap.foreachKey(&KeyState::addActiveModifierCB, &addModifierContext);
 
-	LOG((CLOG_DEBUG1 "modifiers on update: 0x%04x", m_mask));
+	LOG((CLOG_DEBUG1 _N("modifiers on update: 0x%04x"), m_mask));
 }
 
 void
@@ -529,7 +529,7 @@ KeyState::addActiveModifierCB(KeyID, SInt32 group,
 		(keyItem.m_generates & context->m_mask) != 0) {
 		context->m_activeModifiers.insert(std::make_pair(
 								keyItem.m_generates, keyItem));
-	}	
+	}
 }
 
 void
@@ -560,7 +560,7 @@ KeyState::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton serverID)
 
 	// ignore certain keys
 	if (isIgnoredKey(id, mask)) {
-		LOG((CLOG_DEBUG1 "ignored key %04x %04x", id, mask));
+		LOG((CLOG_DEBUG1 _N("ignored key %04x %04x"), id, mask));
 		return;
 	}
 
@@ -578,13 +578,13 @@ KeyState::fakeKeyDown(KeyID id, KeyModifierMask mask, KeyButton serverID)
 			id == kKeyAudioPrev || id == kKeyAudioNext ||
 			id == kKeyBrightnessDown || id == kKeyBrightnessUp
 			) {
-			LOG((CLOG_DEBUG1 "emulating media key"));
+			LOG((CLOG_DEBUG1 _N("emulating media key")));
 			fakeMediaKey(id);
 		}
-		
+
 		return;
 	}
-	
+
 	KeyButton localID = (KeyButton)(keyItem->m_button & kButtonMask);
 	updateModifierKeyState(localID, oldActiveModifiers, m_activeModifiers);
 	if (localID != 0) {
@@ -693,7 +693,7 @@ KeyState::fakeKeyUp(KeyButton serverID)
 			if (m_activeModifiers.count(mask) == 0) {
 				// no key for modifier is down so deactivate modifier
 				m_mask &= ~mask;
-				LOG((CLOG_DEBUG1 "new state %04x", m_mask));
+				LOG((CLOG_DEBUG1 _N("new state %04x"), m_mask));
 			}
 		}
 		else {
@@ -848,7 +848,7 @@ KeyState::fakeKeys(const Keystrokes& keys, UInt32 count)
 	}
 
 	// generate key events
-	LOG((CLOG_DEBUG1 "keystrokes:"));
+	LOG((CLOG_DEBUG1 _N("keystrokes:")));
 	for (Keystrokes::const_iterator k = keys.begin(); k != keys.end(); ) {
 		if (k->m_type == Keystroke::kButton && k->m_data.m_button.m_repeat) {
 			// repeat from here up to but not including the next key

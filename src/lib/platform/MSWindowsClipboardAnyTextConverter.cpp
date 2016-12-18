@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -39,10 +39,10 @@ MSWindowsClipboardAnyTextConverter::getFormat() const
 }
 
 HANDLE
-MSWindowsClipboardAnyTextConverter::fromIClipboard(const String& data) const
+MSWindowsClipboardAnyTextConverter::fromIClipboard(const std::string& data) const
 {
 	// convert linefeeds and then convert to desired encoding
-	String text = doFromIClipboard(convertLinefeedToWin32(data));
+	std::string text = doFromIClipboard(convertLinefeedToWin32(data));
 	UInt32 size  = (UInt32)text.size();
 
 	// copy to memory handle
@@ -63,18 +63,18 @@ MSWindowsClipboardAnyTextConverter::fromIClipboard(const String& data) const
 	return gData;
 }
 
-String
+std::string
 MSWindowsClipboardAnyTextConverter::toIClipboard(HANDLE data) const
 {
 	// get datator
 	const char* src = (const char*)GlobalLock(data);
 	UInt32 srcSize = (UInt32)GlobalSize(data);
 	if (src == NULL || srcSize <= 1) {
-		return String();
+		return std::string();
 	}
 
 	// convert text
-	String text = doToIClipboard(String(src, srcSize));
+	std::string text = doToIClipboard(std::string(src, srcSize));
 
 	// release handle
 	GlobalUnlock(data);
@@ -83,9 +83,9 @@ MSWindowsClipboardAnyTextConverter::toIClipboard(HANDLE data) const
 	return convertLinefeedToUnix(text);
 }
 
-String
+std::string
 MSWindowsClipboardAnyTextConverter::convertLinefeedToWin32(
-				const String& src) const
+				const std::string& src) const
 {
 	// note -- we assume src is a valid UTF-8 string
 
@@ -102,7 +102,7 @@ MSWindowsClipboardAnyTextConverter::convertLinefeedToWin32(
 	}
 
 	// allocate new string
-	String dst;
+	std::string dst;
 	dst.reserve(src.size() + numNewlines);
 
 	// copy string, converting newlines
@@ -117,9 +117,9 @@ MSWindowsClipboardAnyTextConverter::convertLinefeedToWin32(
 	return dst;
 }
 
-String
+std::string
 MSWindowsClipboardAnyTextConverter::convertLinefeedToUnix(
-				const String& src) const
+				const std::string& src) const
 {
 	// count newlines in string
 	UInt32 numNewlines = 0;
@@ -134,7 +134,7 @@ MSWindowsClipboardAnyTextConverter::convertLinefeedToUnix(
 	}
 
 	// allocate new string
-	String dst;
+	std::string dst;
 	dst.reserve(src.size());
 
 	// copy string, converting newlines

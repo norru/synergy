@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -24,7 +24,7 @@
 //
 
 void
-IClipboard::unmarshall(IClipboard* clipboard, const String& data, Time time)
+IClipboard::unmarshall(IClipboard* clipboard, const std::string& data, Time time)
 {
 	assert(clipboard != NULL);
 
@@ -53,7 +53,7 @@ IClipboard::unmarshall(IClipboard* clipboard, const String& data, Time time)
 			// or server supports more clipboard formats than the other
 			// then one of them will get a format >= kNumFormats here.
 			if (format <IClipboard::kNumFormats) {
-				clipboard->add(format, String(index, size));
+				clipboard->add(format, std::string(index, size));
 			}
 			index += size;
 		}
@@ -63,21 +63,21 @@ IClipboard::unmarshall(IClipboard* clipboard, const String& data, Time time)
 	}
 }
 
-String
+std::string
 IClipboard::marshall(const IClipboard* clipboard)
 {
-	// return data format: 
+	// return data format:
 	// 4 bytes => number of formats included
 	// 4 bytes => format enum
 	// 4 bytes => clipboard data size n
 	// n bytes => clipboard data
 	// back to the second 4 bytes if there is another format
-	
+
 	assert(clipboard != NULL);
 
-	String data;
+	std::string data;
 
-	std::vector<String> formatData;
+	std::vector<std::string> formatData;
 	formatData.resize(IClipboard::kNumFormats);
 	// FIXME -- use current time
 	if (clipboard->open(0)) {
@@ -159,7 +159,7 @@ IClipboard::readUInt32(const char* buf)
 }
 
 void
-IClipboard::writeUInt32(String* buf, UInt32 v)
+IClipboard::writeUInt32(std::string* buf, UInt32 v)
 {
 	*buf += static_cast<UInt8>((v >> 24) & 0xff);
 	*buf += static_cast<UInt8>((v >> 16) & 0xff);

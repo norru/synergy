@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -122,8 +122,8 @@ XWindowsClipboardAnyBitmapConverter::getDataSize() const
 	return 8;
 }
 
-String
-XWindowsClipboardAnyBitmapConverter::fromIClipboard(const String& bmp) const
+std::string
+XWindowsClipboardAnyBitmapConverter::fromIClipboard(const std::string& bmp) const
 {
 	// fill BMP info header with native-endian data
 	CBMPInfoHeader infoHeader;
@@ -145,7 +145,7 @@ XWindowsClipboardAnyBitmapConverter::fromIClipboard(const String& bmp) const
 		infoHeader.biWidth == 0 || infoHeader.biHeight == 0 ||
 		infoHeader.biPlanes != 0 || infoHeader.biCompression != 0 ||
 		(infoHeader.biBitCount != 24 && infoHeader.biBitCount != 32)) {
-		return String();
+		return std::string();
 	}
 
 	// convert to image format
@@ -160,14 +160,14 @@ XWindowsClipboardAnyBitmapConverter::fromIClipboard(const String& bmp) const
 	}
 }
 
-String
-XWindowsClipboardAnyBitmapConverter::toIClipboard(const String& image) const
+std::string
+XWindowsClipboardAnyBitmapConverter::toIClipboard(const std::string& image) const
 {
 	// convert to raw BMP data
 	UInt32 w, h, depth;
-	String rawBMP = doToIClipboard(image, w, h, depth);
+	std::string rawBMP = doToIClipboard(image, w, h, depth);
 	if (rawBMP.empty() || w == 0 || h == 0 || (depth != 24 && depth != 32)) {
-		return String();
+		return std::string();
 	}
 
 	// fill BMP info header with little-endian data
@@ -186,6 +186,6 @@ XWindowsClipboardAnyBitmapConverter::toIClipboard(const String& image) const
 	toLE(dst, static_cast<UInt32>(0));
 
 	// construct image
-	return String(reinterpret_cast<const char*>(infoHeader),
+	return std::string(reinterpret_cast<const char*>(infoHeader),
 							sizeof(infoHeader)) + rawBMP;
 }

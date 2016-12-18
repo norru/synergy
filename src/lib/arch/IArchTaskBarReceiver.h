@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2003 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -88,9 +88,9 @@ public:
 	to set the tooltip is left to sublclasses.  Getting and setting
 	the icon must be thread safe.
 	*/
-	virtual std::string	getToolTip() const = 0;
+	virtual nstring	getToolTip() const = 0;
 
-	virtual void updateStatus(INode*, const String& errorMsg) = 0;
+	virtual void updateStatus(INode*, const nstring& errorMsg) = 0;
 
 	virtual void cleanup() {}
 

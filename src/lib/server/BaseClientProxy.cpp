@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2006 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -22,7 +22,7 @@
 // BaseClientProxy
 //
 
-BaseClientProxy::BaseClientProxy(const String& name) :
+BaseClientProxy::BaseClientProxy(const nstring& name) :
 	m_name(name),
 	m_x(0),
 	m_y(0)
@@ -49,7 +49,7 @@ BaseClientProxy::getJumpCursorPos(SInt32& x, SInt32& y) const
 	y = m_y;
 }
 
-String
+nstring
 BaseClientProxy::getName() const
 {
 	return m_name;

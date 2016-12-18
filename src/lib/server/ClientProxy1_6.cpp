@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2015-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -29,7 +29,7 @@
 // ClientProxy1_6
 //
 
-ClientProxy1_6::ClientProxy1_6(const String& name, synergy::IStream* stream, Server* server, IEventQueue* events) :
+ClientProxy1_6::ClientProxy1_6(const nstring& name, synergy::IStream* stream, Server* server, IEventQueue* events) :
 	ClientProxy1_5(name, stream, server, events),
 	m_events(events)
 {
@@ -52,10 +52,10 @@ ClientProxy1_6::setClipboard(ClipboardID id, const IClipboard* clipboard)
 		m_clipboard[id].m_dirty = false;
 		Clipboard::copy(&m_clipboard[id].m_clipboard, clipboard);
 
-		String data = m_clipboard[id].m_clipboard.marshall();
+		nstring data = m_clipboard[id].m_clipboard.marshall();
 
 		size_t size = data.size();
-		LOG((CLOG_DEBUG "sending clipboard %d to \"%s\"", id, getName().c_str()));
+		LOG((CLOG_DEBUG _N("sending clipboard %d to \"%" _NF "\""), id, getName().c_str()));
 
 		StreamChunker::sendClipboard(data, size, id, 0, m_events, this);
 	}
@@ -71,7 +71,7 @@ bool
 ClientProxy1_6::recvClipboard()
 {
 	// parse message
-	static String dataCached;
+	static nstring dataCached;
 	ClipboardID id;
 	UInt32 seq;
 
@@ -79,15 +79,15 @@ ClientProxy1_6::recvClipboard()
 
 	if (r == kStart) {
 		size_t size = ClipboardChunk::getExpectedSize();
-		LOG((CLOG_DEBUG "receiving clipboard %d size=%d", id, size));
+		LOG((CLOG_DEBUG _N("receiving clipboard %d size=%d"), id, size));
 	}
 	else if (r == kFinish) {
-		LOG((CLOG_DEBUG "received client \"%s\" clipboard %d seqnum=%d, size=%d",
+		LOG((CLOG_DEBUG _N("received client \"%" _NF "\" clipboard %d seqnum=%d, size=%d"),
 				getName().c_str(), id, seq, dataCached.size()));
 		// save clipboard
 		m_clipboard[id].m_clipboard.unmarshall(dataCached, 0);
 		m_clipboard[id].m_sequenceNumber = seq;
-		
+
 		// notify
 		ClipboardInfo* info = new ClipboardInfo;
 		info->m_id = id;

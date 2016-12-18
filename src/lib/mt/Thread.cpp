@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -153,28 +153,28 @@ Thread::threadFunc(void* vjob)
 	void* result = NULL;
 	try {
 		// go
-		LOG((CLOG_DEBUG1 "thread 0x%08x entry", id));
+		LOG((CLOG_DEBUG1 _N("thread 0x%08x entry"), id));
 		job->run();
-		LOG((CLOG_DEBUG1 "thread 0x%08x exit", id));
+		LOG((CLOG_DEBUG1 _N("thread 0x%08x exit"), id));
 	}
 	catch (XThreadCancel&) {
 		// client called cancel()
-		LOG((CLOG_DEBUG1 "caught cancel on thread 0x%08x", id));
+		LOG((CLOG_DEBUG1 _N("caught cancel on thread 0x%08x"), id));
 		delete job;
 		throw;
 	}
 	catch (XThreadExit& e) {
 		// client called exit()
 		result = e.m_result;
-		LOG((CLOG_DEBUG1 "caught exit on thread 0x%08x, result %p", id, result));
+		LOG((CLOG_DEBUG1 _N("caught exit on thread 0x%08x, result %p"), id, result));
 	}
 	catch (XBase& e) {
-		LOG((CLOG_ERR "exception on thread 0x%08x: %s", id, e.what()));
+		LOG((CLOG_ERR _N("exception on thread 0x%08x: %" _NF), id, e.what()));
 		delete job;
 		throw;
 	}
 	catch (...) {
-		LOG((CLOG_ERR "exception on thread 0x%08x: <unknown>", id));
+		LOG((CLOG_ERR _N("exception on thread 0x%08x: <unknown>"), id));
 		delete job;
 		throw;
 	}

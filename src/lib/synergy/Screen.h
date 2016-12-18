@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -223,7 +223,7 @@ public:
 
 	//! Change dragging status
 	void				setDraggingStarted(bool started);
-	
+
 	//! Fake a files dragging operation
 	void				startDraggingFiles(DragFileList& fileList);
 
@@ -278,18 +278,18 @@ public:
 
 	//! Test if file is dragged on primary screen
 	bool				isDraggingStarted() const;
-	
+
 	//! Test if file is dragged on secondary screen
 	bool				isFakeDraggingStarted() const;
 
 	//! Get the filename of the file being dragged
-	String&			getDraggingFilename() const;
+	nstring&			getDraggingFilename() const;
 
 	//! Clear the filename of the file that was dragged
 	void				clearDraggingFilename();
 
 	//! Get the drop target directory
-	const String&		getDropTarget() const;
+	const nstring&		getDropTarget() const;
 
 	//@}
 
@@ -299,7 +299,7 @@ public:
 	virtual void		getShape(SInt32& x, SInt32& y,
 							SInt32& width, SInt32& height) const;
 	virtual void		getCursorPos(SInt32& x, SInt32& y) const;
-	
+
 	IPlatformScreen*	getPlatformScreen() { return m_screen; }
 
 protected:

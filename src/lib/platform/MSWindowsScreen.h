@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -117,9 +117,8 @@ public:
 	virtual void		setSequenceNumber(UInt32);
 	virtual bool		isPrimary() const;
 	virtual void		fakeDraggingFiles(DragFileList fileList);
-	virtual String&	getDraggingFilename();
-	virtual const String&	
-						getDropTarget() const;
+	virtual std::wstring& getDraggingFilename();
+	virtual const std::wstring& getDropTarget() const;
 
 protected:
 	// IPlatformScreen overrides
@@ -212,12 +211,12 @@ private: // HACK
 
 	// our window proc
 	static LRESULT CALLBACK wndProc(HWND, UINT, WPARAM, LPARAM);
-	
+
 	// save last position of mouse to compute next delta movement
 	void saveMousePosition(SInt32 x, SInt32 y);
 
 	// check if it is a modifier key repeating message
-	bool				isModifierRepeat(KeyModifierMask oldState, 
+	bool				isModifierRepeat(KeyModifierMask oldState,
 							KeyModifierMask state, WPARAM wParam) const;
 
 	// send drag info and data back to server
@@ -324,22 +323,22 @@ private:
 	bool				m_gotOldMouseKeys;
 	MOUSEKEYS			m_mouseKeys;
 	MOUSEKEYS			m_oldMouseKeys;
-	
+
 	MSWindowsHook		m_hook;
 
 	static MSWindowsScreen*
 						s_screen;
-	
+
 	IEventQueue*		m_events;
 
-	String				m_desktopPath;
+	std::wstring		m_desktopPath;
 
 	MSWindowsDropTarget*
 						m_dropTarget;
 	HWND				m_dropWindow;
 	const int			m_dropWindowSize;
 
-	Thread*			m_sendDragThread;
+	Thread*				m_sendDragThread;
 
 	PrimaryKeyDownList	m_primaryKeyDownList;
 };

@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2011 Nick Bolton
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -36,7 +36,7 @@ protected:
 	}
 
 private:
-	void emptyClipboard() 
+	void emptyClipboard()
 	{
 		MSWindowsClipboard clipboard(NULL);
 		clipboard.open(0);
@@ -89,7 +89,7 @@ TEST_F(MSWindowsClipboardTests, add_newValue_valueWasStored)
 
 	clipboard.add(IClipboard::kText, "synergy rocks!");
 
-	String actual = clipboard.get(IClipboard::kText);
+	std::string actual = clipboard.get(IClipboard::kText);
 	EXPECT_EQ("synergy rocks!", actual);
 }
 
@@ -113,7 +113,7 @@ TEST_F(MSWindowsClipboardTests, add_replaceValue_valueWasReplaced)
 	clipboard.add(IClipboard::kText, "synergy rocks!");
 	clipboard.add(IClipboard::kText, "maxivista sucks"); // haha, just kidding.
 
-	String actual = clipboard.get(IClipboard::kText);
+	std::string actual = clipboard.get(IClipboard::kText);
 	EXPECT_EQ("maxivista sucks", actual);
 }
 
@@ -201,7 +201,7 @@ TEST_F(MSWindowsClipboardTests, get_withNoFormats_returnsEmpty)
 	clipboard.open(0);
 	clipboard.empty();
 
-	String actual = clipboard.get(IClipboard::kText);
+	std::string actual = clipboard.get(IClipboard::kText);
 
 	EXPECT_EQ("", actual);
 }
@@ -213,7 +213,7 @@ TEST_F(MSWindowsClipboardTests, get_withFormatAdded_returnsExpected)
 	clipboard.empty();
 	clipboard.add(IClipboard::kText, "synergy rocks!");
 
-	String actual = clipboard.get(IClipboard::kText);
+	std::string actual = clipboard.get(IClipboard::kText);
 
 	EXPECT_EQ("synergy rocks!", actual);
 }

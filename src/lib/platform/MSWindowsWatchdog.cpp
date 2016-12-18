@@ -6,7 +6,7 @@
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -44,7 +44,7 @@ enum {
 
 typedef VOID (WINAPI *SendSas)(BOOL asUser);
 
-const char g_activeDesktop[] = {"activeDesktop:"};
+const wchar_t g_activeDesktop[] = {L"activeDesktop:"};
 
 MSWindowsWatchdog::MSWindowsWatchdog(
 	bool autoDetectCommand,
@@ -80,7 +80,7 @@ MSWindowsWatchdog::~MSWindowsWatchdog()
 	}
 }
 
-void 
+void
 MSWindowsWatchdog::startAsync()
 {
 	m_thread = new Thread(new TMethodJob<MSWindowsWatchdog>(
@@ -94,7 +94,7 @@ void
 MSWindowsWatchdog::stop()
 {
 	m_monitoring = false;
-	
+
 	m_thread->wait(5);
 	delete m_thread;
 
@@ -113,11 +113,11 @@ MSWindowsWatchdog::duplicateProcessToken(HANDLE process, LPSECURITY_ATTRIBUTES s
 		&sourceToken);
 
 	if (!tokenRet) {
-		LOG((CLOG_ERR "could not open token, process handle: %d", process));
+		LOG((CLOG_ERR L"could not open token, process handle: %d", process));
 		throw XArch(new XArchEvalWindows());
 	}
-	
-	LOG((CLOG_DEBUG "got token %i, duplicating", sourceToken));
+
+	LOG((CLOG_DEBUG L"got token %i, duplicating", sourceToken));
 
 	HANDLE newToken;
 	BOOL duplicateRet = DuplicateTokenEx(
@@ -125,37 +125,37 @@ MSWindowsWatchdog::duplicateProcessToken(HANDLE process, LPSECURITY_ATTRIBUTES s
 		SecurityImpersonation, TokenPrimary, &newToken);
 
 	if (!duplicateRet) {
-		LOG((CLOG_ERR "could not duplicate token %i", sourceToken));
+		LOG((CLOG_ERR L"could not duplicate token %i", sourceToken));
 		throw XArch(new XArchEvalWindows());
 	}
-	
-	LOG((CLOG_DEBUG "duplicated, new token: %i", newToken));
+
+	LOG((CLOG_DEBUG L"duplicated, new token: %i", newToken));
 	return newToken;
 }
 
-HANDLE 
+HANDLE
 MSWindowsWatchdog::getUserToken(LPSECURITY_ATTRIBUTES security)
 {
-	// always elevate if we are at the vista/7 login screen. we could also 
+	// always elevate if we are at the vista/7 login screen. we could also
 	// elevate for the uac dialog (consent.exe) but this would be pointless,
 	// since synergy would re-launch as non-elevated after the desk switch,
 	// and so would be unusable with the new elevated process taking focus.
 	if (m_elevateProcess
 		|| m_autoElevated
-		|| m_session.isProcessInSession("logonui.exe", NULL)) {
-		
-		LOG((CLOG_DEBUG "getting elevated token, %s",
-			(m_elevateProcess ? "elevation required" : "at login screen")));
-		
+		|| m_session.isProcessInSession(L"logonui.exe", NULL)) {
+
+		LOG((CLOG_DEBUG L"getting elevated token, %ls",
+			(m_elevateProcess ? L"elevation required" : L"at login screen")));
+
 		HANDLE process;
-		if (!m_session.isProcessInSession("winlogon.exe", &process)) {
-			throw XMSWindowsWatchdogError("cannot get user token without winlogon.exe");
+		if (!m_session.isProcessInSession(L"winlogon.exe", &process)) {
+			throw XMSWindowsWatchdogError(L"cannot get user token without winlogon.exe");
 		}
 
 		return duplicateProcessToken(process, security);
 	}
 	else {
-		LOG((CLOG_DEBUG "getting non-elevated token"));
+		LOG((CLOG_DEBUG L"getting non-elevated token"));
 		return m_session.getUserToken(security);
 	}
 }
@@ -166,16 +166,16 @@ MSWindowsWatchdog::mainLoop(void*)
 	shutdownExistingProcesses();
 
 	SendSas sendSasFunc = NULL;
-	HINSTANCE sasLib = LoadLibrary("sas.dll");
+	HINSTANCE sasLib = LoadLibraryW(L"sas.dll");
 	if (sasLib) {
-		LOG((CLOG_DEBUG "found sas.dll"));
-		sendSasFunc = (SendSas)GetProcAddress(sasLib, "SendSAS");
+		LOG((CLOG_DEBUG L"found sas.dll"));
+		sendSasFunc = (SendSas)GetProcAddress(sasLib, L"SendSAS");
 	}
 
-	SECURITY_ATTRIBUTES saAttr; 
-	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
-	saAttr.bInheritHandle = TRUE; 
-	saAttr.lpSecurityDescriptor = NULL; 
+	SECURITY_ATTRIBUTES saAttr;
+	saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+	saAttr.bInheritHandle = TRUE;
+	saAttr.lpSecurityDescriptor = NULL;
 
 	if (!CreatePipe(&m_stdOutRead, &m_stdOutWrite, &saAttr, 0)) {
 		throw XArch(new XArchEvalWindows());
@@ -187,7 +187,7 @@ MSWindowsWatchdog::mainLoop(void*)
 		try {
 
 			if (m_processRunning && getCommand().empty()) {
-				LOG((CLOG_INFO "process started but command is empty, shutting down"));
+				LOG((CLOG_INFO L"process started but command is empty, shutting down"));
 				shutdownExistingProcesses();
 				m_processRunning = false;
 				continue;
@@ -196,10 +196,10 @@ MSWindowsWatchdog::mainLoop(void*)
 			if (m_processFailures != 0) {
 				// increasing backoff period, maximum of 10 seconds.
 				int timeout = (m_processFailures * 2) < 10 ? (m_processFailures * 2) : 10;
-				LOG((CLOG_INFO "backing off, wait=%ds, failures=%d", timeout, m_processFailures));
+				LOG((CLOG_INFO L"backing off, wait=%ds, failures=%d", timeout, m_processFailures));
 				ARCH->sleep(timeout);
 			}
-		
+
 			if (!getCommand().empty() && ((m_processFailures != 0) || m_session.hasChanged() || m_commandChanged)) {
 				startProcess();
 			}
@@ -208,19 +208,19 @@ MSWindowsWatchdog::mainLoop(void*)
 
 				m_processFailures++;
 				m_processRunning = false;
-			
-				LOG((CLOG_WARN "detected application not running, pid=%d",
+
+				LOG((CLOG_WARN L"detected application not running, pid=%d",
 					m_processInfo.dwProcessId));
 			}
 
 			if (sendSasFunc != NULL) {
 
-				HANDLE sendSasEvent = CreateEvent(NULL, FALSE, FALSE, "Global\\SendSAS");
+				HANDLE sendSasEvent = CreateEventW(NULL, FALSE, FALSE, L"Global\\SendSAS");
 				if (sendSasEvent != NULL) {
 
 					// use SendSAS event to wait for next session (timeout 1 second).
 					if (WaitForSingleObject(sendSasEvent, 1000) == WAIT_OBJECT_0) {
-						LOG((CLOG_DEBUG "calling SendSAS"));
+						LOG((CLOG_DEBUG L"calling SendSAS"));
 						sendSasFunc(FALSE);
 					}
 
@@ -231,16 +231,16 @@ MSWindowsWatchdog::mainLoop(void*)
 
 			// if the sas event failed, wait by sleeping.
 			ARCH->sleep(1);
-		
+
 		}
 		catch (std::exception& e) {
-			LOG((CLOG_ERR "failed to launch, error: %s", e.what()));
+			LOG((CLOG_ERR L"failed to launch, error: %ls", e.what()));
 			m_processFailures++;
 			m_processRunning = false;
 			continue;
 		}
 		catch (...) {
-			LOG((CLOG_ERR "failed to launch, unknown error."));
+			LOG((CLOG_ERR L"failed to launch, unknown error."));
 			m_processFailures++;
 			m_processRunning = false;
 			continue;
@@ -248,11 +248,11 @@ MSWindowsWatchdog::mainLoop(void*)
 	}
 
 	if (m_processRunning) {
-		LOG((CLOG_DEBUG "terminated running process on exit"));
+		LOG((CLOG_DEBUG L"terminated running process on exit"));
 		shutdownProcess(m_processInfo.hProcess, m_processInfo.dwProcessId, 20);
 	}
-	
-	LOG((CLOG_DEBUG "watchdog main thread finished"));
+
+	LOG((CLOG_DEBUG L"watchdog main thread finished"));
 }
 
 bool
@@ -263,7 +263,7 @@ MSWindowsWatchdog::isProcessActive()
 	return exitCode == STILL_ACTIVE;
 }
 
-void 
+void
 MSWindowsWatchdog::setFileLogOutputter(FileLogOutputter* outputter)
 {
 	m_fileLogOutputter = outputter;
@@ -273,13 +273,13 @@ void
 MSWindowsWatchdog::startProcess()
 {
 	if (m_command.empty()) {
-		throw XMSWindowsWatchdogError("cannot start process, command is empty");
+		throw XMSWindowsWatchdogError(L"cannot start process, command is empty");
 	}
 
 	m_commandChanged = false;
 
 	if (m_processRunning) {
-		LOG((CLOG_DEBUG "closing existing process to make way for new one"));
+		LOG((CLOG_DEBUG L"closing existing process to make way for new one"));
 		shutdownProcess(m_processInfo.hProcess, m_processInfo.dwProcessId, 20);
 		m_processRunning = false;
 	}
@@ -305,62 +305,67 @@ MSWindowsWatchdog::startProcess()
 	BOOL createRet = doStartProcess(m_command, userToken, &sa);
 
 	if (!createRet) {
-		LOG((CLOG_ERR "could not launch"));
+		LOG((CLOG_ERR L"could not launch"));
 		DWORD exitCode = 0;
 		GetExitCodeProcess(m_processInfo.hProcess, &exitCode);
-		LOG((CLOG_ERR "exit code: %d", exitCode));
+		LOG((CLOG_ERR L"exit code: %d", exitCode));
 		throw XArch(new XArchEvalWindows);
 	}
 	else {
 		// wait for program to fail.
 		ARCH->sleep(1);
 		if (!isProcessActive()) {
-			throw XMSWindowsWatchdogError("process immediately stopped");
+			throw XMSWindowsWatchdogError(L"process immediately stopped");
 		}
 
 		m_processRunning = true;
 		m_processFailures = 0;
 
-		LOG((CLOG_DEBUG "started process, session=%i, elevated: %s, command=%s",
+		LOG((CLOG_DEBUG L"started process, session=%i, elevated: %ls, command=%ls",
 			m_session.getActiveSessionId(),
-			m_elevateProcess ? "yes" : "no",
+			m_elevateProcess ? L"yes" : L"no",
 			m_command.c_str()));
 	}
 }
 
 BOOL
-MSWindowsWatchdog::doStartProcess(String& command, HANDLE userToken, LPSECURITY_ATTRIBUTES sa)
+MSWindowsWatchdog::doStartProcess(std::string& command, HANDLE userToken, LPSECURITY_ATTRIBUTES sa)
 {
 	// clear, as we're reusing process info struct
 	ZeroMemory(&m_processInfo, sizeof(PROCESS_INFORMATION));
 
-	STARTUPINFO si;
-	ZeroMemory(&si, sizeof(STARTUPINFO));
+	STARTUPINFOW si;
+	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(STARTUPINFO);
-	si.lpDesktop = "winsta0\\Default"; // TODO: maybe this should be \winlogon if we have logonui.exe?
+	si.lpDesktop = L"winsta0\\Default"; // TODO: maybe this should be \winlogon if we have logonui.exe?
 	si.hStdError = m_stdOutWrite;
 	si.hStdOutput = m_stdOutWrite;
 	si.dwFlags |= STARTF_USESTDHANDLES;
 
 	LPVOID environment;
-	BOOL blockRet = CreateEnvironmentBlock(&environment, userToken, FALSE);
+	BOOL blockRet = CreateEnvironmentBlockW(&environment, userToken, FALSE);
 	if (!blockRet) {
-		LOG((CLOG_ERR "could not create environment block"));
+		LOG((CLOG_ERR L"could not create environment block"));
 		throw XArch(new XArchEvalWindows);
 	}
 
-	DWORD creationFlags = 
+	DWORD creationFlags =
 		NORMAL_PRIORITY_CLASS |
 		CREATE_NO_WINDOW |
 		CREATE_UNICODE_ENVIRONMENT;
 
 	// re-launch in current active user session
-	LOG((CLOG_INFO "starting new process"));
-	BOOL createRet = CreateProcessAsUser(
-		userToken, NULL, LPSTR(command.c_str()),
+	LOG((CLOG_INFO L"starting new process"));
+
+	wchar_t* x = new wchar_t[command.length() + 1];
+	wcscpy(x, command.c_str());
+
+	BOOL createRet = CreateProcessAsUserW(
+		userToken, NULL, x,
 		sa, NULL, TRUE, creationFlags,
 		environment, NULL, &si, &m_processInfo);
 
+	delete[] x;
 	DestroyEnvironmentBlock(environment);
 	CloseHandle(userToken);
 
@@ -370,14 +375,14 @@ MSWindowsWatchdog::doStartProcess(String& command, HANDLE userToken, LPSECURITY_
 void
 MSWindowsWatchdog::setCommand(const std::string& command, bool elevate)
 {
-	LOG((CLOG_INFO "service command updated"));
+	LOG((CLOG_INFO L"service command updated"));
 	m_command = command;
 	m_elevateProcess = elevate;
 	m_commandChanged = true;
 	m_processFailures = 0;
 }
 
-std::string
+std::wstring
 MSWindowsWatchdog::getCommand() const
 {
 	if (!m_autoDetectCommand) {
@@ -385,19 +390,19 @@ MSWindowsWatchdog::getCommand() const
 	}
 
 	// seems like a fairly convoluted way to get the process name
-	const char* launchName = App::instance().argsBase().m_pname;
-	std::string args = ARCH->commandLine();
+	const wchar_t* launchName = App::instance().argsBase().m_pname;
+	std::wstring args = ARCH->commandLine();
 
 	// build up a full command line
-	std::stringstream cmdTemp;
+	std::wstringstream cmdTemp;
 	cmdTemp << launchName << args;
 
-	std::string cmd = cmdTemp.str();
+	std::wstring cmd = cmdTemp.str();
 
 	size_t i;
-	std::string find = "--relaunch";
-	while ((i = cmd.find(find)) != std::string::npos) {
-		cmd.replace(i, find.length(), "");
+	std::wstring find = L"--relaunch";
+	while ((i = cmd.find(find)) != std::wstring::npos) {
+		cmd.replace(i, find.length(), L"");
 	}
 
 	return cmd;
@@ -406,13 +411,13 @@ MSWindowsWatchdog::getCommand() const
 void
 MSWindowsWatchdog::outputLoop(void*)
 {
-	// +1 char for \0
-	CHAR buffer[kOutputBufferSize + 1];
+	wchar_t buffer[kOutputBufferSize + 1];
 
 	while (m_monitoring) {
-		
+
 		DWORD bytesRead;
-		BOOL success = ReadFile(m_stdOutRead, buffer, kOutputBufferSize, &bytesRead, NULL);
+		BOOL success = ReadFile(m_stdOutRead, (void*)buffer,
+			(sizeof(buffer) - sizeof(wchar_t)), &bytesRead, NULL);
 
 		// assume the process has gone away? slow down
 		// the reads until another one turns up.
@@ -420,7 +425,7 @@ MSWindowsWatchdog::outputLoop(void*)
 			ARCH->sleep(1);
 		}
 		else {
-			buffer[bytesRead] = '\0';
+			buffer[bytesRead / sizeof(wchar_t)] = 0;
 
 			testOutput(buffer);
 
@@ -429,7 +434,7 @@ MSWindowsWatchdog::outputLoop(void*)
 			if (m_fileLogOutputter != NULL) {
 				m_fileLogOutputter->write(kINFO, buffer);
 			}
-		}	
+		}
 	}
 }
 
@@ -448,22 +453,20 @@ MSWindowsWatchdog::shutdownProcess(HANDLE handle, DWORD pid, int timeout)
 	// wait for process to exit gracefully.
 	double start = ARCH->time();
 	while (true) {
-
 		GetExitCodeProcess(handle, &exitCode);
 		if (exitCode != STILL_ACTIVE) {
 			// yay, we got a graceful shutdown. there should be no hook in use errors!
-			LOG((CLOG_INFO "process %d was shutdown gracefully", pid));
+			LOG((CLOG_INFO L"process %d was shutdown gracefully", pid));
 			break;
 		}
 		else {
-			
 			double elapsed = (ARCH->time() - start);
 			if (elapsed > timeout) {
 				// if timeout reached, kill forcefully.
 				// calling TerminateProcess on synergy is very bad!
 				// it causes the hook DLL to stay loaded in some apps,
 				// making it impossible to start synergy again.
-				LOG((CLOG_WARN "shutdown timed out after %d secs, forcefully terminating", (int)elapsed));
+				LOG((CLOG_WARN L"shutdown timed out after %d secs, forcefully terminating", (int)elapsed));
 				TerminateProcess(handle, kExitSuccess);
 				break;
 			}
@@ -479,18 +482,18 @@ MSWindowsWatchdog::shutdownExistingProcesses()
 	// first we need to take a snapshot of the running processes
 	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (snapshot == INVALID_HANDLE_VALUE) {
-		LOG((CLOG_ERR "could not get process snapshot"));
+		LOG((CLOG_ERR L"could not get process snapshot"));
 		throw XArch(new XArchEvalWindows);
 	}
 
-	PROCESSENTRY32 entry;
-	entry.dwSize = sizeof(PROCESSENTRY32);
+	PROCESSENTRY32W entry;
+	entry.dwSize = sizeof(entry);
 
-	// get the first process, and if we can't do that then it's 
+	// get the first process, and if we can't do that then it's
 	// unlikely we can go any further
-	BOOL gotEntry = Process32First(snapshot, &entry);
+	BOOL gotEntry = Process32FirstW(snapshot, &entry);
 	if (!gotEntry) {
-		LOG((CLOG_ERR "could not get first process entry"));
+		LOG((CLOG_ERR L"could not get first process entry"));
 		throw XArch(new XArchEvalWindows);
 	}
 
@@ -501,23 +504,23 @@ MSWindowsWatchdog::shutdownExistingProcesses()
 		// make sure we're not checking the system process
 		if (entry.th32ProcessID != 0) {
 
-			if (_stricmp(entry.szExeFile, "synergyc.exe") == 0 ||
-				_stricmp(entry.szExeFile, "synergys.exe") == 0) {
-				
+			if (wcsicmp(entry.szExeFile, L"synergyc.exe") == 0 ||
+				wcsicmp(entry.szExeFile, L"synergys.exe") == 0) {
+
 				HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
 				shutdownProcess(handle, entry.th32ProcessID, 10);
 			}
 		}
 
 		// now move on to the next entry (if we're not at the end)
-		gotEntry = Process32Next(snapshot, &entry);
+		gotEntry = Process32NextW(snapshot, &entry);
 		if (!gotEntry) {
 
 			DWORD err = GetLastError();
 			if (err != ERROR_NO_MORE_FILES) {
 
 				// only worry about error if it's not the end of the snapshot
-				LOG((CLOG_ERR "could not get subsiquent process entry"));
+				LOG((CLOG_ERR L"could not get subsiquent process entry"));
 				throw XArch(new XArchEvalWindows);
 			}
 		}
@@ -530,11 +533,15 @@ MSWindowsWatchdog::shutdownExistingProcesses()
 void
 MSWindowsWatchdog::getActiveDesktop(LPSECURITY_ATTRIBUTES security)
 {
-	String installedDir = ARCH->getInstalledDirectory();
+	std::wstring installedDir = ARCH->getInstalledDirectory();
 	if (!installedDir.empty()) {
-		String syntoolCommand;
-		syntoolCommand.append("\"").append(installedDir).append("\\").append("syntool").append("\"");
-		syntoolCommand.append(" --get-active-desktop");
+		std::wstring syntoolCommand;
+		syntoolCommand.append(L"\"")
+			.append(installedDir)
+			.append(L"\\")
+			.append(L"syntool")
+			.append(L"\"");
+			.append(L" --get-active-desktop");
 
 		m_session.updateActiveSession();
 		bool elevateProcess = m_elevateProcess;
@@ -549,7 +556,7 @@ MSWindowsWatchdog::getActiveDesktop(LPSECURITY_ATTRIBUTES security)
 			RevertToSelf();
 		}
 		else {
-			LOG((CLOG_DEBUG "launched syntool to check active desktop"));
+			LOG((CLOG_DEBUG L"launched syntool to check active desktop"));
 		}
 
 		ARCH->lockMutex(m_mutex);
@@ -565,17 +572,17 @@ MSWindowsWatchdog::getActiveDesktop(LPSECURITY_ATTRIBUTES security)
 		m_ready = false;
 		ARCH->unlockMutex(m_mutex);
 	}
-} 
+}
 
 void
-MSWindowsWatchdog::testOutput(String buffer)
+MSWindowsWatchdog::testOutput(std::wstring buffer)
 {
 	// HACK: check standard output seems hacky.
 	size_t i = buffer.find(g_activeDesktop);
-	if (i != String::npos) {
+	if (i != std::wstring::npos) {
 		size_t s = sizeof(g_activeDesktop);
-		String defaultDesktop("Default");
-		String sub = buffer.substr(i + s - 1, defaultDesktop.size());
+		std::wstring defaultDesktop(L"Default");
+		std::wstring sub = buffer.substr(i + s - 1, defaultDesktop.size());
 		if (sub != defaultDesktop) {
 			m_autoElevated = true;
 		}

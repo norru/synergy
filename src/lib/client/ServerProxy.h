@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -55,11 +55,11 @@ public:
 	//@}
 
 	// sending file chunk to server
-	void				fileChunkSending(UInt8 mark, char* data, size_t dataSize);
+	void				fileChunkSending(UInt8 mark, const char* data, size_t dataSize);
 
 	// sending dragging information to server
 	void				sendDragInfo(UInt32 fileCount, const char* info, size_t size);
-	
+
 #ifdef TEST_ENV
 	void				handleDataForTest() { handleData(Event(), NULL); }
 #endif

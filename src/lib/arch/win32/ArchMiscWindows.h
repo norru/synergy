@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -88,54 +88,54 @@ public:
 	static UINT			getDaemonQuitMessage();
 
 	//! Open and return a registry key, closing the parent key
-	static HKEY			openKey(HKEY parent, const TCHAR* child);
+	static HKEY			openKey(HKEY parent, const wchar_t* child);
 
 	//! Open and return a registry key, closing the parent key
-	static HKEY			openKey(HKEY parent, const TCHAR* const* keyPath);
+	static HKEY			openKey(HKEY parent, const wchar_t* const* keyPath);
 
 	//! Open/create and return a registry key, closing the parent key
-	static HKEY			addKey(HKEY parent, const TCHAR* child);
+	static HKEY			addKey(HKEY parent, const wchar_t* child);
 
 	//! Open/create and return a registry key, closing the parent key
-	static HKEY			addKey(HKEY parent, const TCHAR* const* keyPath);
+	static HKEY			addKey(HKEY parent, const wchar_t* const* keyPath);
 
 	//! Close a key
 	static void			closeKey(HKEY);
 
 	//! Delete a key (which should have no subkeys)
-	static void			deleteKey(HKEY parent, const TCHAR* name);
+	static void			deleteKey(HKEY parent, const wchar_t* name);
 
 	//! Delete a value
-	static void			deleteValue(HKEY parent, const TCHAR* name);
+	static void			deleteValue(HKEY parent, const wchar_t* name);
 
 	//! Test if a value exists
-	static bool			hasValue(HKEY key, const TCHAR* name);
+	static bool			hasValue(HKEY key, const wchar_t* name);
 
 	//! Get type of value
-	static EValueType	typeOfValue(HKEY key, const TCHAR* name);
+	static EValueType	typeOfValue(HKEY key, const wchar_t* name);
 
 	//! Set a string value in the registry
-	static void			setValue(HKEY key, const TCHAR* name,
-							const std::string& value);
+	static void			setValue(HKEY key, const wchar_t* name,
+							const std::wstring& value);
 
 	//! Set a DWORD value in the registry
-	static void			setValue(HKEY key, const TCHAR* name, DWORD value);
+	static void			setValue(HKEY key, const wchar_t* name, DWORD value);
 
 	//! Set a BINARY value in the registry
 	/*!
 	Sets the \p name value of \p key to \p value.data().
 	*/
-	static void			setValueBinary(HKEY key, const TCHAR* name,
-							const std::string& value);
+	static void			setValueBinary(HKEY key, const wchar_t* name,
+							const std::wstring& value);
 
 	//! Read a string value from the registry
-	static std::string	readValueString(HKEY, const TCHAR* name);
+	static std::wstring	readValueString(HKEY, const wchar_t* name);
 
 	//! Read a DWORD value from the registry
-	static DWORD		readValueInt(HKEY, const TCHAR* name);
+	static DWORD		readValueInt(HKEY, const wchar_t* name);
 
 	//! Read a BINARY value from the registry
-	static std::string	readValueBinary(HKEY, const TCHAR* name);
+	static BYTE*		readValueBinary(HKEY, const wchar_t* name);
 
 	//! Add a dialog
 	static void			addDialog(HWND);
@@ -163,31 +163,30 @@ public:
 	static bool wasLaunchedAsService();
 
 	//! Returns true if we got the parent process name.
-	static bool getParentProcessName(String &name);
+	static bool getParentProcessName(std::string &name);
 
 	static HINSTANCE instanceWin32();
 
 	static void setInstanceWin32(HINSTANCE instance);
-	
-	static BOOL WINAPI getProcessEntry(PROCESSENTRY32& entry, DWORD processID);
-	static BOOL WINAPI getSelfProcessEntry(PROCESSENTRY32& entry);
-	static BOOL WINAPI getParentProcessEntry(PROCESSENTRY32& entry);
+
+	static BOOL getProcessEntry(PROCESSENTRY32W& entry, DWORD processID);
+	static BOOL getSelfProcessEntry(PROCESSENTRY32W& entry);
+	static BOOL getParentProcessEntry(PROCESSENTRY32W& entry);
 
 private:
 	//! Open and return a registry key, closing the parent key
-	static HKEY			openKey(HKEY parent, const TCHAR* child, bool create);
+	static HKEY			openKey(HKEY parent, const wchar_t* child, bool create);
 
 	//! Open and return a registry key, closing the parent key
-	static HKEY			openKey(HKEY parent, const TCHAR* const* keyPath,
+	static HKEY			openKey(HKEY parent, const wchar_t* const* keyPath,
 							bool create);
 
-	//! Read a string value from the registry
-	static std::string	readBinaryOrString(HKEY, const TCHAR* name, DWORD type);
+	static BYTE*		readBinaryOrString(HKEY, const wchar_t* name, DWORD type);
 
 	//! Set thread busy state
 	static void			setThreadExecutionState(DWORD);
 
-	static DWORD WINAPI	dummySetThreadExecutionState(DWORD);
+	static WINAPI DWORD dummySetThreadExecutionState(DWORD);
 
 private:
 	typedef std::set<HWND> Dialogs;

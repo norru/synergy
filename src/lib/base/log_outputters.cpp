@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -41,7 +41,7 @@ StopLogOutputter::~StopLogOutputter()
 }
 
 void
-StopLogOutputter::open(const char*)
+StopLogOutputter::open(const nchar*)
 {
 	// do nothing
 }
@@ -59,7 +59,7 @@ StopLogOutputter::show(bool)
 }
 
 bool
-StopLogOutputter::write(ELevel, const char*)
+StopLogOutputter::write(ELevel, const nchar*)
 {
 	return false;
 }
@@ -78,7 +78,7 @@ ConsoleLogOutputter::~ConsoleLogOutputter()
 }
 
 void
-ConsoleLogOutputter::open(const char* title)
+ConsoleLogOutputter::open(const nchar* title)
 {
 	ARCH->openConsole(title);
 }
@@ -96,7 +96,7 @@ ConsoleLogOutputter::show(bool showIfEmpty)
 }
 
 bool
-ConsoleLogOutputter::write(ELevel level, const char* msg)
+ConsoleLogOutputter::write(ELevel level, const nchar* msg)
 {
 	ARCH->writeConsole(level, msg);
 	return true;
@@ -124,7 +124,7 @@ SystemLogOutputter::~SystemLogOutputter()
 }
 
 void
-SystemLogOutputter::open(const char* title)
+SystemLogOutputter::open(const nchar* title)
 {
 	ARCH->openLog(title);
 }
@@ -142,7 +142,7 @@ SystemLogOutputter::show(bool showIfEmpty)
 }
 
 bool
-SystemLogOutputter::write(ELevel level, const char* msg)
+SystemLogOutputter::write(ELevel level, const nchar* msg)
 {
 	ARCH->writeLog(level, msg);
 	return true;
@@ -152,7 +152,7 @@ SystemLogOutputter::write(ELevel level, const char* msg)
 // SystemLogger
 //
 
-SystemLogger::SystemLogger(const char* title, bool blockConsole) :
+SystemLogger::SystemLogger(const nchar* title, bool blockConsole) :
 	m_stop(NULL)
 {
 	// redirect log messages
@@ -204,7 +204,7 @@ BufferedLogOutputter::end() const
 }
 
 void
-BufferedLogOutputter::open(const char*)
+BufferedLogOutputter::open(const nchar*)
 {
 	// do nothing
 }
@@ -223,12 +223,12 @@ BufferedLogOutputter::show(bool)
 }
 
 bool
-BufferedLogOutputter::write(ELevel, const char* message)
+BufferedLogOutputter::write(ELevel, const nchar* message)
 {
 	while (m_buffer.size() >= m_maxBufferSize) {
 		m_buffer.pop_front();
 	}
-	m_buffer.push_back(String(message));
+	m_buffer.push_back(nstring(message));
 	return true;
 }
 
@@ -237,7 +237,7 @@ BufferedLogOutputter::write(ELevel, const char* message)
 // FileLogOutputter
 //
 
-FileLogOutputter::FileLogOutputter(const char* logFile)
+FileLogOutputter::FileLogOutputter(const nchar* logFile)
 {
 	setLogFilename(logFile);
 }
@@ -247,14 +247,14 @@ FileLogOutputter::~FileLogOutputter()
 }
 
 void
-FileLogOutputter::setLogFilename(const char* logFile)
+FileLogOutputter::setLogFilename(const nchar* logFile)
 {
 	assert(logFile != NULL);
 	m_fileName = logFile;
 }
 
 bool
-FileLogOutputter::write(ELevel level, const char *message)
+FileLogOutputter::write(ELevel level, const nchar *message)
 {
 	bool moveFile = false;
 
@@ -272,7 +272,7 @@ FileLogOutputter::write(ELevel level, const char *message)
 	m_handle.close();
 
 	if (moveFile) {
-		String oldLogFilename = synergy::string::sprintf("%s.1", m_fileName.c_str());
+		nstring oldLogFilename = synergy::string::sprintf(_N("%s.1"), m_fileName.c_str());
 		remove(oldLogFilename.c_str());
 		rename(m_fileName.c_str(), oldLogFilename.c_str());
 	}
@@ -281,7 +281,7 @@ FileLogOutputter::write(ELevel level, const char *message)
 }
 
 void
-FileLogOutputter::open(const char *title) {}
+FileLogOutputter::open(const nchar *title) {}
 
 void
 FileLogOutputter::close() {}
@@ -304,7 +304,7 @@ MesssageBoxLogOutputter::~MesssageBoxLogOutputter()
 }
 
 void
-MesssageBoxLogOutputter::open(const char* title) 
+MesssageBoxLogOutputter::open(const nchar* title)
 {
 	// do nothing
 }
@@ -322,7 +322,7 @@ MesssageBoxLogOutputter::show(bool showIfEmpty)
 }
 
 bool
-MesssageBoxLogOutputter::write(ELevel level, const char* msg)
+MesssageBoxLogOutputter::write(ELevel level, const nchar* msg)
 {
 	// don't spam user with messages.
 	if (level > kERROR) {

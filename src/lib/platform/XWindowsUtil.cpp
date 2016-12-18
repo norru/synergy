@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -1294,7 +1294,7 @@ XWindowsUtil::KeySymMap	XWindowsUtil::s_keySymToUCS4;
 
 bool
 XWindowsUtil::getWindowProperty(Display* display, Window window,
-				Atom property, String* data, Atom* type,
+				Atom property, std::string* data, Atom* type,
 				SInt32* format, bool deleteProperty)
 {
 	assert(display != NULL);
@@ -1608,7 +1608,7 @@ XWindowsUtil::getModifierBitForKeySym(KeySym keysym)
 	}
 }
 
-String
+std::string
 XWindowsUtil::atomToString(Display* display, Atom atom)
 {
 	if (atom == 0) {
@@ -1622,20 +1622,20 @@ XWindowsUtil::atomToString(Display* display, Atom atom)
 		return synergy::string::sprintf("<UNKNOWN> (%d)", (int)atom);
 	}
 	else {
-		String msg = synergy::string::sprintf("%s (%d)", name, (int)atom);
+		std::string msg = synergy::string::sprintf("%s (%d)", name, (int)atom);
 		XFree(name);
 		return msg;
 	}
 }
 
-String
+std::string
 XWindowsUtil::atomsToString(Display* display, const Atom* atom, UInt32 num)
 {
 	char** names = new char*[num];
 	bool error = false;
 	XWindowsUtil::ErrorLock lock(display, &error);
 	XGetAtomNames(display, const_cast<Atom*>(atom), (int)num, names);
-	String msg;
+	std::string msg;
 	if (error) {
 		for (UInt32 i = 0; i < num; ++i) {
 			msg += synergy::string::sprintf("<UNKNOWN> (%d), ", (int)atom[i]);
@@ -1655,7 +1655,7 @@ XWindowsUtil::atomsToString(Display* display, const Atom* atom, UInt32 num)
 }
 
 void
-XWindowsUtil::convertAtomProperty(String& data)
+XWindowsUtil::convertAtomProperty(std::string& data)
 {
 	// as best i can tell, 64-bit systems don't pack Atoms into properties
 	// as 32-bit numbers but rather as the 64-bit numbers they are.  that
@@ -1670,13 +1670,13 @@ XWindowsUtil::convertAtomProperty(String& data)
 }
 
 void
-XWindowsUtil::appendAtomData(String& data, Atom atom)
+XWindowsUtil::appendAtomData(std::string& data, Atom atom)
 {
 	data.append(reinterpret_cast<char*>(&atom), sizeof(Atom));
 }
 
 void
-XWindowsUtil::replaceAtomData(String& data, UInt32 index, Atom atom)
+XWindowsUtil::replaceAtomData(std::string& data, UInt32 index, Atom atom)
 {
 	data.replace(index * sizeof(Atom), sizeof(Atom),
 								reinterpret_cast<const char*>(&atom),
@@ -1684,7 +1684,7 @@ XWindowsUtil::replaceAtomData(String& data, UInt32 index, Atom atom)
 }
 
 void
-XWindowsUtil::appendTimeData(String& data, Time time)
+XWindowsUtil::appendTimeData(std::string& data, Time time)
 {
 	data.append(reinterpret_cast<char*>(&time), sizeof(Time));
 }

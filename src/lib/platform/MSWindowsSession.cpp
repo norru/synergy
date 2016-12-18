@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2013-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,28 +33,28 @@ MSWindowsSession::~MSWindowsSession()
 }
 
 bool
-MSWindowsSession::isProcessInSession(const char* name, PHANDLE process = NULL)
+MSWindowsSession::isProcessInSession(const wchar_t* name, PHANDLE process = NULL)
 {
 	// first we need to take a snapshot of the running processes
 	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (snapshot == INVALID_HANDLE_VALUE) {
-		LOG((CLOG_ERR "could not get process snapshot"));
+		LOG((CLOG_ERR L"could not get process snapshot"));
 		throw XArch(new XArchEvalWindows());
 	}
 
-	PROCESSENTRY32 entry;
-	entry.dwSize = sizeof(PROCESSENTRY32);
+	PROCESSENTRY32W entry;
+	entry.dwSize = sizeof(entry);
 
-	// get the first process, and if we can't do that then it's 
+	// get the first process, and if we can't do that then it's
 	// unlikely we can go any further
-	BOOL gotEntry = Process32First(snapshot, &entry);
+	BOOL gotEntry = Process32FirstW(snapshot, &entry);
 	if (!gotEntry) {
-		LOG((CLOG_ERR "could not get first process entry"));
+		LOG((CLOG_ERR L"could not get first process entry"));
 		throw XArch(new XArchEvalWindows());
 	}
 
 	// used to record process names for debug info
-	std::list<std::string> nameList;
+	std::list<std::wstring> nameList;
 
 	// now just iterate until we can find winlogon.exe pid
 	DWORD pid = 0;
@@ -70,7 +70,8 @@ MSWindowsSession::isProcessInSession(const char* name, PHANDLE process = NULL)
 			if (!pidToSidRet) {
 				// if we can not acquire session associated with a specified process,
 				// simply ignore it
-				LOG((CLOG_ERR "could not get session id for process id %i", entry.th32ProcessID));
+				LOG((CLOG_ERR L"could not get session id for process id %i",
+					entry.th32ProcessID));
 				gotEntry = nextProcessEntry(snapshot, &entry);
 				continue;
 			}
@@ -81,7 +82,7 @@ MSWindowsSession::isProcessInSession(const char* name, PHANDLE process = NULL)
 					// store the names so we can record them for debug
 					nameList.push_back(entry.szExeFile);
 
-					if (_stricmp(entry.szExeFile, name) == 0) {
+					if (wcsicmp(entry.szExeFile, name) == 0) {
 						pid = entry.th32ProcessID;
 					}
 				}
@@ -93,14 +94,14 @@ MSWindowsSession::isProcessInSession(const char* name, PHANDLE process = NULL)
 		gotEntry = nextProcessEntry(snapshot, &entry);
 	}
 
-	std::string nameListJoin;
-	for(std::list<std::string>::iterator it = nameList.begin();
+	std::wstring nameListJoin;
+	for(std::list<std::wstring>::iterator it = nameList.begin();
 		it != nameList.end(); it++) {
 			nameListJoin.append(*it);
-			nameListJoin.append(", ");
+			nameListJoin.append(L", ");
 	}
 
-	LOG((CLOG_DEBUG "processes in session %d: %s",
+	LOG((CLOG_DEBUG L"processes in session %d: %ls",
 		m_activeSessionId, nameListJoin.c_str()));
 
 	CloseHandle(snapshot);
@@ -108,36 +109,36 @@ MSWindowsSession::isProcessInSession(const char* name, PHANDLE process = NULL)
 	if (pid) {
 		if (process != NULL) {
 			// now get the process, which we'll use to get the process token.
-			LOG((CLOG_DEBUG "found %s in session %i", name, m_activeSessionId));
+			LOG((CLOG_DEBUG L"found %ls in session %i", name, m_activeSessionId));
 			*process = OpenProcess(MAXIMUM_ALLOWED, FALSE, pid);
 		}
 		return true;
 	}
 	else {
-		LOG((CLOG_DEBUG "did not find %s in session %i", name, m_activeSessionId));
+		LOG((CLOG_DEBUG L"did not find %ls in session %i", name, m_activeSessionId));
 		return false;
 	}
 }
 
-HANDLE 
+HANDLE
 MSWindowsSession::getUserToken(LPSECURITY_ATTRIBUTES security)
 {
 	HANDLE sourceToken;
 	if (!WTSQueryUserToken(m_activeSessionId, &sourceToken)) {
-		LOG((CLOG_ERR "could not get token from session %d", m_activeSessionId));
+		LOG((CLOG_ERR L"could not get token from session %d", m_activeSessionId));
 		throw XArch(new XArchEvalWindows);
 	}
-	
+
 	HANDLE newToken;
 	if (!DuplicateTokenEx(
 		sourceToken, TOKEN_ASSIGN_PRIMARY | TOKEN_ALL_ACCESS, security,
 		SecurityImpersonation, TokenPrimary, &newToken)) {
 
-		LOG((CLOG_ERR "could not duplicate token"));
+		LOG((CLOG_ERR L"could not duplicate token"));
 		throw XArch(new XArchEvalWindows);
 	}
-	
-	LOG((CLOG_DEBUG "duplicated, new token: %i", newToken));
+
+	LOG((CLOG_DEBUG L"duplicated, new token: %i", newToken));
 	return newToken;
 }
 
@@ -155,7 +156,7 @@ MSWindowsSession::updateActiveSession()
 
 
 BOOL
-MSWindowsSession::nextProcessEntry(HANDLE snapshot, LPPROCESSENTRY32 entry)
+MSWindowsSession::nextProcessEntry(HANDLE snapshot, LPPROCESSENTRY32W entry)
 {
 	BOOL gotEntry = Process32Next(snapshot, entry);
 	if (!gotEntry) {
@@ -164,7 +165,7 @@ MSWindowsSession::nextProcessEntry(HANDLE snapshot, LPPROCESSENTRY32 entry)
 		if (err != ERROR_NO_MORE_FILES) {
 
 			// only worry about error if it's not the end of the snapshot
-			LOG((CLOG_ERR "could not get next process entry"));
+			LOG((CLOG_ERR L"could not get next process entry"));
 			throw XArch(new XArchEvalWindows());
 		}
 	}
@@ -172,23 +173,23 @@ MSWindowsSession::nextProcessEntry(HANDLE snapshot, LPPROCESSENTRY32 entry)
 	return gotEntry;
 }
 
-String
+std::wstring
 MSWindowsSession::getActiveDesktopName()
 {
-	String result;
+	std::wstring result;
 	try {
 		HDESK hd = OpenInputDesktop(0, TRUE, GENERIC_READ);
 		if (hd != NULL) {
 			DWORD size;
-			GetUserObjectInformation(hd, UOI_NAME, NULL, 0, &size);
-			TCHAR* name = (TCHAR*)alloca(size + sizeof(TCHAR));
-			GetUserObjectInformation(hd, UOI_NAME, name, size, &size);
+			GetUserObjectInformationW(hd, UOI_NAME, NULL, 0, &size);
+			whcar_t* name = (whcar_t*)alloca(size + sizeof(whcar_t));
+			GetUserObjectInformationW(hd, UOI_NAME, name, size, NULL);
 			result = name;
 			CloseDesktop(hd);
 		}
 	}
 	catch (std::exception error) {
-		LOG((CLOG_ERR "failed to get active desktop name: %s", error.what()));
+		LOG((CLOG_ERR L"failed to get active desktop name: %ls", error.what()));
 	}
 
 	return result;

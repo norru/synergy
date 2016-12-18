@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2012 Nick Bolton
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -113,7 +113,7 @@ IpcLogOutputter::write(ELevel, const char* text)
 }
 
 void
-IpcLogOutputter::appendBuffer(const String& text)
+IpcLogOutputter::appendBuffer(const nstring& text)
 {
 	ArchMutexLock lock(m_bufferMutex);
 
@@ -163,10 +163,10 @@ IpcLogOutputter::bufferThread(void*)
 		}
 	}
 	catch (XArch& e) {
-		LOG((CLOG_ERR "ipc log buffer thread error, %s", e.what()));
+		LOG((CLOG_ERR _N("ipc log buffer thread error, %s"), e.what()));
 	}
 
-	LOG((CLOG_DEBUG "ipc log buffer thread finished"));
+	LOG((CLOG_DEBUG _N("ipc log buffer thread finished")));
 }
 
 void
@@ -176,7 +176,7 @@ IpcLogOutputter::notifyBuffer()
 	ARCH->broadcastCondVar(m_notifyCond);
 }
 
-String
+nstring
 IpcLogOutputter::getChunk(size_t count)
 {
 	ArchMutexLock lock(m_bufferMutex);
@@ -185,10 +185,10 @@ IpcLogOutputter::getChunk(size_t count)
 		count = m_buffer.size();
 	}
 
-	String chunk;
+	nstring chunk;
 	for (size_t i = 0; i < count; i++) {
 		chunk.append(m_buffer.front());
-		chunk.append("\n");
+		chunk.append(_N("\n"));
 		m_buffer.pop_front();
 	}
 	return chunk;

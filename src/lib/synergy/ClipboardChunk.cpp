@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2015-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -35,7 +35,7 @@ ClipboardChunk*
 ClipboardChunk::start(
 					ClipboardID id,
 					UInt32 sequence,
-					const String& size)
+					const std::string& size)
 {
 	size_t sizeLength = size.size();
 	ClipboardChunk* start = new ClipboardChunk(sizeLength + CLIPBOARD_CHUNK_META_SIZE);
@@ -54,7 +54,7 @@ ClipboardChunk*
 ClipboardChunk::data(
 					ClipboardID id,
 					UInt32 sequence,
-					const String& data)
+					const std::string& data)
 {
 	size_t dataSize = data.size();
 	ClipboardChunk* chunk = new ClipboardChunk(dataSize + CLIPBOARD_CHUNK_META_SIZE);
@@ -74,7 +74,7 @@ ClipboardChunk::end(ClipboardID id, UInt32 sequence)
 {
 	ClipboardChunk* end = new ClipboardChunk(CLIPBOARD_CHUNK_META_SIZE);
 	char* chunk = end->m_chunk;
-	
+
 	chunk[0] = id;
 	std::memcpy (&chunk[1], &sequence, 4);
 	chunk[5] = kDataEnd;
@@ -85,20 +85,20 @@ ClipboardChunk::end(ClipboardID id, UInt32 sequence)
 
 int
 ClipboardChunk::assemble(synergy::IStream* stream,
-					String& dataCached,
+					std::string& dataCached,
 					ClipboardID& id,
 					UInt32& sequence)
 {
 	UInt8 mark;
-	String data;
+	std::string data;
 
 	if (!ProtocolUtil::readf(stream, kMsgDClipboard + 4, &id, &sequence, &mark, &data)) {
 		return kError;
 	}
-	
+
 	if (mark == kDataStart) {
 		s_expectedSize = synergy::string::stringToSizeType(data);
-		LOG((CLOG_DEBUG "start receiving clipboard data"));
+		LOG((CLOG_DEBUG _N("start receiving clipboard data")));
 		dataCached.clear();
 		return kStart;
 	}
@@ -112,13 +112,13 @@ ClipboardChunk::assemble(synergy::IStream* stream,
 			return kError;
 		}
 		else if (s_expectedSize != dataCached.size()) {
-			LOG((CLOG_ERR "corrupted clipboard data, expected size=%d actual size=%d", s_expectedSize, dataCached.size()));
+			LOG((CLOG_ERR _N("corrupted clipboard data, expected size=%d actual size=%d"), s_expectedSize, dataCached.size()));
 			return kError;
 		}
 		return kFinish;
 	}
 
-	LOG((CLOG_ERR "clipboard transmission failed: unknown error"));
+	LOG((CLOG_ERR _N("clipboard transmission failed: unknown error")));
 	return kError;
 }
 
@@ -127,26 +127,26 @@ ClipboardChunk::send(synergy::IStream* stream, void* data)
 {
 	ClipboardChunk* clipboardData = static_cast<ClipboardChunk*>(data);
 
-	LOG((CLOG_DEBUG1 "sending clipboard chunk"));
+	LOG((CLOG_DEBUG1 _N("sending clipboard chunk")));
 
 	char* chunk = clipboardData->m_chunk;
 	ClipboardID id = chunk[0];
 	UInt32 sequence;
 	std::memcpy (&sequence, &chunk[1], 4);
 	UInt8 mark = chunk[5];
-	String dataChunk(&chunk[6], clipboardData->m_dataSize);
+	std::string dataChunk(&chunk[6], clipboardData->m_dataSize);
 
 	switch (mark) {
 	case kDataStart:
-		LOG((CLOG_DEBUG2 "sending clipboard chunk start: size=%s", dataChunk.c_str()));
+		LOG((CLOG_DEBUG2 _N("sending clipboard chunk start: size=%s"), dataChunk.c_str()));
 		break;
 
 	case kDataChunk:
-		LOG((CLOG_DEBUG2 "sending clipboard chunk data: size=%i", dataChunk.size()));
+		LOG((CLOG_DEBUG2 _N("sending clipboard chunk data: size=%i"), dataChunk.size()));
 		break;
 
 	case kDataEnd:
-		LOG((CLOG_DEBUG2 "sending clipboard finished"));
+		LOG((CLOG_DEBUG2 _N("sending clipboard finished")));
 		break;
 	}
 

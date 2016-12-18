@@ -1,11 +1,11 @@
 /*
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2015-2016 Symless Ltd.
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -43,7 +43,7 @@ public:
 
 	// IDataSocket overrides
 	virtual void		connect(const NetworkAddress&);
-	
+
 	ISocketMultiplexerJob*
 						newJob();
 	bool				isFatal() const { return m_fatal; }
@@ -56,7 +56,7 @@ public:
 	EJobResult			doRead();
 	EJobResult			doWrite();
 	void				initSsl(bool server);
-	bool				loadCertificates(String& CertFile);
+	bool				loadCertificates(nstring& CertFile);
 
 private:
 	// SSL
@@ -66,10 +66,10 @@ private:
 	int					secureConnect(int s);
 	bool				showCertificate();
 	void				checkResult(int n, int& retry);
-	void				showError(const char* reason = NULL);
-	String				getError();
+	void				showError(const nchar* reason = NULL);
+	nstring				getError();
 	void				disconnect();
-	void				formatFingerprint(String& fingerprint,
+	void				formatFingerprint(std::string& fingerprint,
 											bool hex = true,
 											bool separator = true);
 	bool				verifyCertFingerprint();
@@ -85,7 +85,7 @@ private:
 	void				showSecureConnectInfo();
 	void				showSecureLibInfo();
 	void				showSecureCipherInfo();
-	
+
 	void				handleTCPConnected(const Event& event, void*);
 
 private:

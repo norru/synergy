@@ -219,7 +219,7 @@ MSWindowsDesks::setOptions(const OptionsList& options)
 	for (UInt32 i = 0, n = (UInt32)options.size(); i < n; i += 2) {
 		if (options[i] == kOptionWin32KeepForeground) {
 			m_leaveForegroundOption = (options[i + 1] != 0);
-			LOG((CLOG_DEBUG1 "%s the foreground window", m_leaveForegroundOption ? "don\'t grab" : "grab"));
+			LOG((CLOG_DEBUG1 :"%ls the foreground window", m_leaveForegroundOption ? "don\'t grab" : "grab"));
 		}
 	}
 }
@@ -396,7 +396,7 @@ MSWindowsDesks::queryHookLibrary(HINSTANCE hookLibrary)
 			m_uninstall            == NULL ||
 			m_installScreensaver   == NULL ||
 			m_uninstallScreensaver == NULL) {
-			LOG((CLOG_ERR "Invalid hook library"));
+			LOG((CLOG_ERR L"Invalid hook library"));
 			throw XScreenOpenFailure();
 		}
 	}
@@ -476,7 +476,7 @@ MSWindowsDesks::createWindow(ATOM windowClass, const char* name) const
 								MSWindowsScreen::getWindowInstance(),
 								NULL);
 	if (window == NULL) {
-		LOG((CLOG_ERR "failed to create window: %d", GetLastError()));
+		LOG((CLOG_ERR L"failed to create window: %d", GetLastError()));
 		throw XScreenOpenFailure();
 	}
 	return window;
@@ -679,7 +679,7 @@ MSWindowsDesks::deskLeave(Desk* desk, HKL keyLayout)
 		SetCapture(desk->m_window);
 
 		// warp the mouse to the cursor center
-		LOG((CLOG_DEBUG2 "warping cursor to center: %+d,%+d", m_xCenter, m_yCenter));
+		LOG((CLOG_DEBUG2 L"warping cursor to center: %+d,%+d", m_xCenter, m_yCenter));
 		deskMouseMove(m_xCenter, m_yCenter);
 	}
 }
@@ -700,12 +700,12 @@ MSWindowsDesks::deskThread(void* vdesk)
 
 		// create a window.  we use this window to hide the cursor.
 		try {
-			desk->m_window = createWindow(m_deskClass, "SynergyDesk");
-			LOG((CLOG_DEBUG "desk %s window is 0x%08x", desk->m_name.c_str(), desk->m_window));
+			desk->m_window = createWindow(m_deskClass, L"SynergyDesk");
+			LOG((CLOG_DEBUG L"desk %ls window is 0x%08x", desk->m_name.c_str(), desk->m_window));
 		}
 		catch (...) {
 			// ignore
-			LOG((CLOG_DEBUG "can't create desk window for %s", desk->m_name.c_str()));
+			LOG((CLOG_DEBUG L"can't create desk window for %ls", desk->m_name.c_str()));
 		}
 	}
 
@@ -847,14 +847,14 @@ MSWindowsDesks::deskThread(void* vdesk)
 }
 
 MSWindowsDesks::Desk*
-MSWindowsDesks::addDesk(const String& name, HDESK hdesk)
+MSWindowsDesks::addDesk(const std::wstring& name, HDESK hdesk)
 {
-	Desk* desk      = new Desk;
+	Desk* desk       = new Desk;
 	desk->m_name     = name;
 	desk->m_desk     = hdesk;
 	desk->m_targetID = GetCurrentThreadId();
 	desk->m_thread   = new Thread(new TMethodJob<MSWindowsDesks>(
-						this, &MSWindowsDesks::deskThread, desk));
+		this, &MSWindowsDesks::deskThread, desk));
 	waitForDesk();
 	m_desks.insert(std::make_pair(name, desk));
 	return desk;
@@ -881,8 +881,8 @@ MSWindowsDesks::checkDesk()
 {
 	// get current desktop.  if we already know about it then return.
 	Desk* desk;
-	HDESK hdesk  = openInputDesktop();
-	String name = getDesktopName(hdesk);
+	HDESK hdesk = openInputDesktop();
+	std::wstring name = getDesktopName(hdesk);
 	Desks::const_iterator index = m_desks.find(name);
 	if (index == m_desks.end()) {
 		desk = addDesk(name, hdesk);
@@ -897,7 +897,7 @@ MSWindowsDesks::checkDesk()
 	// if we are told to shut down on desk switch, and this is not the
 	// first switch, then shut down.
 	if (m_stopOnDeskSwitch && m_activeDesk != NULL && name != m_activeDeskName) {
-		LOG((CLOG_DEBUG "shutting down because of desk switch to \"%s\"", name.c_str()));
+		LOG((CLOG_DEBUG L"shutting down because of desk switch to \"%ls\"", name.c_str()));
 		m_events->addEvent(Event(Event::kQuit));
 		return;
 	}
@@ -918,16 +918,16 @@ MSWindowsDesks::checkDesk()
 		// from an inaccessible desktop so when we switch from an
 		// inaccessible desktop to an accessible one we have to
 		// update the keyboard state.
-		LOG((CLOG_DEBUG "switched to desk \"%s\"", name.c_str()));
+		LOG((CLOG_DEBUG L"switched to desk \"%ls\"", name.c_str()));
 		bool syncKeys = false;
 		bool isAccessible = isDeskAccessible(desk);
 		if (isDeskAccessible(m_activeDesk) != isAccessible) {
 			if (isAccessible) {
-				LOG((CLOG_DEBUG "desktop is now accessible"));
+				LOG((CLOG_DEBUG L"desktop is now accessible"));
 				syncKeys = true;
 			}
 			else {
-				LOG((CLOG_DEBUG "desktop is now inaccessible"));
+				LOG((CLOG_DEBUG L"desktop is now inaccessible"));
 			}
 		}
 
@@ -1000,18 +1000,19 @@ MSWindowsDesks::closeDesktop(HDESK desk)
 	}
 }
 
-String
+std::wstring
 MSWindowsDesks::getDesktopName(HDESK desk)
 {
 	if (desk == NULL) {
-		return String();
+		return std::wstring();
 	}
 	else {
 		DWORD size;
-		GetUserObjectInformation(desk, UOI_NAME, NULL, 0, &size);
-		TCHAR* name = (TCHAR*)alloca(size + sizeof(TCHAR));
-		GetUserObjectInformation(desk, UOI_NAME, name, size, &size);
-		String result(name);
+		GetUserObjectInformationW(desk, UOI_NAME, NULL, 0, &size);
+		wchar_t* name = (wchar_t*)alloca(size + sizeof(wchar_t));
+		memset(name, 0, (size + sizeof(wchar_t)));
+		GetUserObjectInformationW(desk, UOI_NAME, name, size, NULL);
+		std::wstring result(name);
 		return result;
 	}
 }

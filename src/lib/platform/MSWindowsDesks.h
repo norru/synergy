@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -196,8 +196,8 @@ public:
 private:
 	class Desk {
 	public:
-		String			m_name;
-		Thread*		m_thread;
+		std::wstring	m_name;
+		Thread*			m_thread;
 		DWORD			m_threadID;
 		DWORD			m_targetID;
 		HDESK			m_desk;
@@ -205,7 +205,7 @@ private:
 		HWND			m_foregroundWindow;
 		bool			m_lowLevel;
 	};
-	typedef std::map<String, Desk*> Desks;
+	typedef std::map<std::wstring, Desk*> Desks;
 
 	// initialization and shutdown operations
 	void				queryHookLibrary(HINSTANCE hookLibrary);
@@ -224,7 +224,7 @@ private:
 	void				deskThread(void* vdesk);
 
 	// desk switch checking and handling
-	Desk*				addDesk(const String& name, HDESK hdesk);
+	Desk*				addDesk(const std::wstring& name, HDESK hdesk);
 	void				removeDesks();
 	void				checkDesk();
 	bool				isDeskAccessible(const Desk* desk) const;
@@ -240,7 +240,7 @@ private:
 	// desk API wrappers
 	HDESK				openInputDesktop();
 	void				closeDesktop(HDESK);
-	String				getDesktopName(HDESK);
+	std::wstring		getDesktopName(HDESK);
 
 	// our desk window procs
 	static LRESULT CALLBACK primaryDeskProc(HWND, UINT, WPARAM, LPARAM);
@@ -278,7 +278,7 @@ private:
 
 	// the current desk and it's name
 	Desk*				m_activeDesk;
-	String				m_activeDeskName;
+	std::wstring		m_activeDeskName;
 
 	// one desk per desktop and a cond var to communicate with it
 	Mutex				m_mutex;

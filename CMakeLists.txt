@@ -92,7 +92,7 @@ if (UNIX)
 
 	# warnings as errors:
 	# we have a problem with people checking in code with warnings.
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-unused-local-typedef")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-null-dereference")
 
 	if (NOT APPLE)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -333,6 +333,8 @@ else() # not-unix
 		/D_XKEYCHECK_H
 		/DWINVER=0x0501
 		/D_WIN32_WINNT=0x0501
+		/D_UNICODE
+		/DWIN32_LEAN_AND_MEAN
 	)
 
 	if (MSVC_VERSION EQUAL 1600)

@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -100,7 +100,7 @@ EventQueue::~EventQueue()
 	delete m_buffer;
 	delete m_readyCondVar;
 	delete m_readyMutex;
-	
+
 	ARCH->setSignalHandler(Arch::kINTERRUPT, NULL, NULL);
 	ARCH->setSignalHandler(Arch::kTERMINATE, NULL, NULL);
 	ARCH->closeMutex(m_mutex);
@@ -115,14 +115,14 @@ EventQueue::loop()
 		*m_readyCondVar = true;
 		m_readyCondVar->signal();
 	}
-	LOG((CLOG_DEBUG "event queue is ready"));
+	LOG((CLOG_DEBUG _N("event queue is ready")));
 	while (!m_pending.empty()) {
-		LOG((CLOG_DEBUG "add pending events to buffer"));
+		LOG((CLOG_DEBUG _N("add pending events to buffer")));
 		Event& event = m_pending.front();
 		addEventToBuffer(event);
 		m_pending.pop();
 	}
-	
+
 	Event event;
 	getEvent(event);
 	while (event.getType() != Event::kQuit) {
@@ -133,13 +133,13 @@ EventQueue::loop()
 }
 
 Event::Type
-EventQueue::registerTypeOnce(Event::Type& type, const char* name)
+EventQueue::registerTypeOnce(Event::Type& type, const nchar* name)
 {
 	ArchMutexLock lock(m_mutex);
 	if (type == Event::kUnknown) {
 		m_typeMap.insert(std::make_pair(m_nextType, name));
 		m_nameMap.insert(std::make_pair(name, m_nextType));
-		LOG((CLOG_DEBUG1 "registered event type %s as %d", name, m_nextType));
+		LOG((CLOG_DEBUG1 _N("registered event type %" _NF " as %d"), name, m_nextType));
 		type = m_nextType++;
 	}
 	return type;
@@ -150,21 +150,21 @@ EventQueue::getTypeName(Event::Type type)
 {
 	switch (type) {
 	case Event::kUnknown:
-		return "nil";
+		return _N("nil");
 
 	case Event::kQuit:
-		return "quit";
+		return _N("quit");
 
 	case Event::kSystem:
-		return "system";
+		return _N("system");
 
 	case Event::kTimer:
-		return "timer";
+		return _N("timer");
 
 	default:
 		TypeMap::const_iterator i = m_typeMap.find(type);
 		if (i == m_typeMap.end()) {
-			return "<unknown>";
+			return _N("<unknown>");
 		}
 		else {
 			return i->second;
@@ -177,12 +177,12 @@ EventQueue::adoptBuffer(IEventQueueBuffer* buffer)
 {
 	ArchMutexLock lock(m_mutex);
 
-	LOG((CLOG_DEBUG "adopting new buffer"));
+	LOG((CLOG_DEBUG _N("adopting new buffer")));
 
 	if (m_events.size() != 0) {
 		// this can come as a nasty surprise to programmers expecting
 		// their events to be raised, only to have them deleted.
-		LOG((CLOG_DEBUG "discarding %d event(s)", m_events.size()));
+		LOG((CLOG_DEBUG _N("discarding %d event(s)"), m_events.size()));
 	}
 
 	// discard old buffer and old events
@@ -287,7 +287,7 @@ EventQueue::addEvent(const Event& event)
 	default:
 		break;
 	}
-	
+
 	if ((event.getFlags() & Event::kDeliverImmediately) != 0) {
 		dispatchEvent(event);
 		Event::deleteData(event);
@@ -304,10 +304,10 @@ void
 EventQueue::addEventToBuffer(const Event& event)
 {
 	ArchMutexLock lock(m_mutex);
-	
+
 	// store the event's data locally
 	UInt32 eventID = saveEvent(event);
-	
+
 	// add it
 	if (!m_buffer->addEvent(eventID)) {
 		// failed to send event
@@ -543,7 +543,7 @@ EventQueue::getNextTimerTimeout() const
 }
 
 Event::Type
-EventQueue::getRegisteredType(const String& name) const
+EventQueue::getRegisteredType(const std::string& name) const
 {
 	NameMap::const_iterator found = m_nameMap.find(name);
 	if (found != m_nameMap.end())
@@ -564,7 +564,7 @@ EventQueue::waitForReady() const
 {
 	double timeout = ARCH->time() + 10;
 	Lock lock(m_readyMutex);
-	
+
 	while (!m_readyCondVar->wait()) {
 		if (ARCH->time() > timeout) {
 			throw std::runtime_error("event queue is not ready within 5 sec");

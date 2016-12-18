@@ -23,6 +23,6 @@
 
 class ArchInternetWindows {
 public:
-	String				get(const String& url);
-	String				urlEncode(const String& url);
+	std::string		get(const std::string& url);
+	std::string		urlEncode(const std::string& url);
 };

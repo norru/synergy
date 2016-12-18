@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -26,7 +26,7 @@
 #include <stdarg.h>
 
 #define CLOG (Log::getInstance())
-#define BYE "\nTry `%s --help' for more information."
+#define BYE _N("\nTry `%s --help' for more information.")
 
 class ILogOutputter;
 class Thread;
@@ -89,8 +89,8 @@ public:
 	true if the priority \c name was recognized;  if \c name is NULL
 	then it simply returns true.
 	*/
-	bool				setFilter(const char* name);
-	
+	bool				setFilter(const nchar* name);
+
 	//! Set the minimum priority filter (by ordinal).
 	void				setFilter(int);
 
@@ -104,17 +104,17 @@ public:
 	preceded by the filename and line number.  If \c file is NULL then
 	neither the file nor the line are printed.
 	*/
-	void				print(const char* file, int line,
-							const char* format, ...);
+	void				print(const nchar* file, int line,
+							const nchar* format, ...);
 
 	//! Get the minimum priority level.
 	int					getFilter() const;
 
 	//! Get the filter name of the current filter level.
-	const char*			getFilterName() const;
+	const nchar*		getFilterName() const;
 
 	//! Get the filter name of a specified filter level.
-	const char*			getFilterName(int level) const;
+	const nchar*		getFilterName(int level) const;
 
 	//! Get the singleton instance of the log
 	static Log*		getInstance();
@@ -125,7 +125,7 @@ public:
 	//@}
 
 private:
-	void				output(ELevel priority, char* msg);
+	void				output(ELevel priority, const nchar* msg);
 
 private:
 	typedef std::list<ILogOutputter*> OutputterList;
@@ -189,23 +189,23 @@ otherwise it expands to a call that doesn't.
 #else
 #define LOG(_a1)		CLOG->print _a1
 #define LOGC(_a1, _a2)	if (_a1) CLOG->print _a2
-#define CLOG_TRACE		__FILE__, __LINE__,
+#define CLOG_TRACE		_N(__FILE__), __LINE__,
 #endif
 
-// the CLOG_* defines are line and file plus %z and an octal number (060=0, 
-// 071=9), but the limitation is that once we run out of numbers at either 
-// end, then we resort to using non-numerical chars. this still works (since 
+// the CLOG_* defines are line and file plus %z and an octal number (060=0,
+// 071=9), but the limitation is that once we run out of numbers at either
+// end, then we resort to using non-numerical chars. this still works (since
 // to deduce the number we subtract octal \060, so '/' is -1, and ':' is 10
 
-#define CLOG_PRINT		CLOG_TRACE "%z\057" // char is '/'
-#define CLOG_CRIT		CLOG_TRACE "%z\060" // char is '0'
-#define CLOG_ERR		CLOG_TRACE "%z\061"
-#define CLOG_WARN		CLOG_TRACE "%z\062"
-#define CLOG_NOTE		CLOG_TRACE "%z\063"
-#define CLOG_INFO		CLOG_TRACE "%z\064"
-#define CLOG_DEBUG		CLOG_TRACE "%z\065"
-#define CLOG_DEBUG1		CLOG_TRACE "%z\066"
-#define CLOG_DEBUG2		CLOG_TRACE "%z\067"
-#define CLOG_DEBUG3		CLOG_TRACE "%z\070"
-#define CLOG_DEBUG4		CLOG_TRACE "%z\071" // char is '9'
-#define CLOG_DEBUG5		CLOG_TRACE "%z\072" // char is ':'
+#define CLOG_PRINT		CLOG_TRACE _N("%z\057") // char is '/'
+#define CLOG_CRIT		CLOG_TRACE _N("%z\060") // char is '0'
+#define CLOG_ERR		CLOG_TRACE _N("%z\061")
+#define CLOG_WARN		CLOG_TRACE _N("%z\062")
+#define CLOG_NOTE		CLOG_TRACE _N("%z\063")
+#define CLOG_INFO		CLOG_TRACE _N("%z\064")
+#define CLOG_DEBUG		CLOG_TRACE _N("%z\065")
+#define CLOG_DEBUG1		CLOG_TRACE _N("%z\066")
+#define CLOG_DEBUG2		CLOG_TRACE _N("%z\067")
+#define CLOG_DEBUG3		CLOG_TRACE _N("%z\070")
+#define CLOG_DEBUG4		CLOG_TRACE _N("%z\071") // char is '9'
+#define CLOG_DEBUG5		CLOG_TRACE _N("%z\072") // char is ':'

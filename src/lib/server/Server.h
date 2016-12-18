@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -62,7 +62,7 @@ public:
 	//! Switch to screen data
 	class SwitchToScreenInfo {
 	public:
-		static SwitchToScreenInfo* alloc(const String& screen);
+		static SwitchToScreenInfo* alloc(const nstring& screen);
 
 	public:
 		// this is a C-string;  this type is a variable size structure
@@ -81,10 +81,10 @@ public:
 	//! Screen connected data
 	class ScreenConnectedInfo {
 	public:
-		ScreenConnectedInfo(String screen) : m_screen(screen) { }
+		ScreenConnectedInfo(nstring screen) : m_screen(screen) { }
 
 	public:
-		String			m_screen; // was char[1]
+		nstring			m_screen; // was char[1]
 	};
 
 	//! Keyboard broadcast data
@@ -94,7 +94,7 @@ public:
 
 		static KeyboardBroadcastInfo* alloc(State state = kToggle);
 		static KeyboardBroadcastInfo* alloc(State state,
-											const String& screens);
+											const nstring& screens);
 
 	public:
 		State			m_state;
@@ -143,14 +143,14 @@ public:
 	void				disconnect();
 
 	//! Create a new thread and use it to send file to client
-	void				sendFileToClient(const char* filename);
+	void				sendFileToClient(const nchar* filename);
 
 	//! Received dragging information from client
-	void				dragInfoReceived(UInt32 fileNum, String content);
+	void				dragInfoReceived(UInt32 fileNum, std::string content);
 
 	//! Store ClientListener pointer
 	void				setListener(ClientListener* p) { m_clientListener = p; }
-	
+
 	//@}
 	//! @name accessors
 	//@{
@@ -165,8 +165,8 @@ public:
 	/*!
 	Set the \c list to the names of the currently connected clients.
 	*/
-	void				getClients(std::vector<String>& list) const;
-	
+	void				getClients(std::vector<nstring>& list) const;
+
 	//! Return true if recieved file size is valid
 	bool				isReceivedFileSizeValid();
 
@@ -174,7 +174,7 @@ public:
 	size_t&				getExpectedFileSize() { return m_expectedFileSize; }
 
 	//! Return received file data
-	String&				getReceivedFileData() { return m_receivedFileData; }
+	nstring&			getReceivedFileData() { return m_receivedFileData; }
 
 	//! Return fake drag file list
 	DragFileList		getFakeDragFileList() { return m_fakeDragFileList; }
@@ -183,7 +183,7 @@ public:
 
 private:
 	// get canonical name of client
-	String				getName(const BaseClientProxy*) const;
+	nstring				getName(const BaseClientProxy*) const;
 
 	// get the sides of the primary screen that have neighbors
 	UInt32				getActivePrimarySides() const;
@@ -321,9 +321,9 @@ private:
 							ClipboardID id, UInt32 seqNum);
 	void				onScreensaver(bool activated);
 	void				onKeyDown(KeyID, KeyModifierMask, KeyButton,
-							const char* screens);
+							const nchar* screens);
 	void				onKeyUp(KeyID, KeyModifierMask, KeyButton,
-							const char* screens);
+							const nchar* screens);
 	void				onKeyRepeat(KeyID, KeyModifierMask, SInt32, KeyButton);
 	void				onMouseDown(ButtonID);
 	void				onMouseUp(ButtonID);
@@ -355,10 +355,10 @@ private:
 
 	// force the cursor off of \p client
 	void				forceLeaveClient(BaseClientProxy* client);
-	
+
 	// thread funciton for sending file
 	void				sendFileThread(void*);
-	
+
 	// thread function for writing file to drop directory
 	void				writeToDropDirThread(void*);
 
@@ -378,8 +378,8 @@ private:
 
 	public:
 		Clipboard		m_clipboard;
-		String			m_clipboardData;
-		String			m_clipboardOwner;
+		nstring			m_clipboardData;
+		nstring			m_clipboardOwner;
 		UInt32			m_clipboardSeqNum;
 	};
 
@@ -387,7 +387,7 @@ private:
 	PrimaryClient*		m_primaryClient;
 
 	// all clients (including the primary client) indexed by name
-	typedef std::map<String, BaseClientProxy*> ClientList;
+	typedef std::map<nstring, BaseClientProxy*> ClientList;
 	typedef std::set<BaseClientProxy*> ClientSet;
 	ClientList			m_clients;
 	ClientSet			m_clientSet;
@@ -447,14 +447,14 @@ private:
 	bool				m_switchNeedsShift;
 	bool				m_switchNeedsControl;
 	bool				m_switchNeedsAlt;
-	
+
 	// relative mouse move option
 	bool				m_relativeMoves;
 
 	// flag whether or not we have broadcasting enabled and the screens to
 	// which we should send broadcasted keys.
 	bool				m_keyboardBroadcasting;
-	String				m_keyboardBroadcastingScreens;
+	nstring				m_keyboardBroadcastingScreens;
 
 	// screen locking (former scroll lock)
 	bool				m_lockedToScreen;
@@ -466,12 +466,12 @@ private:
 
 	// file transfer
 	size_t				m_expectedFileSize;
-	String				m_receivedFileData;
+	std::string			m_receivedFileData;
 	DragFileList		m_dragFileList;
 	DragFileList		m_fakeDragFileList;
 	Thread*				m_sendFileThread;
 	Thread*				m_writeToDropDirThread;
-	String				m_dragFileExt;
+	nstring				m_dragFileExt;
 	bool				m_ignoreFileTransfer;
 	bool				m_enableClipboard;
 

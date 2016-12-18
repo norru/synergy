@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -184,7 +184,7 @@ SocketMultiplexer::serviceThread(void*)
 						pfd.m_events |= IArchNetwork::kPOLLOUT;
 					}
 					pfds.push_back(pfd);
-				}				
+				}
 				jobCursor = nextCursor(cursor);
 			}
 			deleteCursor(cursor);
@@ -201,14 +201,14 @@ SocketMultiplexer::serviceThread(void*)
 			}
 		}
 		catch (XArchNetwork& e) {
-			LOG((CLOG_WARN "error in socket multiplexer: %s", e.what()));
+			LOG((CLOG_WARN _N("error in socket multiplexer: %s"), e.what()));
 			status = 0;
 		}
 
 		if (status != 0) {
 			// iterate over socket jobs, invoking each and saving the
 			// new job.
-			UInt32 i             = 0;
+			UInt32 i            = 0;
 			JobCursor cursor    = newCursor();
 			JobCursor jobCursor = nextCursor(cursor);
 			while (i < pfds.size() && jobCursor != m_socketJobs.end()) {

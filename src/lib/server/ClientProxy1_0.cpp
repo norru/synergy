@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -31,7 +31,7 @@
 // ClientProxy1_0
 //
 
-ClientProxy1_0::ClientProxy1_0(const String& name, synergy::IStream* stream, IEventQueue* events) :
+ClientProxy1_0::ClientProxy1_0(const nstring& name, synergy::IStream* stream, IEventQueue* events) :
 	ClientProxy(name, stream),
 	m_heartbeatTimer(NULL),
 	m_parser(&ClientProxy1_0::parseHandshakeMessage),
@@ -60,7 +60,7 @@ ClientProxy1_0::ClientProxy1_0(const String& name, synergy::IStream* stream, IEv
 
 	setHeartbeatRate(kHeartRate, kHeartRate * kHeartBeatsUntilDeath);
 
-	LOG((CLOG_DEBUG1 "querying client \"%s\" info", getName().c_str()));
+	LOG((CLOG_DEBUG1 _N("querying client \"%" _NF "\" info"), getName().c_str()));
 	ProtocolUtil::writef(getStream(), kMsgQInfo);
 }
 
@@ -141,15 +141,15 @@ ClientProxy1_0::handleData(const Event&, void*)
 	while (n != 0) {
 		// verify we got an entire code
 		if (n != 4) {
-			LOG((CLOG_ERR "incomplete message from \"%s\": %d bytes", getName().c_str(), n));
+			LOG((CLOG_ERR _N("incomplete message from \"%" _NF "\": %d bytes"), getName().c_str(), n));
 			disconnect();
 			return;
 		}
 
 		// parse message
-		LOG((CLOG_DEBUG2 "msg from \"%s\": %c%c%c%c", getName().c_str(), code[0], code[1], code[2], code[3]));
+		LOG((CLOG_DEBUG2 _N("msg from \"%" _NF "\": %c%c%c%c"), getName().c_str(), code[0], code[1], code[2], code[3]));
 		if (!(this->*m_parser)(code)) {
-			LOG((CLOG_ERR "invalid message from client \"%s\": %c%c%c%c", getName().c_str(), code[0], code[1], code[2], code[3]));
+			LOG((CLOG_ERR _N("invalid message from client \"%" _NF "\"): %c%c%c%c"), getName().c_str(), code[0], code[1], code[2], code[3]));
 			disconnect();
 			return;
 		}
@@ -167,7 +167,7 @@ ClientProxy1_0::parseHandshakeMessage(const UInt8* code)
 {
 	if (memcmp(code, kMsgCNoop, 4) == 0) {
 		// discard no-ops
-		LOG((CLOG_DEBUG2 "no-op from", getName().c_str()));
+		LOG((CLOG_DEBUG2 _N("no-op from %" _NF), getName().c_str()));
 		return true;
 	}
 	else if (memcmp(code, kMsgDInfo, 4) == 0) {
@@ -187,15 +187,15 @@ ClientProxy1_0::parseMessage(const UInt8* code)
 {
 	if (memcmp(code, kMsgDInfo, 4) == 0) {
 		if (recvInfo()) {
-			m_events->addEvent(
-							Event(m_events->forIScreen().shapeChanged(), getEventTarget()));
+			m_events->addEvent(Event(
+				m_events->forIScreen().shapeChanged(), getEventTarget()));
 			return true;
 		}
 		return false;
 	}
 	else if (memcmp(code, kMsgCNoop, 4) == 0) {
 		// discard no-ops
-		LOG((CLOG_DEBUG2 "no-op from", getName().c_str()));
+		LOG((CLOG_DEBUG2 _N("no-op from %" _NF), getName().c_str()));
 		return true;
 	}
 	else if (memcmp(code, kMsgCClipboard, 4) == 0) {
@@ -210,14 +210,14 @@ ClientProxy1_0::parseMessage(const UInt8* code)
 void
 ClientProxy1_0::handleDisconnect(const Event&, void*)
 {
-	LOG((CLOG_NOTE "client \"%s\" has disconnected", getName().c_str()));
+	LOG((CLOG_NOTE _N("client \"%" _NF "\" has disconnected"), getName().c_str()));
 	disconnect();
 }
 
 void
 ClientProxy1_0::handleWriteError(const Event&, void*)
 {
-	LOG((CLOG_WARN "error writing to client \"%s\"", getName().c_str()));
+	LOG((CLOG_WARN _N("error writing to client \"%" _NF "\""), getName().c_str()));
 	disconnect();
 }
 
@@ -225,7 +225,7 @@ void
 ClientProxy1_0::handleFlatline(const Event&, void*)
 {
 	// didn't get a heartbeat fast enough.  assume client is dead.
-	LOG((CLOG_NOTE "client \"%s\" is dead", getName().c_str()));
+	LOG((CLOG_NOTE _N("client \"%" _NF "\" is dead"), getName().c_str()));
 	disconnect();
 }
 
@@ -257,7 +257,7 @@ void
 ClientProxy1_0::enter(SInt32 xAbs, SInt32 yAbs,
 				UInt32 seqNum, KeyModifierMask mask, bool)
 {
-	LOG((CLOG_DEBUG1 "send enter to \"%s\", %d,%d %d %04x", getName().c_str(), xAbs, yAbs, seqNum, mask));
+	LOG((CLOG_DEBUG1 _N("send enter to \"%" _NF "\", %d,%d %d %04x"), getName().c_str(), xAbs, yAbs, seqNum, mask));
 	ProtocolUtil::writef(getStream(), kMsgCEnter,
 								xAbs, yAbs, seqNum, mask);
 }
@@ -265,7 +265,7 @@ ClientProxy1_0::enter(SInt32 xAbs, SInt32 yAbs,
 bool
 ClientProxy1_0::leave()
 {
-	LOG((CLOG_DEBUG1 "send leave to \"%s\"", getName().c_str()));
+	LOG((CLOG_DEBUG1 _N("send leave to \"%" _NF "\""), getName().c_str()));
 	ProtocolUtil::writef(getStream(), kMsgCLeave);
 
 	// we can never prevent the user from leaving
@@ -281,7 +281,7 @@ ClientProxy1_0::setClipboard(ClipboardID id, const IClipboard* clipboard)
 void
 ClientProxy1_0::grabClipboard(ClipboardID id)
 {
-	LOG((CLOG_DEBUG "send grab clipboard %d to \"%s\"", id, getName().c_str()));
+	LOG((CLOG_DEBUG _N("send grab clipboard %d to \"%" _NF "\""), id, getName().c_str()));
 	ProtocolUtil::writef(getStream(), kMsgCClipboard, id, 0);
 
 	// this clipboard is now dirty
@@ -297,7 +297,7 @@ ClientProxy1_0::setClipboardDirty(ClipboardID id, bool dirty)
 void
 ClientProxy1_0::keyDown(KeyID key, KeyModifierMask mask, KeyButton)
 {
-	LOG((CLOG_DEBUG1 "send key down to \"%s\" id=%d, mask=0x%04x", getName().c_str(), key, mask));
+	LOG((CLOG_DEBUG1 _N("send key down to \"%" _NF "\" id=%d, mask=0x%04x"), getName().c_str(), key, mask));
 	ProtocolUtil::writef(getStream(), kMsgDKeyDown1_0, key, mask);
 }
 
@@ -305,35 +305,35 @@ void
 ClientProxy1_0::keyRepeat(KeyID key, KeyModifierMask mask,
 				SInt32 count, KeyButton)
 {
-	LOG((CLOG_DEBUG1 "send key repeat to \"%s\" id=%d, mask=0x%04x, count=%d", getName().c_str(), key, mask, count));
+	LOG((CLOG_DEBUG1 _N("send key repeat to \"%" _NF "\" id=%d, mask=0x%04x, count=%d"), getName().c_str(), key, mask, count));
 	ProtocolUtil::writef(getStream(), kMsgDKeyRepeat1_0, key, mask, count);
 }
 
 void
 ClientProxy1_0::keyUp(KeyID key, KeyModifierMask mask, KeyButton)
 {
-	LOG((CLOG_DEBUG1 "send key up to \"%s\" id=%d, mask=0x%04x", getName().c_str(), key, mask));
+	LOG((CLOG_DEBUG1 _N("send key up to \"%" _NF "\" id=%d, mask=0x%04x"), getName().c_str(), key, mask));
 	ProtocolUtil::writef(getStream(), kMsgDKeyUp1_0, key, mask);
 }
 
 void
 ClientProxy1_0::mouseDown(ButtonID button)
 {
-	LOG((CLOG_DEBUG1 "send mouse down to \"%s\" id=%d", getName().c_str(), button));
+	LOG((CLOG_DEBUG1 _N("send mouse down to \"%" _NF "\" id=%d"), getName().c_str(), button));
 	ProtocolUtil::writef(getStream(), kMsgDMouseDown, button);
 }
 
 void
 ClientProxy1_0::mouseUp(ButtonID button)
 {
-	LOG((CLOG_DEBUG1 "send mouse up to \"%s\" id=%d", getName().c_str(), button));
+	LOG((CLOG_DEBUG1 _N("send mouse up to \"%" _NF "\" id=%d"), getName().c_str(), button));
 	ProtocolUtil::writef(getStream(), kMsgDMouseUp, button);
 }
 
 void
 ClientProxy1_0::mouseMove(SInt32 xAbs, SInt32 yAbs)
 {
-	LOG((CLOG_DEBUG2 "send mouse move to \"%s\" %d,%d", getName().c_str(), xAbs, yAbs));
+	LOG((CLOG_DEBUG2 _N("send mouse move to \"%" _NF "\" %d,%d"), getName().c_str(), xAbs, yAbs));
 	ProtocolUtil::writef(getStream(), kMsgDMouseMove, xAbs, yAbs);
 }
 
@@ -347,35 +347,35 @@ void
 ClientProxy1_0::mouseWheel(SInt32, SInt32 yDelta)
 {
 	// clients prior to 1.3 only support the y axis
-	LOG((CLOG_DEBUG2 "send mouse wheel to \"%s\" %+d", getName().c_str(), yDelta));
+	LOG((CLOG_DEBUG2 _N("send mouse wheel to \"%" _NF "\" %+d"), getName().c_str(), yDelta));
 	ProtocolUtil::writef(getStream(), kMsgDMouseWheel1_0, yDelta);
 }
 
 void
-ClientProxy1_0::sendDragInfo(UInt32 fileCount, const char* info, size_t size)
+ClientProxy1_0::sendDragInfo(UInt32 fileCount, const nchar* info, size_t size)
 {
 	// ignore -- not supported in protocol 1.0
-	LOG((CLOG_DEBUG "draggingInfoSending not supported"));
+	LOG((CLOG_DEBUG _N("draggingInfoSending not supported")));
 }
 
 void
 ClientProxy1_0::fileChunkSending(UInt8 mark, char* data, size_t dataSize)
 {
 	// ignore -- not supported in protocol 1.0
-	LOG((CLOG_DEBUG "fileChunkSending not supported"));
+	LOG((CLOG_DEBUG _N("fileChunkSending not supported")));
 }
 
 void
 ClientProxy1_0::screensaver(bool on)
 {
-	LOG((CLOG_DEBUG1 "send screen saver to \"%s\" on=%d", getName().c_str(), on ? 1 : 0));
+	LOG((CLOG_DEBUG1 _N("send screen saver to \"%" _NF "\" on=%d"), getName().c_str(), on ? 1 : 0));
 	ProtocolUtil::writef(getStream(), kMsgCScreenSaver, on ? 1 : 0);
 }
 
 void
 ClientProxy1_0::resetOptions()
 {
-	LOG((CLOG_DEBUG1 "send reset options to \"%s\"", getName().c_str()));
+	LOG((CLOG_DEBUG1 _N("send reset options to \"%" _NF "\""), getName().c_str()));
 	ProtocolUtil::writef(getStream(), kMsgCResetOptions);
 
 	// reset heart rate and death
@@ -387,7 +387,7 @@ ClientProxy1_0::resetOptions()
 void
 ClientProxy1_0::setOptions(const OptionsList& options)
 {
-	LOG((CLOG_DEBUG1 "send set options to \"%s\" size=%d", getName().c_str(), options.size()));
+	LOG((CLOG_DEBUG1 _N("send set options to \"%" _NF "\" size=%d"), getName().c_str(), options.size()));
 	ProtocolUtil::writef(getStream(), kMsgDSetOptions, &options);
 
 	// check options
@@ -413,7 +413,7 @@ ClientProxy1_0::recvInfo()
 							&x, &y, &w, &h, &dummy1, &mx, &my)) {
 		return false;
 	}
-	LOG((CLOG_DEBUG "received client \"%s\" info shape=%d,%d %dx%d at %d,%d", getName().c_str(), x, y, w, h, mx, my));
+	LOG((CLOG_DEBUG _N("received client \"%" _NF "\" info shape=%d,%d %dx%d at %d,%d"), getName().c_str(), x, y, w, h, mx, my));
 
 	// validate
 	if (w <= 0 || h <= 0) {
@@ -433,7 +433,7 @@ ClientProxy1_0::recvInfo()
 	m_info.m_my = my;
 
 	// acknowledge receipt
-	LOG((CLOG_DEBUG1 "send info ack to \"%s\"", getName().c_str()));
+	LOG((CLOG_DEBUG1 _N("send info ack to \"%" _NF "\""), getName().c_str()));
 	ProtocolUtil::writef(getStream(), kMsgCInfoAck);
 	return true;
 }
@@ -454,7 +454,7 @@ ClientProxy1_0::recvGrabClipboard()
 	if (!ProtocolUtil::readf(getStream(), kMsgCClipboard + 4, &id, &seqNum)) {
 		return false;
 	}
-	LOG((CLOG_DEBUG "received client \"%s\" grabbed clipboard %d seqnum=%d", getName().c_str(), id, seqNum));
+	LOG((CLOG_DEBUG _N("received client \"%" _NF "\" grabbed clipboard %d seqnum=%d"), getName().c_str(), id, seqNum));
 
 	// validate
 	if (id >= kClipboardEnd) {

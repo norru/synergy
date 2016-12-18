@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2003 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -39,9 +39,9 @@ public:
 	/*!
 	Determine the status and query required information from the client.
 	*/
-	void				updateStatus(Client*, const String& errorMsg);
+	void				updateStatus(Client*, const nstring& errorMsg);
 
-	void updateStatus(INode* n, const String& errorMsg) { updateStatus((Client*)n, errorMsg); }
+	void updateStatus(INode* n, const nstring& errorMsg) { updateStatus((Client*)n, errorMsg); }
 
 	//@}
 
@@ -52,7 +52,7 @@ public:
 	virtual void		lock() const;
 	virtual void		unlock() const;
 	virtual const Icon	getIcon() const = 0;
-	virtual std::string	getToolTip() const;
+	virtual nstring		getToolTip() const;
 	virtual void cleanup() {}
 
 protected:
@@ -69,7 +69,7 @@ protected:
 	EState				getStatus() const;
 
 	//! Get error message
-	const String&		getErrorMessage() const;
+	const nstring&		getErrorMessage() const;
 
 	//! Quit app
 	/*!
@@ -85,8 +85,8 @@ protected:
 
 private:
 	EState				m_state;
-	String				m_errorMessage;
-	String				m_server;
+	nstring				m_errorMessage;
+	nstring				m_server;
 	IEventQueue*		m_events;
 };
 

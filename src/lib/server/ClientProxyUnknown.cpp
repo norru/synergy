@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2004 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -55,7 +55,7 @@ ClientProxyUnknown::ClientProxyUnknown(synergy::IStream* stream, double timeout,
 	m_timer = m_events->newOneShotTimer(timeout, this);
 	addStreamHandlers();
 
-	LOG((CLOG_DEBUG1 "saying hello"));
+	LOG((CLOG_DEBUG1 _N("saying hello")));
 	ProtocolUtil::writef(m_stream, kMsgHello,
 							kProtocolMajorVersion,
 							kProtocolMinorVersion);
@@ -174,14 +174,14 @@ ClientProxyUnknown::removeTimer()
 void
 ClientProxyUnknown::handleData(const Event&, void*)
 {
-	LOG((CLOG_DEBUG1 "parsing hello reply"));
+	LOG((CLOG_DEBUG1 _N("parsing hello reply")));
 
-	String name("<unknown>");
+	nstring name(_N("<unknown>"));
 	try {
 		// limit the maximum length of the hello
 		UInt32 n = m_stream->getSize();
 		if (n > kMaxHelloLength) {
-			LOG((CLOG_DEBUG1 "hello reply too long"));
+			LOG((CLOG_DEBUG1 _N("hello reply too long")));
 			throw XBadClient();
 		}
 
@@ -241,7 +241,7 @@ ClientProxyUnknown::handleData(const Event&, void*)
 		}
 
 		// the proxy is created and now proxy now owns the stream
-		LOG((CLOG_DEBUG1 "created proxy for client \"%s\" version %d.%d", name.c_str(), major, minor));
+		LOG((CLOG_DEBUG1 _N("created proxy for client \"%" _NF "\" version %d.%d"), name.c_str(), major, minor));
 		m_stream = NULL;
 
 		// wait until the proxy signals that it's ready or has disconnected
@@ -250,19 +250,19 @@ ClientProxyUnknown::handleData(const Event&, void*)
 	}
 	catch (XIncompatibleClient& e) {
 		// client is incompatible
-		LOG((CLOG_WARN "client \"%s\" has incompatible version %d.%d)", name.c_str(), e.getMajor(), e.getMinor()));
+		LOG((CLOG_WARN _N("client \"%" _NF "\" has incompatible version %d.%d)"), name.c_str(), e.getMajor(), e.getMinor()));
 		ProtocolUtil::writef(m_stream,
 							kMsgEIncompatible,
 							kProtocolMajorVersion, kProtocolMinorVersion);
 	}
 	catch (XBadClient&) {
 		// client not behaving
-		LOG((CLOG_WARN "protocol error from client \"%s\"", name.c_str()));
+		LOG((CLOG_WARN _N("protocol error from client \"%" _NF "\""), name.c_str()));
 		ProtocolUtil::writef(m_stream, kMsgEBad);
 	}
 	catch (XBase& e) {
 		// misc error
-		LOG((CLOG_WARN "error communicating with client \"%s\": %s", name.c_str(), e.what()));
+		LOG((CLOG_WARN _N("error communicating with client \"%" _NF "\": %" _NF), name.c_str(), e.what()));
 	}
 	sendFailure();
 }
@@ -270,21 +270,21 @@ ClientProxyUnknown::handleData(const Event&, void*)
 void
 ClientProxyUnknown::handleWriteError(const Event&, void*)
 {
-	LOG((CLOG_NOTE "error communicating with new client"));
+	LOG((CLOG_NOTE _N("error communicating with new client")));
 	sendFailure();
 }
 
 void
 ClientProxyUnknown::handleTimeout(const Event&, void*)
 {
-	LOG((CLOG_NOTE "new client is unresponsive"));
+	LOG((CLOG_NOTE _N("new client is unresponsive")));
 	sendFailure();
 }
 
 void
 ClientProxyUnknown::handleDisconnect(const Event&, void*)
 {
-	LOG((CLOG_NOTE "new client disconnected"));
+	LOG((CLOG_NOTE _N("new client disconnected")));
 	sendFailure();
 }
 

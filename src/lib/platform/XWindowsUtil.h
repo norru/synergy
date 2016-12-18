@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -44,7 +44,7 @@ public:
 	*/
 	static bool			getWindowProperty(Display*,
 							Window window, Atom property,
-							String* data, Atom* type,
+							std::string* data, Atom* type,
 							SInt32* format, bool deleteProperty);
 
 	//! Set property
@@ -81,14 +81,14 @@ public:
 	/*!
 	Converts \p atom to its string representation.
 	*/
-	static String		atomToString(Display*, Atom atom);
+	static std::string	atomToString(Display*, Atom atom);
 
 	//! Convert several Atoms to a string
 	/*!
 	Converts each atom in \p atoms to its string representation and
 	concatenates the results.
 	*/
-	static String		atomsToString(Display* display,
+	static std::string	atomsToString(Display* display,
 							const Atom* atom, UInt32 num);
 
 	//! Prepare a property of atoms for use
@@ -96,21 +96,21 @@ public:
 	64-bit systems may need to modify a property's data if it's a
 	list of Atoms before using it.
 	*/
-	static void			convertAtomProperty(String& data);
+	static void			convertAtomProperty(std::string& data);
 
 	//! Append an Atom to property data
 	/*!
 	Converts \p atom to a 32-bit on-the-wire format and appends it to
 	\p data.
 	*/
-	static void			appendAtomData(String& data, Atom atom);
+	static void			appendAtomData(std::string& data, Atom atom);
 
 	//! Replace an Atom in property data
 	/*!
 	Converts \p atom to a 32-bit on-the-wire format and replaces the atom
 	at index \p index in \p data.
 	*/
-	static void			replaceAtomData(String& data,
+	static void			replaceAtomData(std::string& data,
 							UInt32 index, Atom atom);
 
 	//! Append an Time to property data
@@ -118,14 +118,14 @@ public:
 	Converts \p time to a 32-bit on-the-wire format and appends it to
 	\p data.
 	*/
-	static void			appendTimeData(String& data, Time time);
+	static void			appendTimeData(std::string& data, Time time);
 
 	//! X11 error handler
 	/*!
 	This class sets an X error handler in the c'tor and restores the
 	previous error handler in the d'tor.  A lock should only be
 	installed while the display is locked by the thread.
-	
+
 	ErrorLock() ignores errors
 	ErrorLock(bool* flag) sets *flag to true if any error occurs
 	*/

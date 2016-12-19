@@ -58,7 +58,7 @@ public:
 	void				fileChunkSending(UInt8 mark, const char* data, size_t dataSize);
 
 	// sending dragging information to server
-	void				sendDragInfo(UInt32 fileCount, const char* info, size_t size);
+	void				sendDragInfo(UInt32 fileCount, const nchar* info, size_t size);
 
 #ifdef TEST_ENV
 	void				handleDataForTest() { handleData(Event(), NULL); }

@@ -27,7 +27,7 @@
 //
 
 XBase::XBase() :
-	std::runtime_error(_N(""))
+	std::runtime_error(N"")
 {
 	// do nothing
 }
@@ -43,13 +43,26 @@ XBase::~XBase() _NOEXCEPT
 	// do nothing
 }
 
-const nchar*
+#if SYSAPI_WIN32
+const std::string
 XBase::what() const _NOEXCEPT
 {
-	const nchar* what = std::runtime_error::what();
-	if (strlen(what) == 0) {
+	const char* what = std::runtime_error::what();
+	if (!what || !strlen(what)) {
 		m_what = getWhat();
-		return m_what.c_str();
+		return synergy::string::nativeToUtf8(m_what);
+	}
+	return what;
+}
+#endif
+
+const nstring
+XBase::what() const _NOEXCEPT
+{
+	nstring what = synergy::string::toNative(std::runtime_error::what());
+	if (what.empty()) {
+		m_what = getWhat();
+		return m_what;
 	}
 	return what;
 }

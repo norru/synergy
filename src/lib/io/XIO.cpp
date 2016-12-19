@@ -25,7 +25,7 @@
 nstring
 XIOClosed::getWhat() const throw()
 {
-	return format(_N("XIOClosed"), _N("already closed"));
+	return format(N"XIOClosed", N"already closed");
 }
 
 
@@ -36,7 +36,7 @@ XIOClosed::getWhat() const throw()
 nstring
 XIOEndOfStream::getWhat() const throw()
 {
-	return format(_N("XIOEndOfStream"), _N("reached end of stream"));
+	return format(N"XIOEndOfStream", N"reached end of stream");
 }
 
 
@@ -47,5 +47,5 @@ XIOEndOfStream::getWhat() const throw()
 nstring
 XIOWouldBlock::getWhat() const throw()
 {
-	return format(_N("XIOWouldBlock"), _N("stream operation would block"));
+	return format(N"XIOWouldBlock", N"stream operation would block");
 }

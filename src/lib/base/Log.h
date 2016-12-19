@@ -26,7 +26,7 @@
 #include <stdarg.h>
 
 #define CLOG (Log::getInstance())
-#define BYE _N("\nTry `%s --help' for more information.")
+#define BYE N"\nTry `%s --help' for more information."
 
 class ILogOutputter;
 class Thread;
@@ -117,7 +117,7 @@ public:
 	const nchar*		getFilterName(int level) const;
 
 	//! Get the singleton instance of the log
-	static Log*		getInstance();
+	static Log*			getInstance();
 
 	//! Get the console filter level (messages above this are not sent to console).
 	int					getConsoleMaxLevel() const { return kDEBUG2; }
@@ -130,7 +130,7 @@ private:
 private:
 	typedef std::list<ILogOutputter*> OutputterList;
 
-	static Log*		s_log;
+	static Log*			s_log;
 
 	ArchMutex			m_mutex;
 	OutputterList		m_outputters;
@@ -189,7 +189,7 @@ otherwise it expands to a call that doesn't.
 #else
 #define LOG(_a1)		CLOG->print _a1
 #define LOGC(_a1, _a2)	if (_a1) CLOG->print _a2
-#define CLOG_TRACE		_N(__FILE__), __LINE__,
+#define CLOG_TRACE		N __FILE__, __LINE__,
 #endif
 
 // the CLOG_* defines are line and file plus %z and an octal number (060=0,
@@ -197,15 +197,15 @@ otherwise it expands to a call that doesn't.
 // end, then we resort to using non-numerical chars. this still works (since
 // to deduce the number we subtract octal \060, so '/' is -1, and ':' is 10
 
-#define CLOG_PRINT		CLOG_TRACE _N("%z\057") // char is '/'
-#define CLOG_CRIT		CLOG_TRACE _N("%z\060") // char is '0'
-#define CLOG_ERR		CLOG_TRACE _N("%z\061")
-#define CLOG_WARN		CLOG_TRACE _N("%z\062")
-#define CLOG_NOTE		CLOG_TRACE _N("%z\063")
-#define CLOG_INFO		CLOG_TRACE _N("%z\064")
-#define CLOG_DEBUG		CLOG_TRACE _N("%z\065")
-#define CLOG_DEBUG1		CLOG_TRACE _N("%z\066")
-#define CLOG_DEBUG2		CLOG_TRACE _N("%z\067")
-#define CLOG_DEBUG3		CLOG_TRACE _N("%z\070")
-#define CLOG_DEBUG4		CLOG_TRACE _N("%z\071") // char is '9'
-#define CLOG_DEBUG5		CLOG_TRACE _N("%z\072") // char is ':'
+#define CLOG_PRINT		CLOG_TRACE N"%z\057" N // char is '/'
+#define CLOG_CRIT		CLOG_TRACE N"%z\060" N // char is '0'
+#define CLOG_ERR		CLOG_TRACE N"%z\061" N
+#define CLOG_WARN		CLOG_TRACE N"%z\062" N
+#define CLOG_NOTE		CLOG_TRACE N"%z\063" N
+#define CLOG_INFO		CLOG_TRACE N"%z\064" N
+#define CLOG_DEBUG		CLOG_TRACE N"%z\065" N
+#define CLOG_DEBUG1		CLOG_TRACE N"%z\066" N
+#define CLOG_DEBUG2		CLOG_TRACE N"%z\067" N
+#define CLOG_DEBUG3		CLOG_TRACE N"%z\070" N
+#define CLOG_DEBUG4		CLOG_TRACE N"%z\071" N // char is '9'
+#define CLOG_DEBUG5		CLOG_TRACE N"%z\072" N // char is ':'

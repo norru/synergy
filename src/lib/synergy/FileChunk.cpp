@@ -90,7 +90,7 @@ FileChunk::assemble(synergy::IStream* stream, std::string& dataReceived, size_t&
 		stopwatch.reset();
 
 		if (CLOG->getFilter() >= kDEBUG2) {
-			LOG((CLOG_DEBUG2 _N("recv file size=%s"), content.c_str()));
+			LOG((CLOG_DEBUG2"recv file size=%s"), content.c_str()));
 			stopwatch.start();
 		}
 		return kStart;
@@ -98,13 +98,13 @@ FileChunk::assemble(synergy::IStream* stream, std::string& dataReceived, size_t&
 	case kDataChunk:
 		dataReceived.append(content);
 		if (CLOG->getFilter() >= kDEBUG2) {
-				LOG((CLOG_DEBUG2 _N("recv file chunck size=%i"), content.size()));
+				LOG((CLOG_DEBUG2"recv file chunck size=%i"), content.size()));
 				double interval = stopwatch.getTime();
 				receivedDataSize += content.size();
-				LOG((CLOG_DEBUG2 _N("recv file interval=%f s"), interval));
+				LOG((CLOG_DEBUG2"recv file interval=%f s"), interval));
 				if (interval >= kIntervalThreshold) {
 					double averageSpeed = receivedDataSize / interval / 1000;
-					LOG((CLOG_DEBUG2 _N("recv file average speed=%f kb/s"), averageSpeed));
+					LOG((CLOG_DEBUG2"recv file average speed=%f kb/s"), averageSpeed));
 
 					receivedDataSize = 0;
 					elapsedTime += interval;
@@ -115,17 +115,17 @@ FileChunk::assemble(synergy::IStream* stream, std::string& dataReceived, size_t&
 
 	case kDataEnd:
 		if (expectedSize != dataReceived.size()) {
-			LOG((CLOG_ERR _N("corrupted clipboard data, expected size=%d actual size=%d"), expectedSize, dataReceived.size()));
+			LOG((CLOG_ERR"corrupted clipboard data, expected size=%d actual size=%d"), expectedSize, dataReceived.size()));
 			return kError;
 		}
 
 		if (CLOG->getFilter() >= kDEBUG2) {
-			LOG((CLOG_DEBUG2 _N("file transfer finished")));
+			LOG((CLOG_DEBUG2"file transfer finished")));
 			elapsedTime += stopwatch.getTime();
 			double averageSpeed = expectedSize / elapsedTime / 1000;
-			LOG((CLOG_DEBUG2 _N("file transfer finished: total time consumed=%f s"), elapsedTime));
-			LOG((CLOG_DEBUG2 _N("file transfer finished: total data received=%i kb"), expectedSize / 1000));
-			LOG((CLOG_DEBUG2 _N("file transfer finished: total average speed=%f kb/s"), averageSpeed));
+			LOG((CLOG_DEBUG2"file transfer finished: total time consumed=%f s"), elapsedTime));
+			LOG((CLOG_DEBUG2"file transfer finished: total data received=%i kb"), expectedSize / 1000));
+			LOG((CLOG_DEBUG2"file transfer finished: total average speed=%f kb/s"), averageSpeed));
 		}
 		return kFinish;
 	}
@@ -140,15 +140,15 @@ FileChunk::send(synergy::IStream* stream, UInt8 mark, const char* data, size_t d
 
 	switch (mark) {
 	case kDataStart:
-		LOG((CLOG_DEBUG2 _N("sending file chunk start: size=%s"), data));
+		LOG((CLOG_DEBUG2"sending file chunk start: size=%s"), data));
 		break;
 
 	case kDataChunk:
-		LOG((CLOG_DEBUG2 _N("sending file chunk: size=%i"), chunk.size()));
+		LOG((CLOG_DEBUG2"sending file chunk: size=%i"), chunk.size()));
 		break;
 
 	case kDataEnd:
-		LOG((CLOG_DEBUG2 _N("sending file finished")));
+		LOG((CLOG_DEBUG2"sending file finished")));
 		break;
 	}
 

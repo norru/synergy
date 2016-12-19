@@ -121,7 +121,7 @@ DaemonApp::run(int argc, nchar** argv)
 #endif
 
 		// default log level to system setting.
-		string logLevel = arch.setting(_N("LogLevel"));
+		string logLevel = arch.setting(N"LogLevel"));
 		if (!logLevel.empty())
 			log.setFilter(logLevel.c_str());
 
@@ -130,23 +130,23 @@ DaemonApp::run(int argc, nchar** argv)
 		for (int i = 1; i < argc; ++i) {
 			string arg(argv[i]);
 
-			if (arg == _N("/f") || arg == _N("-f")) {
+			if (arg =="/f") || arg =="-f")) {
 				foreground = true;
 			}
 #if SYSAPI_WIN32
-			else if (arg == _N("/install")) {
+			else if (arg =="/install")) {
 				uninstall = true;
 				arch.installDaemon();
 				return kExitSuccess;
 			}
-			else if (arg == _N("/uninstall")) {
+			else if (arg =="/uninstall")) {
 				arch.uninstallDaemon();
 				return kExitSuccess;
 			}
 #endif
 			else {
 				nstringstream ss;
-				ss << _N("Unrecognized argument: ") << arg;
+				ss <<"Unrecognized argument: ") << arg;
 				foregroundError(ss.str().c_str());
 				return kExitArgs;
 			}
@@ -159,9 +159,9 @@ DaemonApp::run(int argc, nchar** argv)
 		}
 		else {
 #if SYSAPI_WIN32
-			arch.daemonize(_N("Synergy"), winMainLoopStatic);
+			arch.daemonize(N"Synergy"), winMainLoopStatic);
 #elif SYSAPI_UNIX
-			arch.daemonize(_N("Synergy"), unixMainLoopStatic);
+			arch.daemonize(N"Synergy"), unixMainLoopStatic);
 #endif
 		}
 
@@ -169,7 +169,7 @@ DaemonApp::run(int argc, nchar** argv)
 	}
 	catch (XArch& e) {
 		nstring message = e.what();
-		if (uninstall && (message.find(_N("The service has not been started")) != nstring::npos)) {
+		if (uninstall && (message.find(N"The service has not been started")) != nstring::npos)) {
 			// TODO: if we're keeping this use error code instead (what is it?!).
 			// HACK: this message happens intermittently, not sure where from but
 			// it's quite misleading for the user. they thing something has gone
@@ -186,7 +186,7 @@ DaemonApp::run(int argc, nchar** argv)
 		return kExitFailed;
 	}
 	catch (...) {
-		foregroundError(_N("Unrecognized error."));
+		foregroundError(N"Unrecognized error."));
 		return kExitFailed;
 	}
 }
@@ -256,10 +256,10 @@ DaemonApp::mainLoop(bool logToFile)
 		DAEMON_RUNNING(false);
 	}
 	catch (std::exception& e) {
-		LOG((CLOG_CRIT _N("An error occurred: %" _NF), e.what()));
+		LOG((CLOG_CRIT"An error occurred: %" _NF), e.what()));
 	}
 	catch (...) {
-		LOG((CLOG_CRIT _N("An unknown error occurred.\n")));
+		LOG((CLOG_CRIT"An unknown error occurred.\n")));
 	}
 }
 
@@ -277,10 +277,10 @@ std::string
 DaemonApp::logFilename()
 {
 	string logFilename;
-	logFilename = ARCH->setting(_N("LogFilename"));
+	logFilename = ARCH->setting(N"LogFilename"));
 	if (logFilename.empty()) {
 		logFilename = ARCH->getLogDirectory();
-		logFilename.append(_N("/"));
+		logFilename.append(N"/"));
 		logFilename.append(LOG_FILENAME);
 	}
 
@@ -297,12 +297,12 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 			nstring command = cm->command();
 
 			// if empty quotes, clear.
-			if (command == _N("\"\"")) {
+			if (command =="\"\"")) {
 				command.clear();
 			}
 
 			if (!command.empty()) {
-				LOG((CLOG_DEBUG _N("new command, elevate=%d command=%" _NF), cm->elevate(), command.c_str()));
+				LOG((CLOG_DEBUG"new command, elevate=%d command=%" _NF), cm->elevate(), command.c_str()));
 
 				std::vector<nstring> argsArray;
 				ArgParser::splitCommandString(command, argsArray);
@@ -311,7 +311,7 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 				ServerArgs serverArgs;
 				ClientArgs clientArgs;
 				int argc = static_cast<int>(argsArray.size());
-				bool server = argsArray[0].find(_N("synergys")) != nstring::npos ? true : false;
+				bool server = argsArray[0].find(N"synergys")) != nstring::npos ? true : false;
 				ArgsBase* argBase = NULL;
 
 				if (server) {
@@ -330,11 +330,11 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 					try {
 						// change log level based on that in the command string
 						// and change to that log level now.
-						ARCH->setting(_N("LogLevel"), logLevel);
+						ARCH->setting(N"LogLevel"), logLevel);
 						CLOG->setFilter(logLevel.c_str());
 					}
 					catch (XArch& e) {
-						LOG((CLOG_ERR _N("failed to save LogLevel setting, %" _NF), e.what()));
+						LOG((CLOG_ERR"failed to save LogLevel setting, %" _NF), e.what()));
 					}
 				}
 
@@ -356,19 +356,19 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 #endif
 			}
 			else {
-				LOG((CLOG_DEBUG _N("empty command, elevate=%d"), cm->elevate()));
+				LOG((CLOG_DEBUG"empty command, elevate=%d"), cm->elevate()));
 			}
 
 			try {
 				// store command in system settings. this is used when the daemon
 				// next starts.
-				ARCH->setting(_N("Command"), command);
+				ARCH->setting(N"Command"), command);
 
 				// TODO: it would be nice to store bools/ints...
-				ARCH->setting(_N("Elevate"), nstring(cm->elevate() ? _N("1") : _N("0")));
+				ARCH->setting(N"Elevate"), nstring(cm->elevate() ?"1") :"0")));
 			}
 			catch (XArch& e) {
-				LOG((CLOG_ERR _N("failed to save settings, %" _NF), e.what()));
+				LOG((CLOG_ERR"failed to save settings, %" _NF), e.what()));
 			}
 
 #if SYSAPI_WIN32
@@ -384,16 +384,16 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 			IpcHelloMessage* hm = static_cast<IpcHelloMessage*>(m);
 			nstring type;
 			switch (hm->clientType()) {
-				case kIpcClientGui: type = _N("gui"); break;
-				case kIpcClientNode: type = _N("node"); break;
-				default: type = _N("unknown"); break;
+				case kIpcClientGui: type ="gui"); break;
+				case kIpcClientNode: type ="node"); break;
+				default: type ="unknown"); break;
 			}
 
-			LOG((CLOG_DEBUG _N("ipc hello, type=%" _NF), type.c_str()));
+			LOG((CLOG_DEBUG"ipc hello, type=%" _NF), type.c_str()));
 
 #if SYSAPI_WIN32
-			nstring watchdogStatus = m_watchdog->isProcessActive() ? _N("ok") : _N("error");
-			LOG((CLOG_INFO _N("watchdog status: %" _NF), watchdogStatus.c_str()));
+			nstring watchdogStatus = m_watchdog->isProcessActive() ?"ok") :"error");
+			LOG((CLOG_INFO"watchdog status: %" _NF), watchdogStatus.c_str()));
 #endif
 
 			m_ipcLogOutputter->notifyBuffer();

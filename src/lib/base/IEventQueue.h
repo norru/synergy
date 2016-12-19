@@ -176,7 +176,7 @@ public:
 	*/
 	virtual Event::Type
 						registerTypeOnce(Event::Type& type,
-							const char* name) = 0;
+							const nchar* name) = 0;
 
 	//! Wait for event queue to become ready
 	/*!
@@ -208,13 +208,13 @@ public:
 	Returns the name for the event \p type.  This is primarily for
 	debugging.
 	*/
-	virtual const char*	getTypeName(Event::Type type) = 0;
+	virtual constn char* getTypeName(Event::Type type) = 0;
 
 	//! Get an event type by name
 	/*!
 	Returns the registered type for an event for a given name.
 	*/
-	virtual Event::Type getRegisteredType(const std::string& name) const = 0;
+	virtual Event::Type getRegisteredType(const nstring& name) const = 0;
 
 	//! Get the system event type target
 	/*!

@@ -163,10 +163,10 @@ IpcLogOutputter::bufferThread(void*)
 		}
 	}
 	catch (XArch& e) {
-		LOG((CLOG_ERR _N("ipc log buffer thread error, %s"), e.what()));
+		LOG((CLOG_ERR N"ipc log buffer thread error, " NF, e.what()));
 	}
 
-	LOG((CLOG_DEBUG _N("ipc log buffer thread finished")));
+	LOG((CLOG_DEBUG N"ipc log buffer thread finished"));
 }
 
 void
@@ -188,7 +188,7 @@ IpcLogOutputter::getChunk(size_t count)
 	nstring chunk;
 	for (size_t i = 0; i < count; i++) {
 		chunk.append(m_buffer.front());
-		chunk.append(_N("\n"));
+		chunk.append(N"\n");
 		m_buffer.pop_front();
 	}
 	return chunk;

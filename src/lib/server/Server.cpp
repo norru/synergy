@@ -207,7 +207,7 @@ Server::Server(
 
 	// Determine if scroll lock is already set. If so, lock the cursor to the primary screen
 	if (m_primaryClient->getToggleMask() & KeyModifierScrollLock) {
-		LOG((CLOG_NOTE _N("Scroll Lock is on, locking cursor to screen")));
+		LOG((CLOG_NOTE"Scroll Lock is on, locking cursor to screen")));
 		m_lockedToScreen = true;
 	}
 
@@ -321,7 +321,7 @@ Server::adoptClient(BaseClientProxy* client)
 
 	// name must be in our configuration
 	if (!m_config->isScreen(client->getName())) {
-		LOG((CLOG_WARN _N("unrecognised client name \"%" _NF "\", check server config"), client->getName().c_str()));
+		LOG((CLOG_WARN"unrecognised client name \"%" _NF "\", check server config"), client->getName().c_str()));
 		closeClient(client, kMsgEUnknown);
 		return;
 	}
@@ -329,11 +329,11 @@ Server::adoptClient(BaseClientProxy* client)
 	// add client to client list
 	if (!addClient(client)) {
 		// can only have one screen with a given name at any given time
-		LOG((CLOG_WARN _N("a client with name \"%" _NF "\" is already connected"), getName(client).c_str()));
+		LOG((CLOG_WARN"a client with name \"%" _NF "\" is already connected"), getName(client).c_str()));
 		closeClient(client, kMsgEBusy);
 		return;
 	}
-	LOG((CLOG_NOTE _N("client \"%" _NF "\" has connected"), getName(client).c_str()));
+	LOG((CLOG_NOTE"client \"%" _NF "\" has connected"), getName(client).c_str()));
 
 	// send configuration options to client
 	sendOptions(client);
@@ -422,7 +422,7 @@ Server::isLockedToScreen() const
 {
 	// locked if we say we're locked
 	if (isLockedToScreenServer()) {
-		LOG((CLOG_NOTE _N("Cursor is locked to screen, check Scroll Lock key")));
+		LOG((CLOG_NOTE"Cursor is locked to screen, check Scroll Lock key")));
 		return true;
 	}
 
@@ -461,7 +461,7 @@ Server::switchScreen(BaseClientProxy* dst,
 #endif
 	assert(m_active != NULL);
 
-	LOG((CLOG_INFO _N("switch from \"%" _NF "\" to \"%" _NF "\" at %d,%d"), getName(m_active).c_str(), getName(dst).c_str(), x, y));
+	LOG((CLOG_INFO"switch from \"%" _NF "\" to \"%" _NF "\" at %d,%d"), getName(m_active).c_str(), getName(dst).c_str(), x, y));
 
 	// stop waiting to switch
 	stopSwitch();
@@ -481,7 +481,7 @@ Server::switchScreen(BaseClientProxy* dst,
 		// leave active screen
 		if (!m_active->leave()) {
 			// cannot leave screen
-			LOG((CLOG_WARN _N("can't leave screen")));
+			LOG((CLOG_WARN"can't leave screen")));
 			return;
 		}
 
@@ -603,7 +603,7 @@ Server::getNeighbor(BaseClientProxy* src,
 	// get source screen name
 	nstring srcName = getName(src);
 	assert(!srcName.empty());
-	LOG((CLOG_DEBUG2 _N("find neighbor on %" _NF " of \"%" _NF "\""), Config::dirName(dir), srcName.c_str()));
+	LOG((CLOG_DEBUG2"find neighbor on %" _NF " of \"%" _NF "\""), Config::dirName(dir), srcName.c_str()));
 
 	// convert position to fraction
 	float t = mapToFraction(src, dir, x, y);
@@ -618,7 +618,7 @@ Server::getNeighbor(BaseClientProxy* src,
 		// progress in this direction.  since we haven't found a
 		// connected neighbor we return NULL.
 		if (dstName.empty()) {
-			LOG((CLOG_DEBUG2 _N("no neighbor on %" _NF " of \"%" _NF "\""), Config::dirName(dir), srcName.c_str()));
+			LOG((CLOG_DEBUG2"no neighbor on %" _NF " of \"%" _NF "\""), Config::dirName(dir), srcName.c_str()));
 			return NULL;
 		}
 
@@ -626,13 +626,13 @@ Server::getNeighbor(BaseClientProxy* src,
 		// ready then we can stop.
 		ClientList::const_iterator index = m_clients.find(dstName);
 		if (index != m_clients.end()) {
-			LOG((CLOG_DEBUG2 _N("\"%" _NF "\" is on %" _NF " of \"%" _NF "\" at %f"), dstName.c_str(), Config::dirName(dir), srcName.c_str(), t));
+			LOG((CLOG_DEBUG2"\"%" _NF "\" is on %" _NF " of \"%" _NF "\" at %f"), dstName.c_str(), Config::dirName(dir), srcName.c_str(), t));
 			mapToPixel(index->second, dir, tTmp, x, y);
 			return index->second;
 		}
 
 		// skip over unconnected screen
-		LOG((CLOG_DEBUG2 _N("ignored \"%" _NF "\" on %" _NF " of \"%" _NF "\""), dstName.c_str(), Config::dirName(dir), srcName.c_str()));
+		LOG((CLOG_DEBUG2"ignored \"%" _NF "\" on %" _NF " of \"%" _NF "\""), dstName.c_str(), Config::dirName(dir), srcName.c_str()));
 		srcName = dstName;
 
 		// use position on skipped screen
@@ -674,7 +674,7 @@ Server::mapToNeighbor(BaseClientProxy* src,
 			if (x >= 0) {
 				break;
 			}
-			LOG((CLOG_DEBUG2 _N("skipping over screen %" _NF ""), getName(dst).c_str()));
+			LOG((CLOG_DEBUG2"skipping over screen %" _NF ""), getName(dst).c_str()));
 			dst = getNeighbor(lastGoodScreen, srcSide, x, y);
 		}
 		assert(lastGoodScreen != NULL);
@@ -690,7 +690,7 @@ Server::mapToNeighbor(BaseClientProxy* src,
 			if (x < dw) {
 				break;
 			}
-			LOG((CLOG_DEBUG2 _N("skipping over screen %" _NF ""), getName(dst).c_str()));
+			LOG((CLOG_DEBUG2"skipping over screen %" _NF ""), getName(dst).c_str()));
 			dst = getNeighbor(lastGoodScreen, srcSide, x, y);
 		}
 		assert(lastGoodScreen != NULL);
@@ -706,7 +706,7 @@ Server::mapToNeighbor(BaseClientProxy* src,
 			if (y >= 0) {
 				break;
 			}
-			LOG((CLOG_DEBUG2 _N("skipping over screen %" _NF ""), getName(dst).c_str()));
+			LOG((CLOG_DEBUG2"skipping over screen %" _NF ""), getName(dst).c_str()));
 			dst = getNeighbor(lastGoodScreen, srcSide, x, y);
 		}
 		assert(lastGoodScreen != NULL);
@@ -722,7 +722,7 @@ Server::mapToNeighbor(BaseClientProxy* src,
 			if (y < dh) {
 				break;
 			}
-			LOG((CLOG_DEBUG2 _N("skipping over screen %" _NF ""), getName(dst).c_str()));
+			LOG((CLOG_DEBUG2"skipping over screen %" _NF ""), getName(dst).c_str()));
 			dst = getNeighbor(lastGoodScreen, srcSide, x, y);
 		}
 		assert(lastGoodScreen != NULL);
@@ -800,13 +800,13 @@ Server::isSwitchOkay(BaseClientProxy* newScreen,
 				EDirection dir, SInt32 x, SInt32 y,
 				SInt32 xActive, SInt32 yActive)
 {
-	LOG((CLOG_DEBUG1 _N("try to leave \"%" _NF "\" on %" _NF ""), getName(m_active).c_str(), Config::dirName(dir)));
+	LOG((CLOG_DEBUG1"try to leave \"%" _NF "\" on %" _NF ""), getName(m_active).c_str(), Config::dirName(dir)));
 
 	// is there a neighbor?
 	if (newScreen == NULL) {
 		// there's no neighbor.  we don't want to switch and we don't
 		// want to try to switch later.
-		LOG((CLOG_DEBUG1 _N("no neighbor %" _NF ""), Config::dirName(dir)));
+		LOG((CLOG_DEBUG1"no neighbor %" _NF ""), Config::dirName(dir)));
 		stopSwitch();
 		return false;
 	}
@@ -867,7 +867,7 @@ Server::isSwitchOkay(BaseClientProxy* newScreen,
 		// see if we're in a locked corner
 		if ((getCorner(m_active, xActive, yActive, size) & corners) != 0) {
 			// yep, no switching
-			LOG((CLOG_DEBUG1 _N("locked in corner")));
+			LOG((CLOG_DEBUG1"locked in corner")));
 			preventSwitch = true;
 			stopSwitch();
 		}
@@ -875,7 +875,7 @@ Server::isSwitchOkay(BaseClientProxy* newScreen,
 
 	// ignore if mouse is locked to screen and don't try to switch later
 	if (!preventSwitch && isLockedToScreen()) {
-		LOG((CLOG_DEBUG1 _N("locked to screen")));
+		LOG((CLOG_DEBUG1"locked to screen")));
 		preventSwitch = true;
 		stopSwitch();
 	}
@@ -888,7 +888,7 @@ Server::isSwitchOkay(BaseClientProxy* newScreen,
 			(this->m_switchNeedsControl && ((mods & KeyModifierControl) != KeyModifierControl)) ||
 			(this->m_switchNeedsAlt && ((mods & KeyModifierAlt) != KeyModifierAlt))
 		)) {
-		LOG((CLOG_DEBUG1 _N("need modifiers to switch")));
+		LOG((CLOG_DEBUG1"need modifiers to switch")));
 		preventSwitch = true;
 		stopSwitch();
 	}
@@ -920,7 +920,7 @@ Server::startSwitchTwoTap()
 	m_switchTwoTapEngaged = true;
 	m_switchTwoTapArmed   = false;
 	m_switchTwoTapTimer.reset();
-	LOG((CLOG_DEBUG1 _N("waiting for second tap")));
+	LOG((CLOG_DEBUG1"waiting for second tap")));
 }
 
 void
@@ -999,7 +999,7 @@ Server::startSwitchWait(SInt32 x, SInt32 y)
 	m_switchWaitX     = x;
 	m_switchWaitY     = y;
 	m_switchWaitTimer = m_events->newOneShotTimer(m_switchWaitDelay, this);
-	LOG((CLOG_DEBUG1 _N("waiting to switch")));
+	LOG((CLOG_DEBUG1"waiting to switch")));
 }
 
 void
@@ -1087,7 +1087,7 @@ Server::stopRelativeMoves()
 		m_yDelta  = 0;
 		m_xDelta2 = 0;
 		m_yDelta2 = 0;
-		LOG((CLOG_DEBUG2 _N("synchronize move on %" _NF " by %d,%d"), getName(m_active).c_str(), m_x, m_y));
+		LOG((CLOG_DEBUG2"synchronize move on %" _NF " by %d,%d"), getName(m_active).c_str(), m_x, m_y));
 		m_active->mouseMove(m_x, m_y);
 	}
 }
@@ -1174,7 +1174,7 @@ Server::processOptions()
 			m_enableClipboard = (value != 0);
 
 			if (m_enableClipboard == false) {
-				LOG((CLOG_NOTE _N("clipboard sharing is disabled")));
+				LOG((CLOG_NOTE"clipboard sharing is disabled")));
 			}
 		}
 	}
@@ -1193,7 +1193,7 @@ Server::handleShapeChanged(const Event&, void* vclient)
 		return;
 	}
 
-	LOG((CLOG_DEBUG _N("screen \"%" _NF "\" shape changed"), getName(client).c_str()));
+	LOG((CLOG_DEBUG"screen \"%" _NF "\" shape changed"), getName(client).c_str()));
 
 	// update jump coordinate
 	SInt32 x, y;
@@ -1237,12 +1237,12 @@ Server::handleClipboardGrabbed(const Event& event, void* vclient)
 	ClipboardInfo& clipboard = m_clipboards[info->m_id];
 	if (grabber != m_primaryClient &&
 		info->m_sequenceNumber < clipboard.m_clipboardSeqNum) {
-		LOG((CLOG_INFO _N("ignored screen \"%" _NF "\" grab of clipboard %d"), getName(grabber).c_str(), info->m_id));
+		LOG((CLOG_INFO"ignored screen \"%" _NF "\" grab of clipboard %d"), getName(grabber).c_str(), info->m_id));
 		return;
 	}
 
 	// mark screen as owning clipboard
-	LOG((CLOG_INFO _N("screen \"%" _NF "\" grabbed clipboard %d from \"%" _NF "\""), getName(grabber).c_str(), info->m_id, clipboard.m_clipboardOwner.c_str()));
+	LOG((CLOG_INFO"screen \"%" _NF "\" grabbed clipboard %d from \"%" _NF "\""), getName(grabber).c_str(), info->m_id, clipboard.m_clipboardOwner.c_str()));
 	clipboard.m_clipboardOwner  = getName(grabber);
 	clipboard.m_clipboardSeqNum = info->m_sequenceNumber;
 
@@ -1361,7 +1361,7 @@ Server::handleSwitchWaitTimeout(const Event&, void*)
 {
 	// ignore if mouse is locked to screen
 	if (isLockedToScreen()) {
-		LOG((CLOG_DEBUG1 _N("locked to screen")));
+		LOG((CLOG_DEBUG1"locked to screen")));
 		stopSwitch();
 		return;
 	}
@@ -1387,7 +1387,7 @@ Server::handleClientCloseTimeout(const Event&, void* vclient)
 {
 	// client took too long to disconnect.  just dump it.
 	BaseClientProxy* client = static_cast<BaseClientProxy*>(vclient);
-	LOG((CLOG_NOTE _N("forced disconnection of client \"%" _NF "\""), getName(client).c_str()));
+	LOG((CLOG_NOTE"forced disconnection of client \"%" _NF "\""), getName(client).c_str()));
 	removeOldClient(client);
 
 	delete client;
@@ -1401,7 +1401,7 @@ Server::handleSwitchToScreenEvent(const Event& event, void*)
 
 	ClientList::const_iterator index = m_clients.find(info->m_screen);
 	if (index == m_clients.end()) {
-		LOG((CLOG_DEBUG1 _N("screen \"%" _NF "\" not active"), info->m_screen));
+		LOG((CLOG_DEBUG1"screen \"%" _NF "\" not active"), info->m_screen));
 	}
 	else {
 		jumpToScreen(index->second);
@@ -1419,7 +1419,7 @@ Server::handleSwitchInDirectionEvent(const Event& event, void*)
 	BaseClientProxy* newScreen =
 		getNeighbor(m_active, info->m_direction, x, y);
 	if (newScreen == NULL) {
-		LOG((CLOG_DEBUG1 _N("no neighbor %" _NF ""), Config::dirName(info->m_direction)));
+		LOG((CLOG_DEBUG1"no neighbor %" _NF ""), Config::dirName(info->m_direction)));
 	}
 	else {
 		jumpToScreen(newScreen);
@@ -1453,7 +1453,7 @@ Server::handleKeyboardBroadcastEvent(const Event& event, void*)
 		info->m_screens != m_keyboardBroadcastingScreens) {
 		m_keyboardBroadcasting        = newState;
 		m_keyboardBroadcastingScreens = info->m_screens;
-		LOG((CLOG_DEBUG _N("keyboard broadcasting %" _NF ": %" _NF ""), m_keyboardBroadcasting ? "on" : "off", m_keyboardBroadcastingScreens.c_str()));
+		LOG((CLOG_DEBUG"keyboard broadcasting %" _NF ": %" _NF ""), m_keyboardBroadcasting ? "on" : "off", m_keyboardBroadcastingScreens.c_str()));
 	}
 }
 
@@ -1482,7 +1482,7 @@ Server::handleLockCursorToScreenEvent(const Event& event, void*)
 	// enter new state
 	if (newState != m_lockedToScreen) {
 		m_lockedToScreen = newState;
-		LOG((CLOG_NOTE _N("cursor %" _NF " current screen"), m_lockedToScreen ? _N("locked to") : _N("unlocked from")));
+		LOG((CLOG_NOTE"cursor %" _NF " current screen"), m_lockedToScreen ?"locked to") :"unlocked from")));
 
 		m_primaryClient->reconfigure(getActivePrimarySides());
 		if (!isLockedToScreenServer()) {
@@ -1523,7 +1523,7 @@ Server::onClipboardChanged(BaseClientProxy* sender,
 
 	// ignore update if sequence number is old
 	if (seqNum < clipboard.m_clipboardSeqNum) {
-		LOG((CLOG_INFO _N("ignored screen \"%" _NF "\" update of clipboard %d (missequenced)"), getName(sender).c_str(), id));
+		LOG((CLOG_INFO"ignored screen \"%" _NF "\" update of clipboard %d (missequenced)"), getName(sender).c_str(), id));
 		return;
 	}
 
@@ -1536,12 +1536,12 @@ Server::onClipboardChanged(BaseClientProxy* sender,
 	// ignore if data hasn't changed
 	nstring data = clipboard.m_clipboard.marshall();
 	if (data == clipboard.m_clipboardData) {
-		LOG((CLOG_DEBUG _N("ignored screen \"%" _NF "\" update of clipboard %d (unchanged)"), clipboard.m_clipboardOwner.c_str(), id));
+		LOG((CLOG_DEBUG"ignored screen \"%" _NF "\" update of clipboard %d (unchanged)"), clipboard.m_clipboardOwner.c_str(), id));
 		return;
 	}
 
 	// got new data
-	LOG((CLOG_INFO _N("screen \"%" _NF "\" updated clipboard %d"), clipboard.m_clipboardOwner.c_str(), id));
+	LOG((CLOG_INFO"screen \"%" _NF "\" updated clipboard %d"), clipboard.m_clipboardOwner.c_str(), id));
 	clipboard.m_clipboardData = data;
 
 	// tell all clients except the sender that the clipboard is dirty
@@ -1558,7 +1558,7 @@ Server::onClipboardChanged(BaseClientProxy* sender,
 void
 Server::onScreensaver(bool activated)
 {
-	LOG((CLOG_DEBUG _N("onScreenSaver %" _NF ""), activated ? _N("activated") : _N("deactivated")));
+	LOG((CLOG_DEBUG"onScreenSaver %" _NF ""), activated ?"activated") :"deactivated")));
 
 	if (activated) {
 		// save current screen and position
@@ -1614,7 +1614,7 @@ void
 Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button,
 				const nchar* screens)
 {
-	LOG((CLOG_DEBUG1 _N("onKeyDown id=%d mask=0x%04x button=0x%04x"), id, mask, button));
+	LOG((CLOG_DEBUG1"onKeyDown id=%d mask=0x%04x button=0x%04x"), id, mask, button));
 	assert(m_active != NULL);
 
 	// relay
@@ -1625,7 +1625,7 @@ Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button,
 		if (!screens && m_keyboardBroadcasting) {
 			screens = m_keyboardBroadcastingScreens.c_str();
 			if (IKeyState::KeyInfo::isDefault(screens)) {
-				screens = _N("*");
+				screens ="*");
 			}
 		}
 		for (ClientList::const_iterator index = m_clients.begin();
@@ -1641,7 +1641,7 @@ void
 Server::onKeyUp(KeyID id, KeyModifierMask mask, KeyButton button,
 				const char* screens)
 {
-	LOG((CLOG_DEBUG1 _N("onKeyUp id=%d mask=0x%04x button=0x%04x"), id, mask, button));
+	LOG((CLOG_DEBUG1"onKeyUp id=%d mask=0x%04x button=0x%04x"), id, mask, button));
 	assert(m_active != NULL);
 
 	// relay
@@ -1652,7 +1652,7 @@ Server::onKeyUp(KeyID id, KeyModifierMask mask, KeyButton button,
 		if (!screens && m_keyboardBroadcasting) {
 			screens = m_keyboardBroadcastingScreens.c_str();
 			if (IKeyState::KeyInfo::isDefault(screens)) {
-				screens = _N("*");
+				screens ="*");
 			}
 		}
 		for (ClientList::const_iterator index = m_clients.begin();
@@ -1668,7 +1668,7 @@ void
 Server::onKeyRepeat(KeyID id, KeyModifierMask mask,
 				SInt32 count, KeyButton button)
 {
-	LOG((CLOG_DEBUG1 _N("onKeyRepeat id=%d mask=0x%04x count=%d button=0x%04x"), id, mask, count, button));
+	LOG((CLOG_DEBUG1"onKeyRepeat id=%d mask=0x%04x count=%d button=0x%04x"), id, mask, count, button));
 	assert(m_active != NULL);
 
 	// relay
@@ -1678,7 +1678,7 @@ Server::onKeyRepeat(KeyID id, KeyModifierMask mask,
 void
 Server::onMouseDown(ButtonID id)
 {
-	LOG((CLOG_DEBUG1 _N("onMouseDown id=%d"), id));
+	LOG((CLOG_DEBUG1"onMouseDown id=%d"), id));
 	assert(m_active != NULL);
 
 	// relay
@@ -1691,7 +1691,7 @@ Server::onMouseDown(ButtonID id)
 void
 Server::onMouseUp(ButtonID id)
 {
-	LOG((CLOG_DEBUG1 _N("onMouseUp id=%d"), id));
+	LOG((CLOG_DEBUG1"onMouseUp id=%d"), id));
 	assert(m_active != NULL);
 
 	// relay
@@ -1718,7 +1718,7 @@ Server::onMouseUp(ButtonID id)
 bool
 Server::onMouseMovePrimary(SInt32 x, SInt32 y)
 {
-	LOG((CLOG_DEBUG4 _N("onMouseMovePrimary %d,%d"), x, y));
+	LOG((CLOG_DEBUG4"onMouseMovePrimary %d,%d"), x, y));
 
 	// mouse move on primary (server's) screen
 	if (m_active != m_primaryClient) {
@@ -1852,9 +1852,9 @@ Server::sendDragInfo(BaseClientProxy* newScreen)
 		info = new char[size];
 		memcpy(info, infoString.c_str(), size);
 
-		LOG((CLOG_DEBUG2 _N("sending drag information to client")));
-		LOG((CLOG_DEBUG3 _N("dragging file list: %" _NF ""), info));
-		LOG((CLOG_DEBUG3 _N("dragging file list string size: %i"), size));
+		LOG((CLOG_DEBUG2"sending drag information to client")));
+		LOG((CLOG_DEBUG3"dragging file list: %" _NF ""), info));
+		LOG((CLOG_DEBUG3"dragging file list string size: %i"), size));
 		newScreen->sendDragInfo(fileCount, info, size);
 	}
 }
@@ -1862,7 +1862,7 @@ Server::sendDragInfo(BaseClientProxy* newScreen)
 void
 Server::onMouseMoveSecondary(SInt32 dx, SInt32 dy)
 {
-	LOG((CLOG_DEBUG2 _N("onMouseMoveSecondary %+d,%+d"), dx, dy));
+	LOG((CLOG_DEBUG2"onMouseMoveSecondary %+d,%+d"), dx, dy));
 
 	// mouse move on secondary (client's) screen
 	assert(m_active != NULL);
@@ -1878,7 +1878,7 @@ Server::onMouseMoveSecondary(SInt32 dx, SInt32 dy)
 	// program on the secondary screen to warp the mouse on us, so we
 	// have no idea where it really is.
 	if (m_relativeMoves && isLockedToScreenServer()) {
-		LOG((CLOG_DEBUG2 _N("relative move on %" _NF " by %d,%d"), getName(m_active).c_str(), dx, dy));
+		LOG((CLOG_DEBUG2"relative move on %" _NF " by %d,%d"), getName(m_active).c_str(), dx, dy));
 		m_active->mouseRelativeMove(dx, dy);
 		return;
 	}
@@ -2005,24 +2005,24 @@ Server::onMouseMoveSecondary(SInt32 dx, SInt32 dy)
 		m_y = yOld + dy;
 		if (m_x < ax) {
 			m_x = ax;
-			LOG((CLOG_DEBUG2 _N("clamp to left of \"%" _NF "\""), getName(m_active).c_str()));
+			LOG((CLOG_DEBUG2"clamp to left of \"%" _NF "\""), getName(m_active).c_str()));
 		}
 		else if (m_x > ax + aw - 1) {
 			m_x = ax + aw - 1;
-			LOG((CLOG_DEBUG2 _N("clamp to right of \"%" _NF "\""), getName(m_active).c_str()));
+			LOG((CLOG_DEBUG2"clamp to right of \"%" _NF "\""), getName(m_active).c_str()));
 		}
 		if (m_y < ay) {
 			m_y = ay;
-			LOG((CLOG_DEBUG2 _N("clamp to top of \"%" _NF "\""), getName(m_active).c_str()));
+			LOG((CLOG_DEBUG2"clamp to top of \"%" _NF "\""), getName(m_active).c_str()));
 		}
 		else if (m_y > ay + ah - 1) {
 			m_y = ay + ah - 1;
-			LOG((CLOG_DEBUG2 _N("clamp to bottom of \"%" _NF "\""), getName(m_active).c_str()));
+			LOG((CLOG_DEBUG2"clamp to bottom of \"%" _NF "\""), getName(m_active).c_str()));
 		}
 
 		// warp cursor if it moved.
 		if (m_x != xOld || m_y != yOld) {
-			LOG((CLOG_DEBUG2 _N("move on %" _NF " to %d,%d"), getName(m_active).c_str(), m_x, m_y));
+			LOG((CLOG_DEBUG2"move on %" _NF " to %d,%d"), getName(m_active).c_str(), m_x, m_y));
 			m_active->mouseMove(m_x, m_y);
 		}
 	}
@@ -2031,7 +2031,7 @@ Server::onMouseMoveSecondary(SInt32 dx, SInt32 dy)
 void
 Server::onMouseWheel(SInt32 xDelta, SInt32 yDelta)
 {
-	LOG((CLOG_DEBUG1 _N("onMouseWheel %+d,%+d"), xDelta, yDelta));
+	LOG((CLOG_DEBUG1"onMouseWheel %+d,%+d"), xDelta, yDelta));
 	assert(m_active != NULL);
 
 	// relay
@@ -2043,7 +2043,7 @@ Server::onFileChunkSending(const void* data)
 {
 	FileChunk* chunk = static_cast<FileChunk*>(const_cast<void*>(data));
 
-	LOG((CLOG_DEBUG1 _N("sending file chunk")));
+	LOG((CLOG_DEBUG1"sending file chunk")));
 	assert(m_active != NULL);
 
 	// relay
@@ -2063,7 +2063,7 @@ Server::onFileRecieveCompleted()
 void
 Server::writeToDropDirThread(void*)
 {
-	LOG((CLOG_DEBUG _N("starting write to drop dir thread")));
+	LOG((CLOG_DEBUG"starting write to drop dir thread")));
 
 	while (m_screen->isFakeDraggingStarted()) {
 		ARCH->sleep(.1f);
@@ -2148,7 +2148,7 @@ Server::closeClient(BaseClientProxy* client, const char* msg)
 	// note that this method also works on clients that are not in
 	// the m_clients list.  adoptClient() may call us with such a
 	// client.
-	LOG((CLOG_NOTE _N("disconnecting client \"%" _NF "\""), getName(client).c_str()));
+	LOG((CLOG_NOTE"disconnecting client \"%" _NF "\""), getName(client).c_str()));
 
 	// send message
 	// FIXME -- avoid type cast (kinda hard, though)
@@ -2238,7 +2238,7 @@ Server::forceLeaveClient(BaseClientProxy* client)
 
 		// don't notify active screen since it has probably already
 		// disconnected.
-		LOG((CLOG_INFO _N("jump from \"%" _NF "\" to \"%" _NF "\" at %d,%d"), getName(active).c_str(), getName(m_primaryClient).c_str(), m_x, m_y));
+		LOG((CLOG_INFO"jump from \"%" _NF "\" to \"%" _NF "\" at %d,%d"), getName(active).c_str(), getName(m_primaryClient).c_str(), m_x, m_y));
 
 		// cut over
 		m_active = m_primaryClient;
@@ -2368,11 +2368,11 @@ Server::sendFileThread(void* data)
 {
 	try {
 		char* filename = static_cast<char*>(data);
-		LOG((CLOG_DEBUG _N("sending file to client, filename=%" _NF), filename));
+		LOG((CLOG_DEBUG"sending file to client, filename=%" _NF), filename));
 		StreamChunker::sendFile(filename, m_events, this);
 	}
 	catch (std::runtime_error error) {
-		LOG((CLOG_ERR _N("failed sending file chunks, error: %" _NF), error.what()));
+		LOG((CLOG_ERR"failed sending file chunks, error: %" _NF), error.what()));
 	}
 
 	m_sendFileThread = NULL;
@@ -2382,7 +2382,7 @@ void
 Server::dragInfoReceived(UInt32 fileNum, nstring content)
 {
 	if (!m_args.m_enableDragDrop) {
-		LOG((CLOG_DEBUG _N("drag drop not enabled, ignoring drag info.")));
+		LOG((CLOG_DEBUG"drag drop not enabled, ignoring drag info.")));
 		return;
 	}
 

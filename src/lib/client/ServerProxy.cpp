@@ -116,19 +116,19 @@ ServerProxy::handleData(const Event&, void*)
 	while (n != 0) {
 		// verify we got an entire code
 		if (n != 4) {
-			LOG((CLOG_ERR _N("incomplete message from server: %d bytes"), n));
+			LOG((CLOG_ERR "incomplete message from server: %d bytes", n));
 			m_client->disconnect("incomplete message from server");
 			return;
 		}
 
 		// parse message
-		LOG((CLOG_DEBUG2 _N("msg from server: %c%c%c%c"), code[0], code[1], code[2], code[3]));
+		LOG((CLOG_DEBUG2 "msg from server: %c%c%c%c", code[0], code[1], code[2], code[3]));
 		switch ((this->*m_parser)(code)) {
 		case kOkay:
 			break;
 
 		case kUnknown:
-			LOG((CLOG_ERR _N("invalid message from server: %c%c%c%c"), code[0], code[1], code[2], code[3]));
+			LOG((CLOG_ERR "invalid message from server: %c%c%c%c", code[0], code[1], code[2], code[3]));
 			m_client->disconnect("invalid message from server");
 			return;
 
@@ -178,7 +178,7 @@ ServerProxy::parseHandshakeMessage(const UInt8* code)
 
 	else if (memcmp(code, kMsgCClose, 4) == 0) {
 		// server wants us to hangup
-		LOG((CLOG_DEBUG1 _N("recv close")));
+		LOG((CLOG_DEBUG1 "recv close"));
 		m_client->disconnect(NULL);
 		return kDisconnect;
 	}
@@ -187,25 +187,25 @@ ServerProxy::parseHandshakeMessage(const UInt8* code)
 		SInt32 major, minor;
 		ProtocolUtil::readf(m_stream,
 						kMsgEIncompatible + 4, &major, &minor);
-		LOG((CLOG_ERR _N("server has incompatible version %d.%d"), major, minor));
+		LOG((CLOG_ERR "server has incompatible version %d.%d", major, minor));
 		m_client->disconnect("server has incompatible version");
 		return kDisconnect;
 	}
 
 	else if (memcmp(code, kMsgEBusy, 4) == 0) {
-		LOG((CLOG_ERR _N("server already has a connected client with name \"%" _NF "\""), m_client->getName().c_str()));
+		LOG((CLOG_ERR "server already has a connected client with name \"" NFC "\"", m_client->getName().c_str()));
 		m_client->disconnect("server already has a connected client with our name");
 		return kDisconnect;
 	}
 
 	else if (memcmp(code, kMsgEUnknown, 4) == 0) {
-		LOG((CLOG_ERR _N("server refused client with name \"%" _NF "\""), m_client->getName().c_str()));
+		LOG((CLOG_ERR "server refused client with name \"" NFC "\"", m_client->getName().c_str()));
 		m_client->disconnect("server refused client with our name");
 		return kDisconnect;
 	}
 
 	else if (memcmp(code, kMsgEBad, 4) == 0) {
-		LOG((CLOG_ERR _N("server disconnected due to a protocol error")));
+		LOG((CLOG_ERR "server disconnected due to a protocol error"));
 		m_client->disconnect("server reported a protocol error");
 		return kDisconnect;
 	}
@@ -306,12 +306,12 @@ ServerProxy::parseMessage(const UInt8* code)
 
 	else if (memcmp(code, kMsgCClose, 4) == 0) {
 		// server wants us to hangup
-		LOG((CLOG_DEBUG1 _N("recv close")));
+		LOG((CLOG_DEBUG1 "recv close"));
 		m_client->disconnect(NULL);
 		return kDisconnect;
 	}
 	else if (memcmp(code, kMsgEBad, 4) == 0) {
-		LOG((CLOG_ERR _N("server disconnected due to a protocol error")));
+		LOG((CLOG_ERR "server disconnected due to a protocol error"));
 		m_client->disconnect("server reported a protocol error");
 		return kDisconnect;
 	}
@@ -334,7 +334,7 @@ ServerProxy::parseMessage(const UInt8* code)
 void
 ServerProxy::handleKeepAliveAlarm(const Event&, void*)
 {
-	LOG((CLOG_NOTE _N("server is dead")));
+	LOG((CLOG_NOTE "server is dead"));
 	m_client->disconnect("server is not responding");
 }
 
@@ -352,7 +352,7 @@ ServerProxy::onInfoChanged()
 bool
 ServerProxy::onGrabClipboard(ClipboardID id)
 {
-	LOG((CLOG_DEBUG1 _N("sending clipboard %d changed"), id));
+	LOG((CLOG_DEBUG1 "sending clipboard %d changed", id));
 	ProtocolUtil::writef(m_stream, kMsgCClipboard, id, m_seqNum);
 	return true;
 }
@@ -361,7 +361,7 @@ void
 ServerProxy::onClipboardChanged(ClipboardID id, const IClipboard* clipboard)
 {
 	std::string data = IClipboard::marshall(clipboard);
-	LOG((CLOG_DEBUG _N("sending clipboard %d seqnum=%d"), id, m_seqNum));
+	LOG((CLOG_DEBUG "sending clipboard %d seqnum=%d", id, m_seqNum));
 
 	StreamChunker::sendClipboard(data, data.size(), id, m_seqNum, m_events, this);
 }
@@ -384,7 +384,7 @@ ServerProxy::flushCompressedMouse()
 void
 ServerProxy::sendInfo(const ClientInfo& info)
 {
-	LOG((CLOG_DEBUG1 _N("sending info shape=%d,%d %dx%d"),
+	LOG((CLOG_DEBUG1 "sending info shape=%d,%d %dx%d",
 		info.m_x, info.m_y, info.m_w, info.m_h));
 	ProtocolUtil::writef(m_stream, kMsgDInfo,
 								info.m_x, info.m_y,
@@ -520,7 +520,7 @@ ServerProxy::enter()
 	UInt16 mask;
 	UInt32 seqNum;
 	ProtocolUtil::readf(m_stream, kMsgCEnter + 4, &x, &y, &seqNum, &mask);
-	LOG((CLOG_DEBUG1 _N("recv enter, %d,%d %d %04x"), x, y, seqNum, mask));
+	LOG((CLOG_DEBUG1 "recv enter, %d,%d %d %04x", x, y, seqNum, mask));
 
 	// discard old compressed mouse motion, if any
 	m_compressMouse         = false;
@@ -537,7 +537,7 @@ void
 ServerProxy::leave()
 {
 	// parse
-	LOG((CLOG_DEBUG1 _N("recv leave")));
+	LOG((CLOG_DEBUG1 "recv leave"));
 
 	// send last mouse motion
 	flushCompressedMouse();
@@ -558,17 +558,17 @@ ServerProxy::setClipboard()
 
 	if (r == kStart) {
 		size_t size = ClipboardChunk::getExpectedSize();
-		LOG((CLOG_DEBUG _N("receiving clipboard %d size=%d"), id, size));
+		LOG((CLOG_DEBUG "receiving clipboard %d size=%d", id, size));
 	}
 	else if (r == kFinish) {
-		LOG((CLOG_DEBUG _N("received clipboard %d size=%d"), id, dataCached.size()));
+		LOG((CLOG_DEBUG "received clipboard %d size=%d", id, dataCached.size()));
 
 		// forward
 		Clipboard clipboard;
 		clipboard.unmarshall(dataCached, 0);
 		m_client->setClipboard(id, &clipboard);
 
-		LOG((CLOG_INFO _N("clipboard was updated")));
+		LOG((CLOG_INFO "clipboard was updated"));
 	}
 }
 
@@ -579,7 +579,7 @@ ServerProxy::grabClipboard()
 	ClipboardID id;
 	UInt32 seqNum;
 	ProtocolUtil::readf(m_stream, kMsgCClipboard + 4, &id, &seqNum);
-	LOG((CLOG_DEBUG _N("recv grab clipboard %d"), id));
+	LOG((CLOG_DEBUG "recv grab clipboard %d", id));
 
 	// validate
 	if (id >= kClipboardEnd) {
@@ -599,7 +599,7 @@ ServerProxy::keyDown()
 	// parse
 	UInt16 id, mask, button;
 	ProtocolUtil::readf(m_stream, kMsgDKeyDown + 4, &id, &mask, &button);
-	LOG((CLOG_DEBUG1 _N("recv key down id=0x%08x, mask=0x%04x, button=0x%04x"),
+	LOG((CLOG_DEBUG1 "recv key down id=0x%08x, mask=0x%04x, button=0x%04x",
 		id, mask, button));
 
 	// translate
@@ -608,7 +608,7 @@ ServerProxy::keyDown()
 								static_cast<KeyModifierMask>(mask));
 	if (id2   != static_cast<KeyID>(id) ||
 		mask2 != static_cast<KeyModifierMask>(mask))
-		LOG((CLOG_DEBUG1 _N("key down translated to id=0x%08x, mask=0x%04x"),
+		LOG((CLOG_DEBUG1 "key down translated to id=0x%08x, mask=0x%04x",
 			id2, mask2));
 
 	// forward
@@ -625,7 +625,7 @@ ServerProxy::keyRepeat()
 	UInt16 id, mask, count, button;
 	ProtocolUtil::readf(m_stream, kMsgDKeyRepeat + 4,
 								&id, &mask, &count, &button);
-	LOG((CLOG_DEBUG1 _N("recv key repeat id=0x%08x, mask=0x%04x, count=%d, button=0x%04x"),
+	LOG((CLOG_DEBUG1 "recv key repeat id=0x%08x, mask=0x%04x, count=%d, button=0x%04x",
 		id, mask, count, button));
 
 	// translate
@@ -634,7 +634,7 @@ ServerProxy::keyRepeat()
 								static_cast<KeyModifierMask>(mask));
 	if (id2   != static_cast<KeyID>(id) ||
 		mask2 != static_cast<KeyModifierMask>(mask))
-		LOG((CLOG_DEBUG1 _N("key repeat translated to id=0x%08x, mask=0x%04x"), id2, mask2));
+		LOG((CLOG_DEBUG1 "key repeat translated to id=0x%08x, mask=0x%04x", id2, mask2));
 
 	// forward
 	m_client->keyRepeat(id2, mask2, count, button);
@@ -649,7 +649,7 @@ ServerProxy::keyUp()
 	// parse
 	UInt16 id, mask, button;
 	ProtocolUtil::readf(m_stream, kMsgDKeyUp + 4, &id, &mask, &button);
-	LOG((CLOG_DEBUG1 _N("recv key up id=0x%08x, mask=0x%04x, button=0x%04x"), id, mask, button));
+	LOG((CLOG_DEBUG1 "recv key up id=0x%08x, mask=0x%04x, button=0x%04x", id, mask, button));
 
 	// translate
 	KeyID id2             = translateKey(static_cast<KeyID>(id));
@@ -657,7 +657,7 @@ ServerProxy::keyUp()
 								static_cast<KeyModifierMask>(mask));
 	if (id2   != static_cast<KeyID>(id) ||
 		mask2 != static_cast<KeyModifierMask>(mask))
-		LOG((CLOG_DEBUG1 _N("key up translated to id=0x%08x, mask=0x%04x"), id2, mask2));
+		LOG((CLOG_DEBUG1 "key up translated to id=0x%08x, mask=0x%04x", id2, mask2));
 
 	// forward
 	m_client->keyUp(id2, mask2, button);
@@ -672,7 +672,7 @@ ServerProxy::mouseDown()
 	// parse
 	SInt8 id;
 	ProtocolUtil::readf(m_stream, kMsgDMouseDown + 4, &id);
-	LOG((CLOG_DEBUG1 _N("recv mouse down id=%d"), id));
+	LOG((CLOG_DEBUG1 "recv mouse down id=%d", id));
 
 	// forward
 	m_client->mouseDown(static_cast<ButtonID>(id));
@@ -687,7 +687,7 @@ ServerProxy::mouseUp()
 	// parse
 	SInt8 id;
 	ProtocolUtil::readf(m_stream, kMsgDMouseUp + 4, &id);
-	LOG((CLOG_DEBUG1 _N("recv mouse up id=%d"), id));
+	LOG((CLOG_DEBUG1 "recv mouse up id=%d", id));
 
 	// forward
 	m_client->mouseUp(static_cast<ButtonID>(id));
@@ -718,7 +718,7 @@ ServerProxy::mouseMove()
 		m_dxMouse = 0;
 		m_dyMouse = 0;
 	}
-	LOG((CLOG_DEBUG2 _N("recv mouse move %d,%d"), x, y));
+	LOG((CLOG_DEBUG2 "recv mouse move %d,%d", x, y));
 
 	// forward
 	if (!ignore) {
@@ -748,7 +748,7 @@ ServerProxy::mouseRelativeMove()
 		m_dxMouse += dx;
 		m_dyMouse += dy;
 	}
-	LOG((CLOG_DEBUG2 _N("recv mouse relative move %d,%d"), dx, dy));
+	LOG((CLOG_DEBUG2 "recv mouse relative move %d,%d", dx, dy));
 
 	// forward
 	if (!ignore) {
@@ -765,7 +765,7 @@ ServerProxy::mouseWheel()
 	// parse
 	SInt16 xDelta, yDelta;
 	ProtocolUtil::readf(m_stream, kMsgDMouseWheel + 4, &xDelta, &yDelta);
-	LOG((CLOG_DEBUG2 _N("recv mouse wheel %+d,%+d"), xDelta, yDelta));
+	LOG((CLOG_DEBUG2 "recv mouse wheel %+d,%+d", xDelta, yDelta));
 
 	// forward
 	m_client->mouseWheel(xDelta, yDelta);
@@ -777,7 +777,7 @@ ServerProxy::screensaver()
 	// parse
 	SInt8 on;
 	ProtocolUtil::readf(m_stream, kMsgCScreenSaver + 4, &on);
-	LOG((CLOG_DEBUG1 _N("recv screen saver on=%d"), on));
+	LOG((CLOG_DEBUG1 "recv screen saver on=%d", on));
 
 	// forward
 	m_client->screensaver(on != 0);
@@ -787,7 +787,7 @@ void
 ServerProxy::resetOptions()
 {
 	// parse
-	LOG((CLOG_DEBUG1 _N("recv reset options")));
+	LOG((CLOG_DEBUG1 "recv reset options"));
 
 	// forward
 	m_client->resetOptions();
@@ -807,7 +807,7 @@ ServerProxy::setOptions()
 	// parse
 	OptionsList options;
 	ProtocolUtil::readf(m_stream, kMsgDSetOptions + 4, &options);
-	LOG((CLOG_DEBUG1 _N("recv set options size=%d"), options.size()));
+	LOG((CLOG_DEBUG1 "recv set options size=%d", options.size()));
 
 	// forward
 	m_client->setOptions(options);
@@ -841,7 +841,7 @@ ServerProxy::setOptions()
 		if (id != kKeyModifierIDNull) {
 			m_modifierTranslationTable[id] =
 				static_cast<KeyModifierID>(options[i + 1]);
-			LOG((CLOG_DEBUG1 _N("modifier %d mapped to %d"), id, m_modifierTranslationTable[id]));
+			LOG((CLOG_DEBUG1 "modifier %d mapped to %d", id, m_modifierTranslationTable[id]));
 		}
 	}
 }
@@ -858,7 +858,7 @@ ServerProxy::queryInfo()
 void
 ServerProxy::infoAcknowledgment()
 {
-	LOG((CLOG_DEBUG1 _N("recv info acknowledgment")));
+	LOG((CLOG_DEBUG1 "recv info acknowledgment"));
 	m_ignoreMouse = false;
 }
 
@@ -876,7 +876,7 @@ ServerProxy::fileChunkReceived()
 	else if (result == kStart) {
 		if (m_client->getDragFileList().size() > 0) {
 			nstring filename = m_client->getDragFileList().at(0).getFilename();
-			LOG((CLOG_DEBUG _N("start receiving %s"), filename.c_str()));
+			LOG((CLOG_DEBUG "start receiving %s", filename.c_str()));
 		}
 	}
 }

@@ -85,14 +85,14 @@ void
 IpcClientProxy::handleDisconnect(const Event&, void*)
 {
 	disconnect();
-	LOG((CLOG_DEBUG _N("ipc client disconnected")));
+	LOG((CLOG_DEBUG N"ipc client disconnected"));
 }
 
 void
 IpcClientProxy::handleWriteError(const Event&, void*)
 {
 	disconnect();
-	LOG((CLOG_DEBUG _N("ipc client write error")));
+	LOG((CLOG_DEBUG N"ipc client write error"));
 }
 
 void
@@ -101,13 +101,13 @@ IpcClientProxy::handleData(const Event&, void*)
 	// don't allow the dtor to destroy the stream while we're using it.
 	ArchMutexLock lock(m_readMutex);
 
-	LOG((CLOG_DEBUG _N("start ipc handle data")));
+	LOG((CLOG_DEBUG N"start ipc handle data"));
 
 	UInt8 code[4];
 	UInt32 n = m_stream.read(code, 4);
 	while (n != 0) {
 
-		LOG((CLOG_DEBUG _N("ipc read: %c%c%c%c"),
+		LOG((CLOG_DEBUG N"ipc read: %c%c%c%c",
 			code[0], code[1], code[2], code[3]));
 
 		IpcMessage* m = nullptr;
@@ -118,7 +118,7 @@ IpcClientProxy::handleData(const Event&, void*)
 			m = parseCommand();
 		}
 		else {
-			LOG((CLOG_ERR _N("invalid ipc message")));
+			LOG((CLOG_ERR N"invalid ipc message"));
 			disconnect();
 		}
 
@@ -130,7 +130,7 @@ IpcClientProxy::handleData(const Event&, void*)
 		n = m_stream.read(code, 4);
 	}
 
-	LOG((CLOG_DEBUG _N("finished ipc handle data")));
+	LOG((CLOG_DEBUG N"finished ipc handle data"));
 }
 
 void
@@ -141,7 +141,7 @@ IpcClientProxy::send(const IpcMessage& message)
 	// also, don't allow the dtor to destroy the stream while we're using it.
 	ArchMutexLock lock(m_writeMutex);
 
-	LOG((CLOG_DEBUG4 _N("ipc write: %d"), message.type()));
+	LOG((CLOG_DEBUG4 N"ipc write: %d", message.type()));
 
 	switch (message.type()) {
 	case kIpcLogLine: {
@@ -156,7 +156,7 @@ IpcClientProxy::send(const IpcMessage& message)
 		break;
 
 	default:
-		LOG((CLOG_ERR _N("ipc message not supported: %d"), message.type()));
+		LOG((CLOG_ERR N"ipc message not supported: %d", message.type()));
 		break;
 	}
 }
@@ -187,7 +187,7 @@ IpcClientProxy::parseCommand()
 void
 IpcClientProxy::disconnect()
 {
-	LOG((CLOG_DEBUG _N("ipc disconnect, closing stream")));
+	LOG((CLOG_DEBUG N"ipc disconnect, closing stream"));
 	m_disconnecting = true;
 	m_stream.close();
 	m_events->addEvent(Event(m_events->forIpcClientProxy().disconnected(), this));

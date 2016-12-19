@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,23 +33,23 @@ ArchDaemonNone::~ArchDaemonNone()
 }
 
 void
-ArchDaemonNone::installDaemon(const char*,
-				const char*,
-				const char*,
-				const char*,
-				const char*)
+ArchDaemonNone::installDaemon(const nchar*,
+				const nchar*,
+				const nchar*,
+				const nchar*,
+				const nchar*)
 {
 	// do nothing
 }
 
 void
-ArchDaemonNone::uninstallDaemon(const char*)
+ArchDaemonNone::uninstallDaemon(const nchar*)
 {
 	// do nothing
 }
 
 int
-ArchDaemonNone::daemonize(const char* name, DaemonFunc func)
+ArchDaemonNone::daemonize(const nchar* name, DaemonFunc func)
 {
 	// simply forward the call to func.  obviously, this doesn't
 	// do any daemonizing.
@@ -57,13 +57,13 @@ ArchDaemonNone::daemonize(const char* name, DaemonFunc func)
 }
 
 bool
-ArchDaemonNone::canInstallDaemon(const char*)
+ArchDaemonNone::canInstallDaemon(const nchar*)
 {
 	return false;
 }
 
 bool
-ArchDaemonNone::isDaemonInstalled(const char*)
+ArchDaemonNone::isDaemonInstalled(const nchar*)
 {
 	return false;
 }
@@ -78,8 +78,8 @@ ArchDaemonNone::uninstallDaemon()
 {
 }
 
-std::string
+nstring
 ArchDaemonNone::commandLine() const
 {
-	return "";
+	return N"";
 }

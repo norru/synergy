@@ -101,7 +101,7 @@ IpcServer::handleClientConnecting(const Event&, void*)
 		return;
 	}
 
-	LOG((CLOG_DEBUG _N("accepted ipc client connection")));
+	LOG((CLOG_DEBUG N"accepted ipc client connection"));
 
 	ARCH->lockMutex(m_clientsMutex);
 	IpcClientProxy* proxy = new IpcClientProxy(*stream, m_events);
@@ -131,7 +131,7 @@ IpcServer::handleClientDisconnected(const Event& e, void*)
 	m_clients.remove(proxy);
 	deleteClient(proxy);
 
-	LOG((CLOG_DEBUG _N("ipc client proxy removed, connected=%d"), m_clients.size()));
+	LOG((CLOG_DEBUG N"ipc client proxy removed, connected=%d", m_clients.size()));
 }
 
 void

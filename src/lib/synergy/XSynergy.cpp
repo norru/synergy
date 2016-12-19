@@ -56,9 +56,9 @@ XIncompatibleClient::getMinor() const throw()
 nstring
 XIncompatibleClient::getWhat() const throw()
 {
-	return format(_N("XIncompatibleClient"), _N("incompatible client %{1}.%{2}"),
-							synergy::string::sprintf(_N("%d"), m_major).c_str(),
-							synergy::string::sprintf(_N("%d"), m_minor).c_str());
+	return format(N"XIncompatibleClient"),"incompatible client %{1}.%{2}"),
+							synergy::string::sprintf(N"%d"), m_major).c_str(),
+							synergy::string::sprintf(N"%d"), m_minor).c_str());
 }
 
 
@@ -81,7 +81,7 @@ XDuplicateClient::getName() const throw()
 nstring
 XDuplicateClient::getWhat() const throw()
 {
-	return format(_N("XDuplicateClient"), _N("duplicate client %{1}"), m_name.c_str());
+	return format(N"XDuplicateClient"),"duplicate client %{1}"), m_name.c_str());
 }
 
 
@@ -104,7 +104,7 @@ XUnknownClient::getName() const throw()
 nstring
 XUnknownClient::getWhat() const throw()
 {
-	return format(_N("XUnknownClient"), _N("unknown client %{1}"), m_name.c_str());
+	return format(N"XUnknownClient"),"unknown client %{1}"), m_name.c_str());
 }
 
 
@@ -128,6 +128,6 @@ nstring
 XExitApp::getWhat() const throw()
 {
 	return format(
-		_N("XExitApp"), _N("exiting with code %{1}"),
-		synergy::string::sprintf(_N("%d"), m_code).c_str());
+		N"XExitApp"),"exiting with code %{1}"),
+		synergy::string::sprintf(N"%d"), m_code).c_str());
 }

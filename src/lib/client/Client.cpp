@@ -140,7 +140,7 @@ Client::connect()
 		// m_serverAddress will be null if the hostname address is not reolved
 		if (m_serverAddress.getAddress() != NULL) {
 			// to help users troubleshoot, show server host name (issue: 60)
-			LOG((CLOG_NOTE _N("connecting to '%s': %s:%i"),
+			LOG((CLOG_NOTE "connecting to '%s': %s:%i",
 				m_serverAddress.getHostname().c_str(),
 				ARCH->addrToString(m_serverAddress.getAddress()).c_str(),
 				m_serverAddress.getPort()));
@@ -155,7 +155,7 @@ Client::connect()
 		m_stream = new PacketStreamFilter(m_events, m_stream, true);
 
 		// connect
-		LOG((CLOG_DEBUG1 _N("connecting to server")));
+		LOG((CLOG_DEBUG1 "connecting to server"));
 		setupConnecting();
 		setupTimer();
 		socket->connect(m_serverAddress);
@@ -164,8 +164,8 @@ Client::connect()
 		cleanupTimer();
 		cleanupConnecting();
 		cleanupStream();
-		LOG((CLOG_DEBUG1 _N("connection failed")));
-		sendConnectionFailedEvent(e.what());
+		LOG((CLOG_DEBUG1 "connection failed"));
+		sendConnectionFailedEvent(e.what().c_str());
 		return;
 	}
 }
@@ -360,7 +360,7 @@ Client::setOptions(const OptionsList& options)
 		if (id == kOptionClipboardSharing) {
 			index++;
 			if (!*index) {
-				LOG((CLOG_NOTE _N("clipboard sharing is disabled")));
+				LOG((CLOG_NOTE "clipboard sharing is disabled"));
 			}
 			m_enableClipboard = !!*index;
 
@@ -589,7 +589,7 @@ Client::cleanupStream()
 void
 Client::handleConnected(const Event&, void*)
 {
-	LOG((CLOG_DEBUG1 _N("connected;  wait for hello")));
+	LOG((CLOG_DEBUG1 "connected;  wait for hello"));
 	cleanupConnecting();
 	setupConnection();
 
@@ -610,7 +610,7 @@ Client::handleConnectionFailed(const Event& event, void*)
 	cleanupTimer();
 	cleanupConnecting();
 	cleanupStream();
-	LOG((CLOG_DEBUG1 _N("connection failed")));
+	LOG((CLOG_DEBUG1 "connection failed"));
 	sendConnectionFailedEvent(info->m_what.c_str());
 	delete info;
 }
@@ -622,7 +622,7 @@ Client::handleConnectTimeout(const Event&, void*)
 	cleanupConnecting();
 	cleanupConnection();
 	cleanupStream();
-	LOG((CLOG_DEBUG1 _N("connection timed out")));
+	LOG((CLOG_DEBUG1 "connection timed out"));
 	sendConnectionFailedEvent("Timed out");
 }
 
@@ -632,7 +632,7 @@ Client::handleOutputError(const Event&, void*)
 	cleanupTimer();
 	cleanupScreen();
 	cleanupConnection();
-	LOG((CLOG_WARN _N("error sending to server")));
+	LOG((CLOG_WARN "error sending to server"));
 	sendEvent(m_events->forClient().disconnected(), NULL);
 }
 
@@ -642,14 +642,14 @@ Client::handleDisconnected(const Event&, void*)
 	cleanupTimer();
 	cleanupScreen();
 	cleanupConnection();
-	LOG((CLOG_DEBUG1 _N("disconnected")));
+	LOG((CLOG_DEBUG1 "disconnected"));
 	sendEvent(m_events->forClient().disconnected(), NULL);
 }
 
 void
 Client::handleShapeChanged(const Event&, void*)
 {
-	LOG((CLOG_DEBUG _N("resolution changed")));
+	LOG((CLOG_DEBUG "resolution changed"));
 	m_server->onInfoChanged();
 }
 
@@ -693,14 +693,14 @@ Client::handleHello(const Event&, void*)
 	LOG((CLOG_DEBUG1 "got hello version %d.%d", major, minor));
 	if (major < kProtocolMajorVersion ||
 		(major == kProtocolMajorVersion && minor < kProtocolMinorVersion)) {
-		sendConnectionFailedEvent(XIncompatibleClient(major, minor).what());
+		sendConnectionFailedEvent(XIncompatibleClient(major, minor).what().c_str());
 		cleanupTimer();
 		cleanupConnection();
 		return;
 	}
 
 	// say hello back
-	LOG((CLOG_DEBUG1 _N("say hello version %d.%d"), kProtocolMajorVersion, kProtocolMinorVersion));
+	LOG((CLOG_DEBUG1 "say hello version %d.%d", kProtocolMajorVersion, kProtocolMinorVersion));
 	ProtocolUtil::writef(m_stream, kMsgHelloBack,
 							kProtocolMajorVersion,
 							kProtocolMinorVersion, &m_name);
@@ -721,7 +721,7 @@ Client::handleHello(const Event&, void*)
 void
 Client::handleSuspend(const Event&, void*)
 {
-	LOG((CLOG_INFO _N("suspend")));
+	LOG((CLOG_INFO "suspend"));
 	m_suspended       = true;
 	bool wasConnected = isConnected();
 	disconnect(NULL);
@@ -731,7 +731,7 @@ Client::handleSuspend(const Event&, void*)
 void
 Client::handleResume(const Event&, void*)
 {
-	LOG((CLOG_INFO _N("resume")));
+	LOG((CLOG_INFO "resume"));
 	m_suspended = false;
 	if (m_connectOnResume) {
 		m_connectOnResume = false;
@@ -770,7 +770,7 @@ Client::handleStopRetry(const Event&, void*)
 void
 Client::writeToDropDirThread(void*)
 {
-	LOG((CLOG_DEBUG _N("starting write to drop dir thread")));
+	LOG((CLOG_DEBUG "starting write to drop dir thread"));
 
 	while (m_screen->isFakeDraggingStarted()) {
 		ARCH->sleep(.1f);
@@ -785,7 +785,7 @@ Client::dragInfoReceived(UInt32 fileNum, nstring data)
 {
 	// TODO: fix duplicate function from CServer
 	if (!m_args.m_enableDragDrop) {
-		LOG((CLOG_DEBUG _N("drag drop not enabled, ignoring drag info.")));
+		LOG((CLOG_DEBUG "drag drop not enabled, ignoring drag info."));
 		return;
 	}
 
@@ -801,7 +801,7 @@ Client::isReceivedFileSizeValid()
 }
 
 void
-Client::sendFileToServer(const char* filename)
+Client::sendFileToServer(const nchar* filename)
 {
 	if (m_sendFileThread != NULL) {
 		StreamChunker::interruptFile();
@@ -810,18 +810,18 @@ Client::sendFileToServer(const char* filename)
 	m_sendFileThread = new Thread(
 		new TMethodJob<Client>(
 			this, &Client::sendFileThread,
-			static_cast<void*>(const_cast<char*>(filename))));
+			static_cast<void*>(filename)));
 }
 
 void
 Client::sendFileThread(void* filename)
 {
 	try {
-		nchar* name  = static_cast<nchar*>(filename);
+		const nchar* name  = static_cast<const nchar*>(filename);
 		StreamChunker::sendFile(name, m_events, this);
 	}
 	catch (std::runtime_error error) {
-		LOG((CLOG_ERR _N("failed sending file chunks: %s"), error.what()));
+		LOG((CLOG_ERR "failed sending file chunks: %s", error.what()));
 	}
 
 	m_sendFileThread = NULL;

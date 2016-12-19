@@ -115,9 +115,9 @@ EventQueue::loop()
 		*m_readyCondVar = true;
 		m_readyCondVar->signal();
 	}
-	LOG((CLOG_DEBUG _N("event queue is ready")));
+	LOG((CLOG_DEBUG N"event queue is ready"));
 	while (!m_pending.empty()) {
-		LOG((CLOG_DEBUG _N("add pending events to buffer")));
+		LOG((CLOG_DEBUG N"add pending events to buffer"));
 		Event& event = m_pending.front();
 		addEventToBuffer(event);
 		m_pending.pop();
@@ -139,32 +139,32 @@ EventQueue::registerTypeOnce(Event::Type& type, const nchar* name)
 	if (type == Event::kUnknown) {
 		m_typeMap.insert(std::make_pair(m_nextType, name));
 		m_nameMap.insert(std::make_pair(name, m_nextType));
-		LOG((CLOG_DEBUG1 _N("registered event type %" _NF " as %d"), name, m_nextType));
+		LOG((CLOG_DEBUG1 N"registered event type " NFC " as %d", name, m_nextType));
 		type = m_nextType++;
 	}
 	return type;
 }
 
-const char*
+const nchar*
 EventQueue::getTypeName(Event::Type type)
 {
 	switch (type) {
 	case Event::kUnknown:
-		return _N("nil");
+		return N"nil";
 
 	case Event::kQuit:
-		return _N("quit");
+		return N"quit";
 
 	case Event::kSystem:
-		return _N("system");
+		return N"system";
 
 	case Event::kTimer:
-		return _N("timer");
+		return N"timer";
 
 	default:
 		TypeMap::const_iterator i = m_typeMap.find(type);
 		if (i == m_typeMap.end()) {
-			return _N("<unknown>");
+			return N"<unknown>";
 		}
 		else {
 			return i->second;
@@ -177,12 +177,12 @@ EventQueue::adoptBuffer(IEventQueueBuffer* buffer)
 {
 	ArchMutexLock lock(m_mutex);
 
-	LOG((CLOG_DEBUG _N("adopting new buffer")));
+	LOG((CLOG_DEBUG N"adopting new buffer"));
 
 	if (m_events.size() != 0) {
 		// this can come as a nasty surprise to programmers expecting
 		// their events to be raised, only to have them deleted.
-		LOG((CLOG_DEBUG _N("discarding %d event(s)"), m_events.size()));
+		LOG((CLOG_DEBUG N"discarding %d event(s)", m_events.size()));
 	}
 
 	// discard old buffer and old events

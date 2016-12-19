@@ -60,7 +60,7 @@ public:
 						registerTypeOnce(Event::Type& type, const nchar* name);
 	virtual bool		isEmpty() const;
 	virtual IEventJob*	getHandler(Event::Type type, void* target) const;
-	virtual const char*	getTypeName(Event::Type type);
+	virtual const nchar* getTypeName(Event::Type type);
 	virtual Event::Type
 						getRegisteredType(const nstring& name) const;
 	void*				getSystemTarget();

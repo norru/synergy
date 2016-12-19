@@ -54,7 +54,7 @@ ClientListener::ClientListener(const NetworkAddress& address,
 							&ClientListener::handleClientConnecting));
 
 		// bind listen address
-		LOG((CLOG_DEBUG1 _N("binding listen socket")));
+		LOG((CLOG_DEBUG1 "binding listen socket"));
 		m_listen->bind(address);
 	}
 	catch (XSocketAddressInUse&) {
@@ -67,12 +67,12 @@ ClientListener::ClientListener(const NetworkAddress& address,
 		delete m_socketFactory;
 		throw;
 	}
-	LOG((CLOG_DEBUG1 _N("listening for clients")));
+	LOG((CLOG_DEBUG1 "listening for clients"));
 }
 
 ClientListener::~ClientListener()
 {
-	LOG((CLOG_DEBUG1 _N("stop listening for clients")));
+	LOG((CLOG_DEBUG1 "stop listening for clients"));
 
 	// discard already connected clients
 	for (NewClients::iterator index = m_newClients.begin();
@@ -144,7 +144,7 @@ ClientListener::handleClientConnecting(const Event&, void*)
 void
 ClientListener::handleClientAccepted(const Event&, void* vsocket)
 {
-	LOG((CLOG_NOTE _N("accepted client connection")));
+	LOG((CLOG_NOTE "accepted client connection"));
 
 	IDataSocket* socket = static_cast<IDataSocket*>(vsocket);
 

@@ -34,11 +34,12 @@ public:
 	virtual ~XBase() _NOEXCEPT;
 
 	//! Reason for exception
-	virtual const nchar* what() const _NOEXCEPT;
+	virtual const nstring what() const _NOEXCEPT;
+	virtual const char* what() const _NOEXCEPT;
 
 protected:
 	//! Get a human readable string describing the exception
-	virtual nstring		getWhat() const throw() { return ""; }
+	virtual nstring		getWhat() const throw() { return N""; }
 
 	//! Format a string
 	/*!
@@ -101,7 +102,23 @@ public:																	\
 	name_(const nstring& msg) : super_(msg), m_state(kFirst) { }		\
 	virtual ~name_() _NOEXCEPT { }										\
 																		\
-	virtual const nchar*	what() const _NOEXCEPT						\
+#if SYSAPI_WIN32														\
+	virtual const std::string what() const _NOEXCEPT					\
+	{																	\
+		if (m_state == kFirst) {										\
+			m_state = kFormat;											\
+			m_formatted = getWhat();									\
+			m_state = kDone;											\
+		}																\
+		if (m_state == kDone) {											\
+			return synerg::string::nativeToUtf8(m_formatted);			\
+		}																\
+		else {															\
+			return super_::what();										\
+		}																\
+	}																	\
+#endif																	\
+	virtual const nstring what() const _NOEXCEPT						\
 	{																	\
 		if (m_state == kFirst) {										\
 			m_state = kFormat;											\
@@ -121,5 +138,5 @@ protected:																\
 																		\
 private:																\
 	mutable EState				m_state;								\
-	mutable std::string			m_formatted;							\
+	mutable nstring			m_formatted;								\
 }

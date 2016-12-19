@@ -201,7 +201,7 @@ SocketMultiplexer::serviceThread(void*)
 			}
 		}
 		catch (XArchNetwork& e) {
-			LOG((CLOG_WARN _N("error in socket multiplexer: %s"), e.what()));
+			LOG((CLOG_WARN "error in socket multiplexer: " NF, e.what()));
 			status = 0;
 		}
 

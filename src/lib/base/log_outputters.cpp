@@ -272,7 +272,7 @@ FileLogOutputter::write(ELevel level, const nchar *message)
 	m_handle.close();
 
 	if (moveFile) {
-		nstring oldLogFilename = synergy::string::sprintf(_N("%s.1"), m_fileName.c_str());
+		nstring oldLogFilename = synergy::string::sprintf(N"%s.1", m_fileName.c_str());
 		remove(oldLogFilename.c_str());
 		rename(m_fileName.c_str(), oldLogFilename.c_str());
 	}

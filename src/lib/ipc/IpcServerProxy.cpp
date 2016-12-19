@@ -48,13 +48,13 @@ IpcServerProxy::~IpcServerProxy()
 void
 IpcServerProxy::handleData(const Event&, void*)
 {
-	LOG((CLOG_DEBUG _N("start ipc handle data")));
+	LOG((CLOG_DEBUG N"start ipc handle data"));
 
 	UInt8 code[4];
 	UInt32 n = m_stream.read(code, 4);
 	while (n != 0) {
 
-		LOG((CLOG_DEBUG _N("ipc read: %c%c%c%c"),
+		LOG((CLOG_DEBUG"ipc read: %c%c%c%c",
 			code[0], code[1], code[2], code[3]));
 
 		IpcMessage* m = nullptr;
@@ -65,7 +65,7 @@ IpcServerProxy::handleData(const Event&, void*)
 			m = new IpcShutdownMessage();
 		}
 		else {
-			LOG((CLOG_ERR _N("invalid ipc message")));
+			LOG((CLOG_ERR N"invalid ipc message"));
 			disconnect();
 		}
 
@@ -77,13 +77,13 @@ IpcServerProxy::handleData(const Event&, void*)
 		n = m_stream.read(code, 4);
 	}
 
-	LOG((CLOG_DEBUG _N("finished ipc handle data")));
+	LOG((CLOG_DEBUG N"finished ipc handle data"));
 }
 
 void
 IpcServerProxy::send(const IpcMessage& message)
 {
-	LOG((CLOG_DEBUG4 _N("ipc write: %d"), message.type()));
+	LOG((CLOG_DEBUG4 N"ipc write: %d", message.type()));
 
 	switch (message.type()) {
 	case kIpcHello: {
@@ -100,7 +100,7 @@ IpcServerProxy::send(const IpcMessage& message)
 	}
 
 	default:
-		LOG((CLOG_ERR _N("ipc message not supported: %d"), message.type()));
+		LOG((CLOG_ERR N"ipc message not supported: %d", message.type()));
 		break;
 	}
 }
@@ -118,6 +118,6 @@ IpcServerProxy::parseLogLine()
 void
 IpcServerProxy::disconnect()
 {
-	LOG((CLOG_DEBUG _N("ipc disconnect, closing stream")));
+	LOG((CLOG_DEBUG N"ipc disconnect, closing stream"));
 	m_stream.close();
 }

@@ -75,11 +75,11 @@ DragInformation::parseDragInfo(DragFileList& dragFileList, UInt32 fileNum, std::
 		++index;
 	}
 
-	LOG((CLOG_DEBUG _N("drag info received, total drag file number: %i"),
+	LOG((CLOG_DEBUG"drag info received, total drag file number: %i"),
 		dragFileList.size()));
 
 	for (size_t i = 0; i < dragFileList.size(); ++i) {
-		LOG((CLOG_DEBUG _N("dragging file %i name: %" _NF),
+		LOG((CLOG_DEBUG"dragging file %i name: %" _NF),
 			i + 1,
 			dragFileList.at(i).getFilename().c_str()));
 	}
@@ -89,12 +89,12 @@ nstring
 DragInformation::getDragFileExtension(nstring filename)
 {
 	size_t findResult = string::npos;
-	findResult = filename.find_last_of(_N("."), filename.size());
+	findResult = filename.find_last_of(N"."), filename.size());
 	if (findResult != string::npos) {
 		return filename.substr(findResult + 1, filename.size() - findResult - 1);
 	}
 	else {
-		return _N("");
+		return"");
 	}
 }
 

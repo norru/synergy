@@ -117,7 +117,7 @@ TCPSocket::close()
 		}
 		catch (XArchNetwork& e) {
 			// ignore, there's not much we can do
-			LOG((CLOG_WARN _N("error closing socket: %s"), e.what()));
+			LOG((CLOG_WARN "error closing socket: " NF, e.what().c_str()));
 		}
 	}
 }
@@ -257,7 +257,7 @@ bool
 TCPSocket::isFatal() const
 {
 	// TCP sockets aren't ever left in a fatal state.
-	LOG((CLOG_ERR _N("isFatal() not valid for non-secure connections")));
+	LOG((CLOG_ERR "isFatal() not valid for non-secure connections"));
 	return false;
 }
 
@@ -562,7 +562,7 @@ TCPSocket::serviceConnected(ISocketMultiplexerJob* job,
 		}
 		catch (XArchNetwork& e) {
 			// other write error
-			LOG((CLOG_WARN _N("error writing socket: %s"), e.what()));
+			LOG((CLOG_WARN "error writing socket: " NF, e.what().c_str()));
 			onDisconnected();
 			sendEvent(m_events->forIStream().outputError());
 			sendEvent(m_events->forISocket().disconnected());
@@ -582,7 +582,7 @@ TCPSocket::serviceConnected(ISocketMultiplexerJob* job,
 		}
 		catch (XArchNetwork& e) {
 			// ignore other read error
-			LOG((CLOG_WARN _N("error reading socket: %s"), e.what()));
+			LOG((CLOG_WARN "error reading socket: " NF, e.what().c_str()));
 		}
 	}
 

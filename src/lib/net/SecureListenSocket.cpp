@@ -23,8 +23,8 @@
 #include "net/TSocketMultiplexerMethodJob.h"
 #include "arch/XArch.h"
 
-static const nchar s_certificateDir[] = { _N("SSL") };
-static const nchar s_certificateFilename[] = { _N("Synergy.pem") };
+static const nchar s_certificateDir[] = {N"SSL"};
+static const nchar s_certificateFilename[] = {N"Synergy.pem"};
 
 //
 // SecureListenSocket
@@ -62,7 +62,7 @@ SecureListenSocket::accept()
 		}
 
 		nstring certificateFilename = synergy::string::sprintf(
-			"%" _NF "/%" _NF "/%" _NF,
+			NFC "/" NFC "/" NF,
 			ARCH->getProfileDirectory().c_str(),
 			s_certificateDir,
 			s_certificateFilename);

@@ -55,7 +55,7 @@ ClientProxy1_6::setClipboard(ClipboardID id, const IClipboard* clipboard)
 		nstring data = m_clipboard[id].m_clipboard.marshall();
 
 		size_t size = data.size();
-		LOG((CLOG_DEBUG _N("sending clipboard %d to \"%" _NF "\""), id, getName().c_str()));
+		LOG((CLOG_DEBUG "sending clipboard %d to \"" NFC "\"", id, getName().c_str()));
 
 		StreamChunker::sendClipboard(data, size, id, 0, m_events, this);
 	}
@@ -79,10 +79,10 @@ ClientProxy1_6::recvClipboard()
 
 	if (r == kStart) {
 		size_t size = ClipboardChunk::getExpectedSize();
-		LOG((CLOG_DEBUG _N("receiving clipboard %d size=%d"), id, size));
+		LOG((CLOG_DEBUG"receiving clipboard %d size=%d"), id, size));
 	}
 	else if (r == kFinish) {
-		LOG((CLOG_DEBUG _N("received client \"%" _NF "\" clipboard %d seqnum=%d, size=%d"),
+		LOG((CLOG_DEBUG "received client \"" NFC "\" clipboard %d seqnum=%d, size=%d",
 				getName().c_str(), id, seq, dataCached.size()));
 		// save clipboard
 		m_clipboard[id].m_clipboard.unmarshall(dataCached, 0);

@@ -48,7 +48,7 @@ public:
 	static void			removeDoubleQuotes(nstring& arg);
 	static const nchar** getArgv(std::vector<nstring>& argsArray);
 	static std::string	assembleCommand(std::vector<nstring>& argsArray,
-							nstring ignoreArg = _N(""), int parametersRequired = 0);
+							nstring ignoreArg =""), int parametersRequired = 0);
 
 private:
 	void				updateCommonArgs(const nchar* const* argv);

@@ -45,7 +45,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_logLevelCmd_setLogLevel)
 {
 	int i = 1;
 	const int argc = 3;
-	const nchar* kLogLevelCmd[argc] = { _N("stub"), _N("--debug"), _N("DEBUG") };
+	const nchar* kLogLevelCmd[argc] = { N"stub", N"--debug", N"DEBUG" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -63,7 +63,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_logFileCmd_saveLogFilename)
 {
 	int i = 1;
 	const int argc = 3;
-	const nchar* kLogFileCmd[argc] = { _N("stub"), _N("--log"), _N("mock_filename") };
+	const nchar* kLogFileCmd[argc] = { N"stub", N"--log", N"mock_filename" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -81,7 +81,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_logFileCmdWithSpace_saveLogFilena
 {
 	int i = 1;
 	const int argc = 3;
-	const nchar* kLogFileCmdWithSpace[argc] = { _N("stub"), _N("--log"), _N("mo ck_filename")};
+	const nchar* kLogFileCmdWithSpace[argc] = { N"stub", N"--log", N"mo ck_filename" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -99,7 +99,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_noDeamonCmd_daemonFalse)
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kNoDeamonCmd[argc] = { _N("stub"), _N("-f") };
+	const nchar* kNoDeamonCmd[argc] = { N"stub", N"-f" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -115,7 +115,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_deamonCmd_daemonTrue)
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kDeamonCmd[argc] = { _N("stub"), _N("--daemon") };
+	const nchar* kDeamonCmd[argc] = { N"stub", N"--daemon" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -131,7 +131,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_nameCmd_saveName)
 {
 	int i = 1;
 	const int argc = 3;
-	const nchar* kNameCmd[argc] = { _N("stub"), _N("--name"), _N("mock") };
+	const nchar* kNameCmd[argc] = { N"stub", N"--name", N"mock" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -147,7 +147,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_noRestartCmd_restartFalse)
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kNoRestartCmd[argc] = { _N("stub"), _N("--no-restart") };
+	const nchar* kNoRestartCmd[argc] = { N"stub", N"--no-restart" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -163,7 +163,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_restartCmd_restartTrue)
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kRestartCmd[argc] = { _N("stub"), _N("--restart") };
+	const nchar* kRestartCmd[argc] = { N"stub", N"--restart" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -179,7 +179,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_backendCmd_backendTrue)
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kBackendCmd[argc] = { _N("stub"), _N("-z") };
+	const nchar* kBackendCmd[argc] = { N"stub", N"-z" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -195,7 +195,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_noHookCmd_noHookTrue)
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kNoHookCmd[argc] = { _N("stub"), _N("--no-hooks") };
+	const nchar* kNoHookCmd[argc] = { N"stub", N"--no-hooks" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -212,7 +212,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_helpCmd_showHelp)
 	g_helpShowed = false;
 	int i = 1;
 	const int argc = 2;
-	const nchar* kHelpCmd[argc] = { _N("stub"), _N("--help") };
+	const nchar* kHelpCmd[argc] = { N"stub", N"--help" };
 
 	NiceMock<MockApp> app;
 	ArgParser argParser(&app);
@@ -232,7 +232,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_versionCmd_showVersion)
 	g_versionShowed = false;
 	int i = 1;
 	const int argc = 2;
-	const nchar* kVersionCmd[argc] = { _N("stub"), _N("--version") };
+	const nchar* kVersionCmd[argc] = { N"stub", N"--version" };
 
 	NiceMock<MockApp> app;
 	ArgParser argParser(&app);
@@ -250,7 +250,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_noTrayCmd_disableTrayTrue)
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kNoTrayCmd[argc] = { _N("stub"), _N("--no-tray") };
+	const nchar* kNoTrayCmd[argc] = { N"stub", N"--no-tray" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -266,7 +266,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_ipcCmd_enableIpcTrue)
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kIpcCmd[argc] = { _N("stub"), _N("--ipc") };
+	const nchar* kIpcCmd[argc] = { N"stub", N"--ipc" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -283,7 +283,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_dragDropCmdOnNonLinux_enableDragD
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kDragDropCmd[argc] = { _N("stub"), _N("--enable-drag-drop") };
+	const nchar* kDragDropCmd[argc] = { N"stub", N"--enable-drag-drop" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;
@@ -301,7 +301,7 @@ TEST(GenericArgsParsingTests, parseGenericArgs_dragDropCmdOnLinux_enableDragDrop
 {
 	int i = 1;
 	const int argc = 2;
-	const nchar* kDragDropCmd[argc] = { _N("stub"), _N("--enable-drag-drop") };
+	const nchar* kDragDropCmd[argc] = { N"stub",N"--enable-drag-drop" };
 
 	ArgParser argParser(NULL);
 	ArgsBase argsBase;

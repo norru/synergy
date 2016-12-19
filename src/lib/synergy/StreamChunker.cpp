@@ -73,7 +73,7 @@ StreamChunker::sendFile(
 	while (true) {
 		if (s_interruptFile) {
 			s_interruptFile = false;
-			LOG((CLOG_DEBUG _N("file transmission interrupted")));
+			LOG((CLOG_DEBUG "file transmission interrupted"));
 			break;
 		}
 
@@ -153,7 +153,7 @@ StreamChunker::sendClipboard(
 
 	events->addEvent(Event(events->forClipboard().clipboardSending(), eventTarget, end));
 
-	LOG((CLOG_DEBUG _N("sent clipboard size=%d"), sentLength));
+	LOG((CLOG_DEBUG "sent clipboard size=%d", sentLength));
 }
 
 void
@@ -161,6 +161,6 @@ StreamChunker::interruptFile()
 {
 	if (s_isChunkingFile) {
 		s_interruptFile = true;
-		LOG((CLOG_INFO _N("previous dragged file has become invalid")));
+		LOG((CLOG_INFO "previous dragged file has become invalid"));
 	}
 }

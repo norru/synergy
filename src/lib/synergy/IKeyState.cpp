@@ -93,13 +93,13 @@ IKeyState::KeyInfo::contains(const nchar* screens, const nstring& name)
 	if (isDefault(screens)) {
 		return false;
 	}
-	if (screens[0] == _N('*')) {
+	if (screens[0] =='*')) {
 		return true;
 	}
 
 	const nchar* match = nstrstr(screens, name.c_str());
 	if (match && match > screens) {
-		return match[name.length()] == _N(':');
+		return match[name.length()] ==':');
 	}
 
 	return false;
@@ -124,16 +124,16 @@ IKeyState::KeyInfo::join(const std::set<nstring>& destinations)
 	nstring screens;
 	for (std::set<nstring>::const_iterator i = destinations.begin();
 								i != destinations.end(); ++i) {
-		if (*i == _N("*")) {
-			screens = _N("*");
+		if (*i =="*")) {
+			screens ="*");
 			break;
 		}
 		else {
 			if (screens.empty()) {
-				screens = _N(":");
+				screens =":");
 			}
 			screens += *i;
-			screens += _N(":");
+			screens +=":");
 		}
 	}
 	return screens;
@@ -146,14 +146,14 @@ IKeyState::KeyInfo::split(const nchar* screens, std::set<nstring>& dst)
 	if (isDefault(screens)) {
 		return;
 	}
-	if (screens[0] == _N('*')) {
-		dst.insert(_N("*"));
+	if (screens[0] =='*')) {
+		dst.insert(N"*"));
 		return;
 	}
 
 	const char* i = screens + 1;
 	while (*i) {
-		const nchar* j = strchr(i, _N(':'));
+		const nchar* j = strchr(i,':'));
 		dst.insert(nstring(i, j - i));
 		i = j + 1;
 	}

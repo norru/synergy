@@ -41,7 +41,7 @@ ClientProxy::~ClientProxy()
 void
 ClientProxy::close(const char* msg)
 {
-	LOG((CLOG_DEBUG1 _N("send close \"%s\" to \"%" _NF "\""), msg, getName().c_str()));
+	LOG((CLOG_DEBUG1 "send close \"%s\" to \"" NFC "\"", msg, getName().c_str()));
 	ProtocolUtil::writef(getStream(), msg);
 
 	// force the close to be sent before we return

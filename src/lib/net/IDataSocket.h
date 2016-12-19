@@ -32,7 +32,7 @@ class IDataSocket : public ISocket, public synergy::IStream {
 public:
 	class ConnectionFailedInfo {
 	public:
-		ConnectionFailedInfo(const nchar* what) : m_what(what) { }
+		ConnectionFailedInfo(const char* what) : m_what(what) { }
 		nstring			m_what;
 	};
 

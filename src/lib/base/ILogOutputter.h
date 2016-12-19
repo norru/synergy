@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -38,7 +38,7 @@ public:
 	Opens the outputter for writing.  Calling this method on an
 	already open outputter must have no effect.
 	*/
-	virtual void		open(const char* title) = 0;
+	virtual void		open(const nchar* title) = 0;
 
 	//! Close the outputter
 	/*!
@@ -63,7 +63,7 @@ public:
 	message to all outputters in the outputter chain, otherwise
 	it continues.  Most implementations should return true.
 	*/
-	virtual bool		write(ELevel level, const char* message) = 0;
+	virtual bool		write(ELevel level, const nchar* message) = 0;
 
 	//@}
 };

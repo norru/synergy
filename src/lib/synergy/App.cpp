@@ -79,7 +79,7 @@ App::~App()
 void
 App::version()
 {
-	nprintf(_N("%" _NF " %" _NF ", protocol version %d.%d\n%" _NF),
+	nprintf(N"%" _NF " %" _NF ", protocol version %d.%d\n%" _NF),
 		argsBase().m_pname,
 		kVersion,
 		kProtocolMajorVersion,
@@ -118,10 +118,10 @@ App::run(int argc, nchar** argv)
 		result = e.getCode();
 	}
 	catch (std::exception& e) {
-		LOG((CLOG_CRIT _N("An error occurred: %s\n"), e.what()));
+		LOG((CLOG_CRIT"An error occurred: %s\n"), e.what()));
 	}
 	catch (...) {
-		LOG((CLOG_CRIT _N("An unknown error occurred.\n")));
+		LOG((CLOG_CRIT"An unknown error occurred.\n")));
 	}
 
 	appUtil().beforeAppExit();
@@ -146,7 +146,7 @@ App::setupFileLogging()
 	if (argsBase().m_logFile != NULL) {
 		m_fileLog = new FileLogOutputter(argsBase().m_logFile);
 		CLOG->insert(m_fileLog);
-		LOG((CLOG_DEBUG1 _N("logging to file (%" _NF ") enabled"), argsBase().m_logFile));
+		LOG((CLOG_DEBUG1"logging to file (%" _NF ") enabled"), argsBase().m_logFile));
 	}
 }
 
@@ -155,7 +155,7 @@ App::loggingFilterWarning()
 {
 	if (CLOG->getFilter() > CLOG->getConsoleMaxLevel()) {
 		if (argsBase().m_logFile == NULL) {
-			LOG((CLOG_WARN _N("log messages above %" _NF " are NOT sent to console (use file logging)"),
+			LOG((CLOG_WARN"log messages above %" _NF " are NOT sent to console (use file logging)"),
 				CLOG->getFilterName(CLOG->getConsoleMaxLevel())));
 		}
 	}
@@ -172,14 +172,14 @@ App::initApp(int argc, const nchar** argv)
 
 	// set log filter
 	if (!CLOG->setFilter(argsBase().m_logFilter)) {
-		LOG((CLOG_PRINT _N("%" _NF ": unrecognized log level `%" _NF "'" BYE),
+		LOG((CLOG_PRINT"%" _NF ": unrecognized log level `%" _NF "'" BYE),
 			argsBase().m_pname, argsBase().m_logFilter, argsBase().m_pname));
 		m_bye(kExitArgs);
 	}
 	loggingFilterWarning();
 
 	if (argsBase().m_enableDragDrop) {
-		LOG((CLOG_INFO _N("drag and drop enabled")));
+		LOG((CLOG_INFO"drag and drop enabled")));
 	}
 
 	// setup file logging after parsing args
@@ -225,7 +225,7 @@ App::handleIpcMessage(const Event& e, void*)
 {
 	IpcMessage* m = static_cast<IpcMessage*>(e.getDataObject());
 	if (m->type() == kIpcShutdown) {
-		LOG((CLOG_INFO _N("got ipc shutdown message")));
+		LOG((CLOG_INFO"got ipc shutdown message")));
 		m_events->addEvent(Event(Event::kQuit));
     }
 }
@@ -306,13 +306,13 @@ MinimalApp::loadConfig(const nstring& pathname)
 const nchar*
 MinimalApp::daemonInfo() const
 {
-	return _N("");
+	return"");
 }
 
 const nchar*
 MinimalApp::daemonName() const
 {
-	return _N("");
+	return"");
 }
 
 void

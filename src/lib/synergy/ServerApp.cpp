@@ -97,7 +97,7 @@ ServerApp::parseArgs(int argc, const char* const* argv)
 				m_synergyAddress->resolve();
 			}
 			catch (XSocketAddress& e) {
-				LOG((CLOG_PRINT _N("%" _NF ": " _NF BYE),
+				LOG((CLOG_PRINT"%" _NF ": " _NF BYE),
 					args().m_pname, e.what(), args().m_pname));
 				m_bye(kExitArgs);
 			}
@@ -111,17 +111,17 @@ ServerApp::help()
 	// window api args (windows/x-windows/carbon)
 #if WINAPI_XWINDOWS
 #  define WINAPI_ARGS \
-	_N(" [--display <display>] [--no-xinitthreads]")
+	N" [--display <display>] [--no-xinitthreads]")
 #  define WINAPI_INFO \
-	_N("      --display <display>  connect to the X server at <display>\n") \
-	_N("      --no-xinitthreads    do not call XInitThreads()\n")
+	N"      --display <display>  connect to the X server at <display>\n") \
+	N"      --no-xinitthreads    do not call XInitThreads()\n")
 #else
 #  define WINAPI_ARGS
 #  define WINAPI_INFO
 #endif
 
 	LOG((CLOG_PRINT
-		_N("Usage: %" _NF
+		N"Usage: %" _NF
 		" [--address <address>]"
 		" [--config <pathname>]"
 		WINAPI_ARGS
@@ -164,12 +164,12 @@ ServerApp::reloadSignalHandler(Arch::ESignal, void*)
 void
 ServerApp::reloadConfig(const Event&, void*)
 {
-	LOG((CLOG_DEBUG _N("reload configuration")));
+	LOG((CLOG_DEBUG"reload configuration")));
 	if (loadConfig(args().m_configFile)) {
 		if (m_server != NULL) {
 			m_server->setConfig(*args().m_config);
 		}
-		LOG((CLOG_NOTE _N("reloaded configuration")));
+		LOG((CLOG_NOTE"reloaded configuration")));
 	}
 }
 
@@ -211,7 +211,7 @@ ServerApp::loadConfig()
 	}
 
 	if (!loaded) {
-		LOG((CLOG_PRINT _N("%" _NF ": no configuration available"), args().m_pname));
+		LOG((CLOG_PRINT"%" _NF ": no configuration available"), args().m_pname));
 		m_bye(kExitConfig);
 	}
 }
@@ -221,23 +221,23 @@ ServerApp::loadConfig(const nstring& pathname)
 {
 	try {
 		// load configuration
-		LOG((CLOG_DEBUG _N("opening configuration \"%" _NF "\""), pathname.c_str()));
+		LOG((CLOG_DEBUG"opening configuration \"%" _NF "\""), pathname.c_str()));
 		std::ifstream configStream(pathname.c_str());
 		if (!configStream.is_open()) {
 			// report failure to open configuration as a debug message
 			// since we try several paths and we expect some to be
 			// missing.
-			LOG((CLOG_DEBUG _N("cannot open configuration \"%" _NF "\""),
+			LOG((CLOG_DEBUG"cannot open configuration \"%" _NF "\""),
 				pathname.c_str()));
 			return false;
 		}
 		configStream >> *args().m_config;
-		LOG((CLOG_DEBUG _N("configuration read successfully")));
+		LOG((CLOG_DEBUG"configuration read successfully")));
 		return true;
 	}
 	catch (XConfigRead& e) {
 		// report error in configuration file
-		LOG((CLOG_ERR _N("cannot read configuration \"%" _NF "\": %" _NF),
+		LOG((CLOG_ERR"cannot read configuration \"%" _NF "\": %" _NF),
 			pathname.c_str(), e.what()));
 	}
 	return false;
@@ -403,7 +403,7 @@ ServerApp::retryHandler(const Event&, void*)
 		break;
 
 	case kInitializing:
-		LOG((CLOG_DEBUG1 _N("retry server initialization")));
+		LOG((CLOG_DEBUG1"retry server initialization")));
 		m_serverState = kUninitialized;
 		if (!initServer()) {
 			m_events->addEvent(Event(Event::kQuit));
@@ -411,13 +411,13 @@ ServerApp::retryHandler(const Event&, void*)
 		break;
 
 	case kInitializingToStart:
-		LOG((CLOG_DEBUG1 _N("retry server initialization")));
+		LOG((CLOG_DEBUG1"retry server initialization")));
 		m_serverState = kUninitialized;
 		if (!initServer()) {
 			m_events->addEvent(Event(Event::kQuit));
 		}
 		else if (m_serverState == kInitialized) {
-			LOG((CLOG_DEBUG1 _N("starting server")));
+			LOG((CLOG_DEBUG1"starting server")));
 			if (!startServer()) {
 				m_events->addEvent(Event(Event::kQuit));
 			}
@@ -425,7 +425,7 @@ ServerApp::retryHandler(const Event&, void*)
 		break;
 
 	case kStarting:
-		LOG((CLOG_DEBUG1 _N("retry starting server")));
+		LOG((CLOG_DEBUG1"retry starting server")));
 		m_serverState = kInitialized;
 		if (!startServer()) {
 			m_events->addEvent(Event(Event::kQuit));
@@ -455,20 +455,20 @@ bool ServerApp::initServer()
 		return true;
 	}
 	catch (XScreenUnavailable& e) {
-		LOG((CLOG_WARN _N("primary screen unavailable: %" _NF), e.what()));
+		LOG((CLOG_WARN"primary screen unavailable: %" _NF), e.what()));
 		closePrimaryClient(primaryClient);
 		closeServerScreen(serverScreen);
-		updateStatus(nstring(_N("primary screen unavailable: ")) + e.what());
+		updateStatus(nstring(N"primary screen unavailable: ")) + e.what());
 		retryTime = e.getRetryTime();
 	}
 	catch (XScreenOpenFailure& e) {
-		LOG((CLOG_CRIT _N("failed to start server: %" _NF), e.what()));
+		LOG((CLOG_CRIT"failed to start server: %" _NF), e.what()));
 		closePrimaryClient(primaryClient);
 		closeServerScreen(serverScreen);
 		return false;
 	}
 	catch (XBase& e) {
-		LOG((CLOG_CRIT _N("failed to start server: %" _NF), e.what()));
+		LOG((CLOG_CRIT"failed to start server: %" _NF), e.what()));
 		closePrimaryClient(primaryClient);
 		closeServerScreen(serverScreen);
 		return false;
@@ -477,7 +477,7 @@ bool ServerApp::initServer()
 	if (args().m_restartable) {
 		// install a timer and handler to retry later
 		assert(m_timer == NULL);
-		LOG((CLOG_DEBUG _N("retry in %.0f seconds"), retryTime));
+		LOG((CLOG_DEBUG"retry in %.0f seconds"), retryTime));
 		m_timer = m_events->newOneShotTimer(retryTime, NULL);
 		m_events->adoptHandler(Event::kTimer, m_timer,
 			new TMethodEventJob<ServerApp>(this, &ServerApp::retryHandler));
@@ -541,18 +541,18 @@ ServerApp::startServer()
 		m_server->setListener(listener);
 		m_listener = listener;
 		updateStatus();
-		LOG((CLOG_NOTE _N("started server, waiting for clients")));
+		LOG((CLOG_NOTE"started server, waiting for clients")));
 		m_serverState = kStarted;
 		return true;
 	}
 	catch (XSocketAddressInUse& e) {
-		LOG((CLOG_WARN _N("cannot listen for clients: %" _NF), e.what()));
+		LOG((CLOG_WARN"cannot listen for clients: %" _NF), e.what()));
 		closeClientListener(listener);
 		updateStatus(nstring("cannot listen for clients: ") + e.what());
 		retryTime = 10.0;
 	}
 	catch (XBase& e) {
-		LOG((CLOG_CRIT _N("failed to start server: %" _NF), e.what()));
+		LOG((CLOG_CRIT"failed to start server: %" _NF), e.what()));
 		closeClientListener(listener);
 		return false;
 	}
@@ -560,7 +560,7 @@ ServerApp::startServer()
 	if (args().m_restartable) {
 		// install a timer and handler to retry later
 		assert(m_timer == NULL);
-		LOG((CLOG_DEBUG _N("retry in %.0f seconds" _NF), retryTime));
+		LOG((CLOG_DEBUG"retry in %.0f seconds" _NF), retryTime));
 		m_timer = m_events->newOneShotTimer(retryTime, NULL);
 		m_events->adoptHandler(Event::kTimer, m_timer,
 			new TMethodEventJob<ServerApp>(this, &ServerApp::retryHandler));
@@ -590,7 +590,7 @@ ServerApp::createScreen()
 PrimaryClient*
 ServerApp::openPrimaryClient(const nstring& name, synergy::Screen* screen)
 {
-	LOG((CLOG_DEBUG1 _N("creating primary screen")));
+	LOG((CLOG_DEBUG1"creating primary screen")));
 	return new PrimaryClient(name, screen);
 
 }
@@ -598,7 +598,7 @@ ServerApp::openPrimaryClient(const nstring& name, synergy::Screen* screen)
 void
 ServerApp::handleScreenError(const Event&, void*)
 {
-	LOG((CLOG_CRIT _N("error on screen")));
+	LOG((CLOG_CRIT"error on screen")));
 	m_events->addEvent(Event(Event::kQuit));
 }
 
@@ -606,7 +606,7 @@ void
 ServerApp::handleSuspend(const Event&, void*)
 {
 	if (!m_suspended) {
-		LOG((CLOG_INFO _N("suspend")));
+		LOG((CLOG_INFO"suspend")));
 		stopServer();
 		m_suspended = true;
 	}
@@ -616,7 +616,7 @@ void
 ServerApp::handleResume(const Event&, void*)
 {
 	if (m_suspended) {
-		LOG((CLOG_INFO _N("resume")));
+		LOG((CLOG_INFO"resume")));
 		startServer();
 		m_suspended = false;
 	}
@@ -698,7 +698,7 @@ ServerApp::mainLoop()
 	// canonicalize the primary screen name
 	nstring primaryName = args().m_config->getCanonicalName(args().m_name);
 	if (primaryName.empty()) {
-		LOG((CLOG_CRIT _N("unknown screen name `%" _NF "'"), args().m_name.c_str()));
+		LOG((CLOG_CRIT"unknown screen name `%" _NF "'"), args().m_name.c_str()));
 		return kExitFailed;
 	}
 
@@ -754,14 +754,14 @@ ServerApp::mainLoop()
 	DAEMON_RUNNING(false);
 
 	// close down
-	LOG((CLOG_DEBUG1 _N("stopping server")));
+	LOG((CLOG_DEBUG1"stopping server")));
 	m_events->removeHandler(m_events->forServerApp().forceReconnect(),
 		m_events->getSystemTarget());
 	m_events->removeHandler(m_events->forServerApp().reloadConfig(),
 		m_events->getSystemTarget());
 	cleanupServer();
 	updateStatus();
-	LOG((CLOG_NOTE _N("stopped server")));
+	LOG((CLOG_NOTE"stopped server")));
 
 	if (argsBase().m_enableIpc) {
 		cleanupIpcClient();
@@ -772,7 +772,7 @@ ServerApp::mainLoop()
 
 void ServerApp::resetServer(const Event&, void*)
 {
-	LOG((CLOG_DEBUG1 _N("resetting server")));
+	LOG((CLOG_DEBUG1"resetting server")));
 	stopServer();
 	cleanupServer();
 	startServer();
@@ -857,7 +857,7 @@ ServerApp::startNode()
 {
 	// start the server.  if this return false then we've failed and
 	// we shouldn't retry.
-	LOG((CLOG_DEBUG1 _N("starting server")));
+	LOG((CLOG_DEBUG1"starting server")));
 	if (!startServer()) {
 		m_bye(kExitFailed);
 	}

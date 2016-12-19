@@ -24,30 +24,30 @@
 void
 DropHelper::writeToDir(const nstring& destination, DragFileList& fileList, std::string& data)
 {
-	LOG((CLOG_DEBUG _N("dropping file, files=%i target=%" _NF), fileList.size(), destination.c_str()));
+	LOG((CLOG_DEBUG"dropping file, files=%i target=%" _NF), fileList.size(), destination.c_str()));
 
 	if (!destination.empty() && fileList.size() > 0) {
 		nfstream file;
 		nstring dropTarget = destination;
 #ifdef SYSAPI_WIN32
-		dropTarget.append(_N("\\"));
+		dropTarget.append(N"\\"));
 #else
-		dropTarget.append(_N("/"));
+		dropTarget.append(N"/"));
 #endif
 		dropTarget.append(fileList.at(0).getFilename());
 		file.open(dropTarget.c_str(), std::ios::out | std::ios::binary);
 		if (!file.is_open()) {
-			LOG((CLOG_ERR _N("drop file failed: can not open %" _NF), dropTarget.c_str()));
+			LOG((CLOG_ERR"drop file failed: can not open %" _NF), dropTarget.c_str()));
 		}
 
 		file.write(data.c_str(), data.size());
 		file.close();
 
-		LOG((CLOG_DEBUG _N("%" _NF " is saved to %" _NF), fileList.at(0).getFilename().c_str(), destination.c_str()));
+		LOG((CLOG_DEBUG"%" _NF " is saved to %" _NF), fileList.at(0).getFilename().c_str(), destination.c_str()));
 
 		fileList.clear();
 	}
 	else {
-		LOG((CLOG_ERR _N("drop file failed: drop target is empty")));
+		LOG((CLOG_ERR"drop file failed: drop target is empty")));
 	}
 }

@@ -29,9 +29,12 @@
 #ifdef SYSAPI_WIN32
 	#include <wchar.h>
 	#include <cwctype>
-	#define _N(c) L##c
+	// Wide char string specifier
+	#define N L
 	// Native [string] format specifier
-	#define _NF L"ls"
+	#define NF L"%ls"
+	// Native [string] format specifier and [N] connecting
+	#define NFC L"%ls" L
 	#define nchar wchar_t
 	#define nstring std::wstring
 	#define nstrlen wcslen
@@ -45,14 +48,16 @@
 	#define tonlower towlower
 	#define nsprintf wsprintf
 	#define nprintf wprintf
+	#define nifstream std::wifstream
 	#define nfstream std::wfstream
-	#define ncerr wcerr
-	#define ncout wcout
+	#define ncerr std::wcerr
+	#define ncout std::wcout
 #else
 	#include <cctype>
-	#define _N(c) c
+	#define N
 	// Native [string] format specifier
-	#define _NF "s"
+	#define NF "%s"
+	#define NFC "%s"
 	#define nchar char
 	#define nstring std::string
 	#define nstrlen strlen
@@ -66,9 +71,10 @@
 	#define tonlower tolower
 	#define nsprintf sprintf
 	#define nprintf printf
+	#define nifstream std::ifstream
 	#define nfstream std::fstream
-	#define ncerr cerr
-	#define ncout cout
+	#define ncerr std::cerr
+	#define ncout std::cout
 #endif
 
 namespace synergy {
@@ -128,7 +134,7 @@ void toHex(std::string& subject, int width, const nchar fill = '0'));
 /*!
 Convert each character in \c subject into hexdecimal form with \c width
 */
-void toHex(nstring& subject, int width, const nchar fill = _N('0'));
+void toHex(nstring& subject, int width, const nchar fill ='0'));
 
 #if Q_OS_WIN
 //! Convert to all uppercase

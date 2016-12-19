@@ -98,7 +98,7 @@ ClipboardChunk::assemble(synergy::IStream* stream,
 
 	if (mark == kDataStart) {
 		s_expectedSize = synergy::string::stringToSizeType(data);
-		LOG((CLOG_DEBUG _N("start receiving clipboard data")));
+		LOG((CLOG_DEBUG"start receiving clipboard data")));
 		dataCached.clear();
 		return kStart;
 	}
@@ -112,13 +112,13 @@ ClipboardChunk::assemble(synergy::IStream* stream,
 			return kError;
 		}
 		else if (s_expectedSize != dataCached.size()) {
-			LOG((CLOG_ERR _N("corrupted clipboard data, expected size=%d actual size=%d"), s_expectedSize, dataCached.size()));
+			LOG((CLOG_ERR"corrupted clipboard data, expected size=%d actual size=%d"), s_expectedSize, dataCached.size()));
 			return kError;
 		}
 		return kFinish;
 	}
 
-	LOG((CLOG_ERR _N("clipboard transmission failed: unknown error")));
+	LOG((CLOG_ERR"clipboard transmission failed: unknown error")));
 	return kError;
 }
 
@@ -127,7 +127,7 @@ ClipboardChunk::send(synergy::IStream* stream, void* data)
 {
 	ClipboardChunk* clipboardData = static_cast<ClipboardChunk*>(data);
 
-	LOG((CLOG_DEBUG1 _N("sending clipboard chunk")));
+	LOG((CLOG_DEBUG1"sending clipboard chunk")));
 
 	char* chunk = clipboardData->m_chunk;
 	ClipboardID id = chunk[0];
@@ -138,15 +138,15 @@ ClipboardChunk::send(synergy::IStream* stream, void* data)
 
 	switch (mark) {
 	case kDataStart:
-		LOG((CLOG_DEBUG2 _N("sending clipboard chunk start: size=%s"), dataChunk.c_str()));
+		LOG((CLOG_DEBUG2"sending clipboard chunk start: size=%s"), dataChunk.c_str()));
 		break;
 
 	case kDataChunk:
-		LOG((CLOG_DEBUG2 _N("sending clipboard chunk data: size=%i"), dataChunk.size()));
+		LOG((CLOG_DEBUG2"sending clipboard chunk data: size=%i"), dataChunk.size()));
 		break;
 
 	case kDataEnd:
-		LOG((CLOG_DEBUG2 _N("sending clipboard finished")));
+		LOG((CLOG_DEBUG2"sending clipboard finished")));
 		break;
 	}
 

@@ -48,7 +48,7 @@ ClientProxy1_3::~ClientProxy1_3()
 void
 ClientProxy1_3::mouseWheel(SInt32 xDelta, SInt32 yDelta)
 {
-	LOG((CLOG_DEBUG2 _N("send mouse wheel to \"%" _NF "\" %+d,%+d"), getName().c_str(), xDelta, yDelta));
+	LOG((CLOG_DEBUG2 "send mouse wheel to \"" NFC "\" %+d,%+d", getName().c_str(), xDelta, yDelta));
 	ProtocolUtil::writef(getStream(), kMsgDMouseWheel, xDelta, yDelta);
 }
 

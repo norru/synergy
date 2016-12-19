@@ -44,10 +44,10 @@ enum {
 	kMsgSize = 128
 };
 
-static const nchar kFingerprintDirName[] = _N("SSL/Fingerprints");
-//static const char kFingerprintLocalFilename[] = _N("Local.txt");
-static const nchar kFingerprintTrustedServersFilename[] = _N("TrustedServers.txt");
-//static const char kFingerprintTrustedClientsFilename[] = _N("TrustedClients.txt");
+static const nchar kFingerprintDirName[] = N"SSL/Fingerprints";
+//static const char kFingerprintLocalFilename[] = N"Local.txt";
+static const nchar kFingerprintTrustedServersFilename[] = N"TrustedServers.txt";
+//static const char kFingerprintTrustedClientsFilename[] = N"TrustedClients.txt";
 
 struct Ssl {
 	SSL_CTX*	m_context;
@@ -252,7 +252,7 @@ int
 SecureSocket::secureRead(void* buffer, int size, int& read)
 {
 	if (m_ssl->m_ssl != NULL) {
-		LOG((CLOG_DEBUG2 _N("reading secure socket")));
+		LOG((CLOG_DEBUG2 "reading secure socket"));
 		read = SSL_read(m_ssl->m_ssl, buffer, size);
 
 		static int retry;
@@ -278,7 +278,7 @@ int
 SecureSocket::secureWrite(const void* buffer, int size, int& wrote)
 {
 	if (m_ssl->m_ssl != NULL) {
-		LOG((CLOG_DEBUG2 _N("writing secure socket: %p"), this));
+		LOG((CLOG_DEBUG2 "writing secure socket: %p", this));
 
 		wrote = SSL_write(m_ssl->m_ssl, buffer, size);
 
@@ -321,7 +321,7 @@ bool
 SecureSocket::loadCertificates(nstring& filename)
 {
 	if (filename.empty()) {
-		showError(_N("ssl certificate is not specified"));
+		showError(N"ssl certificate is not specified"));
 		return false;
 	}
 	else {
@@ -330,7 +330,7 @@ SecureSocket::loadCertificates(nstring& filename)
 		file.close();
 
 		if (!exist) {
-			nstring errorMsg(_N("ssl certificate doesn't exist: "));
+			nstring errorMsg(N"ssl certificate doesn't exist: "));
 			errorMsg.append(filename);
 			showError(errorMsg.c_str());
 			return false;
@@ -345,7 +345,7 @@ SecureSocket::loadCertificates(nstring& filename)
 		utf8filename.c_str(),
 		SSL_FILETYPE_PEM);
 	if (r <= 0) {
-		showError(_N("could not use ssl certificate"));
+		showError(N"could not use ssl certificate"));
 		return false;
 	}
 
@@ -353,13 +353,13 @@ SecureSocket::loadCertificates(nstring& filename)
 		utf8filename.c_str(),
 		SSL_FILETYPE_PEM);
 	if (r <= 0) {
-		showError(_N("could not use ssl private key"));
+		showError(N"could not use ssl private key"));
 		return false;
 	}
 
 	r = SSL_CTX_check_private_key(m_ssl->m_context);
 	if (!r) {
-		showError(_N("could not verify ssl private key"));
+		showError(N"could not verify ssl private key"));
 		return false;
 	}
 
@@ -421,7 +421,7 @@ SecureSocket::secureAccept(int socket)
 	// set connection socket to SSL state
 	SSL_set_fd(m_ssl->m_ssl, socket);
 
-	LOG((CLOG_DEBUG2 _N("accepting secure socket")));
+	LOG((CLOG_DEBUG2 "accepting secure socket"));
 	int r = SSL_accept(m_ssl->m_ssl);
 
 	static int retry;
@@ -430,8 +430,8 @@ SecureSocket::secureAccept(int socket)
 
 	if (isFatal()) {
 		// tell user and sleep so the socket isn't hammered.
-		LOG((CLOG_ERR _N("failed to accept secure socket")));
-		LOG((CLOG_INFO _N("client connection may not be secure")));
+		LOG((CLOG_ERR "failed to accept secure socket"));
+		LOG((CLOG_INFO "client connection may not be secure"));
 		m_secureReady = false;
 		ARCH->sleep(1);
 		retry = 0;
@@ -441,7 +441,7 @@ SecureSocket::secureAccept(int socket)
 	// If not fatal and no retry, state is good
 	if (retry == 0) {
 		m_secureReady = true;
-		LOG((CLOG_INFO _N("accepted secure socket")));
+		LOG((CLOG_INFO "accepted secure socket"));
 		if (CLOG->getFilter() >= kDEBUG1) {
 			showSecureCipherInfo();
 		}
@@ -451,14 +451,14 @@ SecureSocket::secureAccept(int socket)
 
 	// If not fatal and retry is set, not ready, and return retry
 	if (retry > 0) {
-		LOG((CLOG_DEBUG2 _N("retry accepting secure socket")));
+		LOG((CLOG_DEBUG2 "retry accepting secure socket"));
 		m_secureReady = false;
 		ARCH->sleep(s_retryDelay);
 		return 0;
 	}
 
 	// no good state exists here
-	LOG((CLOG_ERR _N("unexpected state attempting to accept connection")));
+	LOG((CLOG_ERR "unexpected state attempting to accept connection"));
 	return -1;
 }
 
@@ -470,7 +470,7 @@ SecureSocket::secureConnect(int socket)
 	// attach the socket descriptor
 	SSL_set_fd(m_ssl->m_ssl, socket);
 
-	LOG((CLOG_DEBUG2 _N("connecting secure socket")));
+	LOG((CLOG_DEBUG2 "connecting secure socket"));
 	int r = SSL_connect(m_ssl->m_ssl);
 
 	static int retry;
@@ -478,14 +478,14 @@ SecureSocket::secureConnect(int socket)
 	checkResult(r, retry);
 
 	if (isFatal()) {
-		LOG((CLOG_ERR _N("failed to connect secure socket")));
+		LOG((CLOG_ERR "failed to connect secure socket"));
 		retry = 0;
 		return -1;
 	}
 
 	// If we should retry, not ready and return 0
 	if (retry > 0) {
-		LOG((CLOG_DEBUG2 _N("retry connect secure socket")));
+		LOG((CLOG_DEBUG2 "retry connect secure socket"));
 		m_secureReady = false;
 		ARCH->sleep(s_retryDelay);
 		return 0;
@@ -495,18 +495,18 @@ SecureSocket::secureConnect(int socket)
 	// No error, set ready, process and return ok
 	m_secureReady = true;
 	if (verifyCertFingerprint()) {
-		LOG((CLOG_INFO _N("connected to secure socket")));
+		LOG((CLOG_INFO "connected to secure socket"));
 		if (!showCertificate()) {
 			disconnect();
 			return -1;// Cert fail, error
 		}
 	}
 	else {
-		LOG((CLOG_ERR _N("failed to verify server certificate fingerprint")));
+		LOG((CLOG_ERR "failed to verify server certificate fingerprint"));
 		disconnect();
 		return -1; // Fingerprint failed, error
 	}
-	LOG((CLOG_DEBUG2 _N("connected secure socket")));
+	LOG((CLOG_DEBUG2 "connected secure socket"));
 	if (CLOG->getFilter() >= kDEBUG1) {
 		showSecureCipherInfo();
 	}
@@ -524,12 +524,12 @@ SecureSocket::showCertificate()
 	cert = SSL_get_peer_certificate(m_ssl->m_ssl);
 	if (cert != NULL) {
 		line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
-		LOG((CLOG_INFO _N("server ssl certificate info: %s"), line));
+		LOG((CLOG_INFO "server ssl certificate info: %s", line));
 		OPENSSL_free(line);
 		X509_free(cert);
 	}
 	else {
-		showError(_N("server has no ssl certificate"));
+		showError(N"server has no ssl certificate"));
 		return false;
 	}
 
@@ -553,12 +553,12 @@ SecureSocket::checkResult(int status, int& retry)
 	case SSL_ERROR_ZERO_RETURN:
 		// connection closed
 		isFatal(true);
-		LOG((CLOG_DEBUG _N("ssl connection closed")));
+		LOG((CLOG_DEBUG "ssl connection closed"));
 		break;
 
 	case SSL_ERROR_WANT_READ:
 		retry++;
-		LOG((CLOG_DEBUG2 _N("want to read, error=%d, attempt=%d"), errorCode, retry));
+		LOG((CLOG_DEBUG2 "want to read, error=%d, attempt=%d", errorCode, retry));
 		break;
 
 	case SSL_ERROR_WANT_WRITE:
@@ -567,24 +567,24 @@ SecureSocket::checkResult(int status, int& retry)
 		// m_readable because the socket logic is always readable
 		m_writable = true;
 		retry++;
-		LOG((CLOG_DEBUG2 _N("want to write, error=%d, attempt=%d"), errorCode, retry));
+		LOG((CLOG_DEBUG2 "want to write, error=%d, attempt=%d", errorCode, retry));
 		break;
 
 	case SSL_ERROR_WANT_CONNECT:
 		retry++;
-		LOG((CLOG_DEBUG2 _N("want to connect, error=%d, attempt=%d"), errorCode, retry));
+		LOG((CLOG_DEBUG2 "want to connect, error=%d, attempt=%d", errorCode, retry));
 		break;
 
 	case SSL_ERROR_WANT_ACCEPT:
 		retry++;
-		LOG((CLOG_DEBUG2 _N("want to accept, error=%d, attempt=%d"), errorCode, retry));
+		LOG((CLOG_DEBUG2 "want to accept, error=%d, attempt=%d", errorCode, retry));
 		break;
 
 	case SSL_ERROR_SYSCALL:
-		LOG((CLOG_ERR _N("ssl error occurred (system call failure)")));
+		LOG((CLOG_ERR "ssl error occurred (system call failure)"));
 		if (ERR_peek_error() == 0) {
 			if (status == 0) {
-				LOG((CLOG_ERR _N("eof violates ssl protocol")));
+				LOG((CLOG_ERR "eof violates ssl protocol"));
 			}
 			else if (status == -1) {
 				// underlying socket I/O reproted an error
@@ -592,7 +592,7 @@ SecureSocket::checkResult(int status, int& retry)
 					ARCH->throwErrorOnSocket(getSocket());
 				}
 				catch (XArchNetwork& e) {
-					LOG((CLOG_ERR _N("%" _NF), e.what()));
+					LOG((CLOG_ERR"%" _NF, e.what()));
 				}
 			}
 		}
@@ -601,12 +601,12 @@ SecureSocket::checkResult(int status, int& retry)
 		break;
 
 	case SSL_ERROR_SSL:
-		LOG((CLOG_ERR _N("ssl error occurred (generic failure)")));
+		LOG((CLOG_ERR "ssl error occurred (generic failure)"));
 		isFatal(true);
 		break;
 
 	default:
-		LOG((CLOG_ERR _N("ssl error occurred (unknown failure)")));
+		LOG((CLOG_ERR "ssl error occurred (unknown failure)"));
 		isFatal(true);
 		break;
 	}
@@ -622,12 +622,12 @@ void
 SecureSocket::showError(const nchar* reason)
 {
 	if (reason != NULL) {
-		LOG((CLOG_ERR _N("%" _NF), reason));
+		LOG((CLOG_ERR"%" _NF, reason));
 	}
 
 	nstring error = getError();
 	if (!error.empty()) {
-		LOG((CLOG_ERR _N("%" _NF), error.c_str()));
+		LOG((CLOG_ERR NF, error.c_str()));
 	}
 }
 
@@ -639,10 +639,10 @@ SecureSocket::getError()
 	if (e != 0) {
 		char error[MAX_ERROR_SIZE + 1] = {};
 		ERR_error_string_n(e, error, MAX_ERROR_SIZE);
-		return error;
+		return synergy::string::toNative(error);
 	}
 	else {
-		return "";
+		return nstring(N"");
 	}
 }
 
@@ -686,14 +686,14 @@ SecureSocket::verifyCertFingerprint()
 	int digestResult = X509_digest(cert, tempDigest, tempFingerprint, &tempFingerprintLen);
 
 	if (digestResult <= 0) {
-		LOG((CLOG_ERR _N("failed to calculate fingerprint, digest result: %d"), digestResult));
+		LOG((CLOG_ERR "failed to calculate fingerprint, digest result: %d", digestResult));
 		return false;
 	}
 
 	// format fingerprint into hexdecimal format with colon separator
 	std::string fingerprint(reinterpret_cast<char*>(tempFingerprint), tempFingerprintLen);
 	formatFingerprint(fingerprint);
-	LOG((CLOG_NOTE _N("server fingerprint: %s"), fingerprint.c_str()));
+	LOG((CLOG_NOTE "server fingerprint: %s", fingerprint.c_str()));
 
 	nstring trustedServersFilename;
 	trustedServersFilename = synergy::string::sprintf(
@@ -703,8 +703,9 @@ SecureSocket::verifyCertFingerprint()
 		kFingerprintTrustedServersFilename);
 
 	// check if this fingerprint exist
+	//FIXME
 	std::string fileLine;
-	std::ifstream file;
+	nifstream file;
 	file.open(trustedServersFilename.c_str());
 
 	bool isValid = false;
@@ -792,11 +793,11 @@ showCipherStackDesc(STACK_OF(SSL_CIPHER) * stack) {
 
 		// Why does SSL put a newline in the description?
 		int pos = (int)strlen(msg) - 1;
-		if (msg[pos] == _N('\n')) {
-			msg[pos] = _N('\0');
+		if (msg[pos] =='\n')) {
+			msg[pos] ='\0');
 		}
 
-		LOG((CLOG_DEBUG1 _N("%s"), msg));
+		LOG((CLOG_DEBUG1"%s", msg));
 	}
 }
 
@@ -806,10 +807,10 @@ SecureSocket::showSecureCipherInfo()
 	STACK_OF(SSL_CIPHER) * sStack = SSL_get_ciphers(m_ssl->m_ssl);
 
 	if (sStack == NULL) {
-		LOG((CLOG_DEBUG1 _N("local cipher list not available")));
+		LOG((CLOG_DEBUG1 "local cipher list not available"));
 	}
 	else {
-		LOG((CLOG_DEBUG1 _N("available local ciphers:")));
+		LOG((CLOG_DEBUG1 "available local ciphers:"));
 		showCipherStackDesc(sStack);
 	}
 
@@ -828,10 +829,10 @@ SecureSocket::showSecureCipherInfo()
 #undef _TMPVER
 
 	if (cStack == NULL) {
-		LOG((CLOG_DEBUG1 _N("remote cipher list not available")));
+		LOG((CLOG_DEBUG1 "remote cipher list not available"));
 	}
 	else {
-		LOG((CLOG_DEBUG1 _N("available remote ciphers:")));
+		LOG((CLOG_DEBUG1 "available remote ciphers:"));
 		showCipherStackDesc(cStack);
 	}
 	return;
@@ -840,11 +841,11 @@ SecureSocket::showSecureCipherInfo()
 void
 SecureSocket::showSecureLibInfo()
 {
-	LOG((CLOG_INFO _N("%s"), SSLeay_version(SSLEAY_VERSION)));
-	LOG((CLOG_DEBUG1 _N("openSSL : %s"), SSLeay_version(SSLEAY_CFLAGS)));
-	LOG((CLOG_DEBUG1 _N("openSSL : %s"), SSLeay_version(SSLEAY_BUILT_ON)));
-	LOG((CLOG_DEBUG1 _N("openSSL : %s"), SSLeay_version(SSLEAY_PLATFORM)));
-	LOG((CLOG_DEBUG1 _N("%s"), SSLeay_version(SSLEAY_DIR)));
+	LOG((CLOG_INFO "%s", SSLeay_version(SSLEAY_VERSION)));
+	LOG((CLOG_DEBUG1 "openSSL : %s", SSLeay_version(SSLEAY_CFLAGS)));
+	LOG((CLOG_DEBUG1 "openSSL : %s", SSLeay_version(SSLEAY_BUILT_ON)));
+	LOG((CLOG_DEBUG1 "openSSL : %s", SSLeay_version(SSLEAY_PLATFORM)));
+	LOG((CLOG_DEBUG1 "%s", SSLeay_version(SSLEAY_DIR)));
 	return;
 }
 
@@ -858,7 +859,7 @@ SecureSocket::showSecureConnectInfo()
 		if (SSL_CIPHER_description(cipher, msg, 255)) {
 			msg[255] = 0;
 		}
-		LOG((CLOG_INFO _N("cipher description: '%s'"), msg));
+		LOG((CLOG_INFO "cipher description: '%s'", msg));
 	}
 	return;
 }

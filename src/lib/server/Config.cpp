@@ -378,7 +378,7 @@ Config::isValidScreenName(const std::string& name) const
 		}
 
 		// find end of part
-		std::string::size_type e = name.find(_N('.'), b);
+		std::string::size_type e = name.find(N'.'), b);
 		if (e == std::string::npos) {
 			e = name.size();
 		}
@@ -389,14 +389,14 @@ Config::isValidScreenName(const std::string& name) const
 		}
 
 		// check first and last characters
-		if (!(isalnum(name[b]) || name[b] == _N('_')) ||
-			!(isalnum(name[e - 1]) || name[e - 1] == _N('_'))) {
+		if (!(isalnum(name[b]) || name[b] == (N '_')) ||
+			!(isalnum(name[e - 1]) || name[e - 1] == (N '_'))) {
 			return false;
 		}
 
 		// check interior characters
 		for (std::string::size_type i = b; i < e; ++i) {
-			if (!isalnum(name[i]) && name[i] != _N('_') && name[i] != _N('-')) {
+			if (!isalnum(name[i]) && name[i] != (N '_') && name[i] != (N '-')) {
 				return false;
 			}
 		}
@@ -628,7 +628,7 @@ Config::read(ConfigReadContext& context)
 const char*
 Config::dirName(EDirection dir)
 {
-	static const char* s_name[] = { _N("left"), _N("right"), _N("up"), _N("down") };
+	static const char* s_name[] = {N"left", N"right", N"up", N"down"};
 
 	assert(dir >= kFirstDirection && dir <= kLastDirection);
 
@@ -647,7 +647,7 @@ Config::formatInterval(const Interval& x)
 	if (x.first == 0.0f && x.second == 1.0f) {
 		return "";
 	}
-	return synergy::string::sprintf("(%d,%d)", (int)(x.first * 100.0f + 0.5f),
+	return synergy::string::sprintf(N"(%d,%d)", (int)(x.first * 100.0f + 0.5f),
 										(int)(x.second * 100.0f + 0.5f));
 }
 

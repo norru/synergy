@@ -120,19 +120,19 @@ ServerTaskBarReceiver::getToolTip() const
 {
 	switch (m_state) {
 	case kNotRunning:
-		return synergy::string::sprintf(_N("%s:  Not running"), kAppVersion);
+		return synergy::string::sprintf(N"%" _NF N":  Not running", kAppVersion);
 
 	case kNotWorking:
-		return synergy::string::sprintf(_N("%s:  %s"),
+		return synergy::string::sprintf(N"%s:  %s",
 								kAppVersion, m_errorMessage.c_str());
 
 	case kNotConnected:
-		return synergy::string::sprintf(_N("%s:  Waiting for clients"), kAppVersion);
+		return synergy::string::sprintf(N"%s:  Waiting for clients", kAppVersion);
 
 	case kConnected:
-		return synergy::string::sprintf(_N("%s:  Connected"), kAppVersion);
+		return synergy::string::sprintf(N"%s:  Connected", kAppVersion);
 
 	default:
-		return _N("");
+		return"");
 	}
 }

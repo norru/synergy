@@ -54,12 +54,12 @@ vformat(const nchar* fmt, va_list args)
 	std::vector<int> index;
 	int maxIndex = 0;
 	for (const nchar* scan = fmt; *scan; ++scan) {
-		if (*scan == _N('%')) {
+		if (*scan =='%')) {
 			++scan;
 			if (*scan == 0) {
 				break;
 			}
-			else if (*scan == _N('%')) {
+			else if (*scan =='%')) {
 				// literal
 				index.push_back(0);
 				pos.push_back(static_cast<int>(scan - 1 - fmt));
@@ -69,7 +69,7 @@ vformat(const nchar* fmt, va_list args)
 				// get argument index
 				nchar* end;
 				int i = static_cast<int>(strtol(scan + 1, &end, 10));
-				if (*end != _N('}')) {
+				if (*end !='}')) {
 					// invalid index -- ignore
 					scan = end - 1;
 				}

@@ -40,7 +40,7 @@ UInt32
 ToolApp::run(int argc, char** argv)
 {
 	if (argc <= 1) {
-		std::ncerr << _N("no args") << std::endl;
+		std::ncerr << N"no args" << std::endl;
 		return kErrorArgs;
 	}
 
@@ -75,15 +75,15 @@ ToolApp::run(int argc, char** argv)
 			std::ncout << ARCH->getPlatformName() << std::endl;
 		}
 		else {
-			throw XSynergy(_N("Nothing to do"));
+			throw XSynergy(N"Nothing to do");
 		}
 	}
 	catch (std::exception& e) {
-		LOG((CLOG_CRIT _N("An error occurred: %s\n"), e.what()));
+		LOG((CLOG_CRIT "An error occurred: %s\n", e.what()));
 		return kExitFailed;
 	}
 	catch (...) {
-		LOG((CLOG_CRIT _N("An unknown error occurred.\n")));
+		LOG((CLOG_CRIT "An unknown error occurred.\n"));
 		return kExitFailed;
 	}
 

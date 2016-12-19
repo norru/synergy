@@ -30,17 +30,17 @@
 
 // names of priorities
 static const nchar*		g_priority[] = {
-	_N("FATAL"),
-	_N("ERROR"),
-	_N("WARNING"),
-	_N("NOTE"),
-	_N("INFO"),
-	_N("DEBUG"),
-	_N("DEBUG1"),
-	_N("DEBUG2"),
-	_N("DEBUG3"),
-	_N("DEBUG4"),
-	_N("DEBUG5")
+	N"FATAL",
+	N"ERROR",
+	N"WARNING",
+	N"NOTE",
+	N"INFO",
+	N"DEBUG",
+	N"DEBUG1",
+	N"DEBUG2",
+	N"DEBUG3",
+	N"DEBUG4",
+	N"DEBUG5"
 };
 
 // number of priorities
@@ -110,7 +110,7 @@ const nchar*
 Log::getFilterName(int level) const
 {
 	if (level < 0) {
-		return _N("Message");
+		return N"Message";
 	}
 	return g_priority[level];
 }
@@ -120,12 +120,12 @@ Log::print(const nchar* file, int line, const nchar* fmt, ...)
 {
 	// check if fmt begins with a priority argument
 	ELevel priority = kINFO;
-	if ((strlen(fmt) > 2) && (fmt[0] == _N('%') && fmt[1] == _N('z'))) {
+	if ((strlen(fmt) > 2) && (fmt[0] =='%') && fmt[1] =='z'))) {
 
 		// 060 in octal is 0 (48 in decimal), so subtracting this converts ascii
 		// number it a true number. we could use atoi instead, but this is how
 		// it was done originally.
-		priority = (ELevel)(fmt[2] - _N('\060'));
+		priority = (ELevel)(fmt[2] -'\060'));
 
 		// move the pointer on past the debug priority char
 		fmt += 3;
@@ -177,7 +177,7 @@ Log::print(const nchar* file, int line, const nchar* fmt, ...)
 		time_t t;
 		time(&t);
 		tm = localtime(&t);
-		nsprintf(timestamp, _N("%04i-%02i-%02iT%02i:%02i:%02i"),
+		nsprintf(timestamp, N"%04i-%02i-%02iT%02i:%02i:%02i",
 			tm->tm_year + 1900, tm->tm_mon+1, tm->tm_mday, tm->tm_hour,
 			tm->tm_min, tm->tm_sec);
 
@@ -194,10 +194,10 @@ Log::print(const nchar* file, int line, const nchar* fmt, ...)
 		nchar* message = new nchar[size];
 
 #ifndef NDEBUG
-		nsprintf(message, _N("[%s] %s: %s\n\t%s,%d"),
+		nsprintf(message, N"[%s] %s: %s\n\t%s,%d",
 			timestamp, g_priority[priority], buffer, file, line);
 #else
-		nsprintf(message, _N("[%s] %s: %s"),
+		nsprintf(message, N"[%s] %s: %s",
 			timestamp, g_priority[priority], buffer);
 #endif
 

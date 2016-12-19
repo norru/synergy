@@ -46,7 +46,7 @@ protected:
 	~XWindowsKeyStateTests()
 	{
 		if (m_display != NULL) {
-			LOG((CLOG_DEBUG _N("closing display")));
+			LOG((CLOG_DEBUG"closing display")));
 			XCloseDisplay(m_display);
 		}
 	}
@@ -56,7 +56,7 @@ protected:
 	{
 		// open the display only once for the entire test suite
 		if (this->m_display == NULL) {
-			LOG((CLOG_DEBUG _N("opening display")));
+			LOG((CLOG_DEBUG"opening display")));
 			this->m_display = XOpenDisplay(NULL);
 
 			ASSERT_TRUE(this->m_display != NULL)

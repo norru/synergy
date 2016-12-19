@@ -106,14 +106,14 @@ PortableTaskBarReceiver::getToolTip() const
 {
 	switch (m_state) {
 	case kNotRunning:
-		return synergy::string::sprintf(_N("%s:  Not running"), kAppVersion);
+		return synergy::string::sprintf(N"%s:  Not running"), kAppVersion);
 
 	case kNotWorking:
-		return synergy::string::sprintf(_N("%s:  %s"),
+		return synergy::string::sprintf(N"%s:  %s"),
 								kAppVersion, m_errorMessage.c_str());
 
 	case kNotConnected:
-		return synergy::string::sprintf(_N("%s:  Unknown"), kAppVersion);
+		return synergy::string::sprintf(N"%s:  Unknown"), kAppVersion);
 
 	default:
 		return "";

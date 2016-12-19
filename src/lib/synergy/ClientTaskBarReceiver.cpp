@@ -117,25 +117,25 @@ ClientTaskBarReceiver::getToolTip() const
 {
 	switch (m_state) {
 	case kNotRunning:
-		return synergy::string::sprintf(_N("%s:  Not running"), kAppVersion);
+		return synergy::string::sprintf(N"%s:  Not running"), kAppVersion);
 
 	case kNotWorking:
-		return synergy::string::sprintf(_N("%s:  %s"),
+		return synergy::string::sprintf(N"%s:  %s"),
 								kAppVersion, m_errorMessage.c_str());
 
 	case kNotConnected:
-		return synergy::string::sprintf(_N("%s:  Not connected:  %s"),
+		return synergy::string::sprintf(N"%s:  Not connected:  %s"),
 								kAppVersion, m_errorMessage.c_str());
 
 	case kConnecting:
-		return synergy::string::sprintf(_N("%s:  Connecting to %s..."),
+		return synergy::string::sprintf(N"%s:  Connecting to %s..."),
 								kAppVersion, m_server.c_str());
 
 	case kConnected:
-		return synergy::string::sprintf(_N("%s:  Connected to %s"),
+		return synergy::string::sprintf(N"%s:  Connected to %s"),
 								kAppVersion, m_server.c_str());
 
 	default:
-		return _N("");
+		return"");
 	}
 }

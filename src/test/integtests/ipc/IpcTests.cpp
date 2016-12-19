@@ -173,13 +173,13 @@ IpcTests::sendMessageToServer_serverHandleMessageReceived(const Event& e, void*)
 {
 	IpcMessage* m = static_cast<IpcMessage*>(e.getDataObject());
 	if (m->type() == kIpcHello) {
-		LOG((CLOG_DEBUG _N("client said hello, sending test to server")));
+		LOG((CLOG_DEBUG"client said hello, sending test to server")));
 		IpcCommandMessage m("test", true);
 		m_sendMessageToServer_client->send(m);
 	}
 	else if (m->type() == kIpcCommand) {
 		IpcCommandMessage* cm = static_cast<IpcCommandMessage*>(m);
-		LOG((CLOG_DEBUG _N("got ipc command message, %d"), cm->command().c_str()));
+		LOG((CLOG_DEBUG"got ipc command message, %d"), cm->command().c_str()));
 		m_sendMessageToServer_receivedString = cm->command();
 		m_events.raiseQuitEvent();
 	}
@@ -190,7 +190,7 @@ IpcTests::sendMessageToClient_serverHandleClientConnected(const Event& e, void*)
 {
 	IpcMessage* m = static_cast<IpcMessage*>(e.getDataObject());
 	if (m->type() == kIpcHello) {
-		LOG((CLOG_DEBUG _N("client said hello, sending test to client")));
+		LOG((CLOG_DEBUG"client said hello, sending test to client")));
 		IpcLogLineMessage m("test");
 		m_sendMessageToClient_server->send(m, kIpcClientNode);
 	}
@@ -202,7 +202,7 @@ IpcTests::sendMessageToClient_clientHandleMessageReceived(const Event& e, void*)
 	IpcMessage* m = static_cast<IpcMessage*>(e.getDataObject());
 	if (m->type() == kIpcLogLine) {
 		IpcLogLineMessage* llm = static_cast<IpcLogLineMessage*>(m);
-		LOG((CLOG_DEBUG _N("got ipc log message, %d"), llm->logLine().c_str()));
+		LOG((CLOG_DEBUG"got ipc log message, %d"), llm->logLine().c_str()));
 		m_sendMessageToClient_receivedString = llm->logLine();
 		m_events.raiseQuitEvent();
 	}

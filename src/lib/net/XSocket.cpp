@@ -54,18 +54,18 @@ nstring
 XSocketAddress::getWhat() const throw()
 {
 	static const nchar* s_errorID[] = {
-		_N("XSocketAddressUnknown"),
-		_N("XSocketAddressNotFound"),
-		_N("XSocketAddressNoAddress"),
-		_N("XSocketAddressUnsupported"),
-		_N("XSocketAddressBadPort")
+		N"XSocketAddressUnknown",
+		N"XSocketAddressNotFound",
+		N"XSocketAddressNoAddress",
+		N"XSocketAddressUnsupported",
+		N"XSocketAddressBadPort"
 	};
 	static const nchar* s_errorMsg[] = {
-		_N("unknown error for: %{1}:%{2}"),
-		_N("address not found for: %{1}"),
-		_N("no address for: %{1}"),
-		_N("unsupported address for: %{1}"),
-		_N("invalid port")				// m_port may not be set to the bad port
+		N"unknown error for: %{1}:%{2}",
+		N"address not found for: %{1}",
+		N"no address for: %{1}",
+		N"unsupported address for: %{1}",
+		N"invalid port"				// m_port may not be set to the bad port
 	};
 
 	const nchar* str;
@@ -76,7 +76,7 @@ XSocketAddress::getWhat() const throw()
 	str = m_hostname.c_str();
 #endif
 	return format(s_errorID[m_error], s_errorMsg[m_error], str,
-		synergy::string::sprintf(_N("%d"), m_port).c_str());
+		synergy::string::sprintf(N"%d", m_port).c_str());
 }
 
 
@@ -87,7 +87,7 @@ XSocketAddress::getWhat() const throw()
 nstring
 XSocketIOClose::getWhat() const throw()
 {
-	return format(_N("XSocketIOClose"), _N("close: %{1}"), what());
+	return format(N"XSocketIOClose", N"close: %{1}", what().c_str());
 }
 
 
@@ -98,7 +98,7 @@ XSocketIOClose::getWhat() const throw()
 nstring
 XSocketBind::getWhat() const throw()
 {
-	return format(_N("XSocketBind"), _N("cannot bind address: %{1}"), what());
+	return format(N"XSocketBind", N"cannot bind address: %{1}", what().c_str());
 }
 
 
@@ -109,7 +109,7 @@ XSocketBind::getWhat() const throw()
 nstring
 XSocketConnect::getWhat() const throw()
 {
-	return format(_N("XSocketConnect"), _N("cannot connect socket: %{1}"), what());
+	return format(N"XSocketConnect", N"cannot connect socket: %{1}", what().c_str());
 }
 
 
@@ -120,5 +120,5 @@ XSocketConnect::getWhat() const throw()
 nstring
 XSocketCreate::getWhat() const throw()
 {
-	return format(_N("XSocketCreate"), _N("cannot create socket: %{1}"), what());
+	return format(N"XSocketCreate", N"cannot create socket: %{1}", what().c_str());
 }

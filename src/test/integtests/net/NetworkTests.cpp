@@ -205,7 +205,7 @@ TEST_F(NetworkTests, sendToClient_mockFile)
 	ClientArgs clientArgs;
 	clientArgs.m_enableDragDrop = true;
 	clientArgs.m_enableCrypto = false;
-	Client client(&m_events, _N("stub"), serverAddress, clientSocketFactory, &clientScreen, clientArgs);
+	Client client(&m_events,"stub"), serverAddress, clientSocketFactory, &clientScreen, clientArgs);
 
 	m_events.adoptHandler(
 		m_events.forFile().fileRecieveCompleted(), &client,
@@ -256,7 +256,7 @@ TEST_F(NetworkTests, sendToServer_mockData)
 	ClientArgs clientArgs;
 	clientArgs.m_enableDragDrop = true;
 	clientArgs.m_enableCrypto = false;
-	Client client(&m_events, _N("stub"), serverAddress, clientSocketFactory, &clientScreen, clientArgs);
+	Client client(&m_events,"stub"), serverAddress, clientSocketFactory, &clientScreen, clientArgs);
 
 	m_events.adoptHandler(
 		m_events.forClientListener().connected(), &listener,
@@ -313,7 +313,7 @@ TEST_F(NetworkTests, sendToServer_mockFile)
 	ClientArgs clientArgs;
 	clientArgs.m_enableDragDrop = true;
 	clientArgs.m_enableCrypto = false;
-	Client client(&m_events, _N("stub"), serverAddress, clientSocketFactory, &clientScreen, clientArgs);
+	Client client(&m_events,"stub"), serverAddress, clientSocketFactory, &clientScreen, clientArgs);
 
 	m_events.adoptHandler(
 		m_events.forClientListener().connected(), &listener,

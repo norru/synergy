@@ -46,7 +46,7 @@ Screen::Screen(IPlatformScreen* platformScreen, IEventQueue* events) :
 	// reset options
 	resetOptions();
 
-	LOG((CLOG_DEBUG _N("opened display")));
+	LOG((CLOG_DEBUG"opened display")));
 }
 
 Screen::~Screen()
@@ -61,7 +61,7 @@ Screen::~Screen()
 	assert(!m_enabled);
 	assert(m_entered == m_isPrimary);
 	delete m_screen;
-	LOG((CLOG_DEBUG _N("closed display")));
+	LOG((CLOG_DEBUG"closed display")));
 }
 
 void
@@ -110,7 +110,7 @@ void
 Screen::enter(KeyModifierMask toggleMask)
 {
 	assert(m_entered == false);
-	LOG((CLOG_INFO _N("entering screen")));
+	LOG((CLOG_INFO"entering screen")));
 
 	// now on screen
 	m_entered = true;
@@ -128,7 +128,7 @@ bool
 Screen::leave()
 {
 	assert(m_entered == true);
-	LOG((CLOG_INFO _N("leaving screen")));
+	LOG((CLOG_INFO"leaving screen")));
 
 	if (!m_screen->leave()) {
 		return false;
@@ -193,7 +193,7 @@ Screen::keyDown(KeyID id, KeyModifierMask mask, KeyButton button)
 	if (id == kKeyDelete &&
 		(mask & (KeyModifierControl | KeyModifierAlt)) ==
 				(KeyModifierControl | KeyModifierAlt)) {
-		LOG((CLOG_DEBUG _N("emulating ctrl+alt+del press")));
+		LOG((CLOG_DEBUG"emulating ctrl+alt+del press")));
 		if (m_screen->fakeCtrlAltDel()) {
 			return;
 		}
@@ -275,7 +275,7 @@ Screen::setOptions(const OptionsList& options)
 	for (UInt32 i = 0, n = (UInt32)options.size(); i < n; i += 2) {
 		if (options[i] == kOptionScreenSaverSync) {
 			m_screenSaverSync = (options[i + 1] != 0);
-			LOG((CLOG_DEBUG1 _N("screen saver synchronization %s"), m_screenSaverSync ? "on" : "off"));
+			LOG((CLOG_DEBUG1"screen saver synchronization %s"), m_screenSaverSync ? "on" : "off"));
 		}
 		else if (options[i] == kOptionHalfDuplexCapsLock) {
 			if (options[i + 1] != 0) {
@@ -284,7 +284,7 @@ Screen::setOptions(const OptionsList& options)
 			else {
 				m_halfDuplex &= ~KeyModifierCapsLock;
 			}
-			LOG((CLOG_DEBUG1 _N("half-duplex caps-lock %s"), ((m_halfDuplex & KeyModifierCapsLock) != 0) ? "on" : "off"));
+			LOG((CLOG_DEBUG1"half-duplex caps-lock %s"), ((m_halfDuplex & KeyModifierCapsLock) != 0) ? "on" : "off"));
 		}
 		else if (options[i] == kOptionHalfDuplexNumLock) {
 			if (options[i + 1] != 0) {
@@ -293,7 +293,7 @@ Screen::setOptions(const OptionsList& options)
 			else {
 				m_halfDuplex &= ~KeyModifierNumLock;
 			}
-			LOG((CLOG_DEBUG1 _N("half-duplex num-lock %s"), ((m_halfDuplex & KeyModifierNumLock) != 0) ? "on" : "off"));
+			LOG((CLOG_DEBUG1"half-duplex num-lock %s"), ((m_halfDuplex & KeyModifierNumLock) != 0) ? "on" : "off"));
 		}
 		else if (options[i] == kOptionHalfDuplexScrollLock) {
 			if (options[i + 1] != 0) {
@@ -302,7 +302,7 @@ Screen::setOptions(const OptionsList& options)
 			else {
 				m_halfDuplex &= ~KeyModifierScrollLock;
 			}
-			LOG((CLOG_DEBUG1 _N("half-duplex scroll-lock %s"), ((m_halfDuplex & KeyModifierScrollLock) != 0) ? "on" : "off"));
+			LOG((CLOG_DEBUG1"half-duplex scroll-lock %s"), ((m_halfDuplex & KeyModifierScrollLock) != 0) ? "on" : "off"));
 		}
 	}
 
@@ -374,7 +374,7 @@ Screen::isLockedToScreen() const
 
 	if (m_screen->isAnyMouseButtonDown(buttonID)) {
 		if (buttonID != kButtonLeft) {
-			LOG((CLOG_DEBUG _N("locked by mouse buttonID: %d"), buttonID));
+			LOG((CLOG_DEBUG"locked by mouse buttonID: %d"), buttonID));
 		}
 
 		if (m_enableDragDrop) {

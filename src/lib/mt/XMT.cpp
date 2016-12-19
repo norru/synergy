@@ -25,5 +25,5 @@
 nstring
 XMTThreadUnavailable::getWhat() const throw()
 {
-	return format(_N("XMTThreadUnavailable"), _N("cannot create thread"));
+	return format(N"XMTThreadUnavailable", N"cannot create thread");
 }

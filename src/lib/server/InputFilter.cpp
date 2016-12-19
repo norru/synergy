@@ -98,7 +98,7 @@ InputFilter::KeystrokeCondition::clone() const
 nstring
 InputFilter::KeystrokeCondition::format() const
 {
-	return synergy::string::sprintf(_N("keystroke(%" _NF ")"),
+	return synergy::string::sprintf(N"keystroke(%" _NF ")"),
 							synergy::KeyMap::formatKey(m_key, m_mask).c_str());
 }
 
@@ -190,7 +190,7 @@ InputFilter::MouseButtonCondition::format() const
 	if (!key.empty()) {
 		key += '+';
 	}
-	return synergy::string::sprintf(_N("mousebutton(%" _NF "%d)"), key.c_str(), m_button);
+	return synergy::string::sprintf(N"mousebutton(%" _NF "%d)"), key.c_str(), m_button);
 }
 
 InputFilter::EFilterStatus
@@ -248,7 +248,7 @@ InputFilter::ScreenConnectedCondition::clone() const
 nstring
 InputFilter::ScreenConnectedCondition::format() const
 {
-	return synergy::string::sprintf(_N("connect(%" _NF ")"), m_screen.c_str());
+	return synergy::string::sprintf(N"connect(%" _NF ")"), m_screen.c_str());
 }
 
 InputFilter::EFilterStatus
@@ -301,7 +301,7 @@ InputFilter::LockCursorToScreenAction::clone() const
 nstring
 InputFilter::LockCursorToScreenAction::format() const
 {
-	static const nchar* s_mode[] = { _N("off"), _N("on"), _N("toggle") };
+	static const nchar* s_mode[] = {"off"),"on"),"toggle") };
 
 	return synergy::string::sprintf("lockCursorToScreen(%" _NF ")", s_mode[m_mode]);
 }
@@ -346,7 +346,7 @@ InputFilter::SwitchToScreenAction::clone() const
 nstring
 InputFilter::SwitchToScreenAction::format() const
 {
-	return synergy::string::sprintf(_N("switchToScreen(%s)"), m_screen.c_str());
+	return synergy::string::sprintf(N"switchToScreen(%s)"), m_screen.c_str());
 }
 
 void
@@ -393,14 +393,14 @@ nstring
 InputFilter::SwitchInDirectionAction::format() const
 {
 	static const nchar* s_names[] = {
-		_N(""),
-		_N("left"),
-		_N("right"),
-		_N("up"),
-		_N("down")
+		N""),
+		N"left"),
+		N"right"),
+		N"up"),
+		N"down")
 	};
 
-	return synergy::string::sprintf(_N("switchInDirection(%" _NF ")"), s_names[m_direction]);
+	return synergy::string::sprintf(N"switchInDirection(%" _NF ")"), s_names[m_direction]);
 }
 
 void
@@ -455,14 +455,14 @@ InputFilter::KeyboardBroadcastAction::clone() const
 nstring
 InputFilter::KeyboardBroadcastAction::format() const
 {
-	static const nchar* s_mode[] = { _N("off"), _N("on"), _N("toggle") };
-	static const nchar* s_name = _N("keyboardBroadcast");
+	static const nchar* s_mode[] = {"off"),"on"),"toggle") };
+	static const nchar* s_name ="keyboardBroadcast");
 
-	if (m_screens.empty() || m_screens[0] == _N('*')) {
-		return synergy::string::sprintf(_N("%" _NF "(%" _NF ")"), s_name, s_mode[m_mode]);
+	if (m_screens.empty() || m_screens[0] =='*')) {
+		return synergy::string::sprintf(N"%" _NF "(%" _NF ")"), s_name, s_mode[m_mode]);
 	}
 	else {
-		return synergy::string::sprintf(_N("%" _NF "(%" _NF ",%.*s)"), s_name, s_mode[m_mode],
+		return synergy::string::sprintf(N"%" _NF "(%" _NF ",%.*s)"), s_name, s_mode[m_mode],
 							m_screens.size() - 2,
 							m_screens.c_str() + 1);
 	}
@@ -531,17 +531,17 @@ InputFilter::KeystrokeAction::format() const
 	const nchar* type = formatName();
 
 	if (m_keyInfo->m_screens[0] == 0) {
-		return synergy::string::sprintf(_N("%" _NF "(%" _NF ")"), type,
+		return synergy::string::sprintf(N"%" _NF "(%" _NF ")"), type,
 							synergy::KeyMap::formatKey(m_keyInfo->m_key,
 								m_keyInfo->m_mask).c_str());
 	}
-	else if (m_keyInfo->m_screens[0] == _N('*')) {
-		return synergy::string::sprintf(_N("%" _NF "(%" _NF ",*)"), type,
+	else if (m_keyInfo->m_screens[0] =='*')) {
+		return synergy::string::sprintf(N"%" _NF "(%" _NF ",*)"), type,
 							synergy::KeyMap::formatKey(m_keyInfo->m_key,
 								m_keyInfo->m_mask).c_str());
 	}
 	else {
-		return synergy::string::sprintf(_N("%" _NF "(%" _NF ",%.*s)"), type,
+		return synergy::string::sprintf(N"%" _NF "(%" _NF ",%.*s)"), type,
 							synergy::KeyMap::formatKey(m_keyInfo->m_key,
 								m_keyInfo->m_mask).c_str(),
 							strlen(m_keyInfo->m_screens + 1) - 1,
@@ -570,7 +570,7 @@ InputFilter::KeystrokeAction::perform(const Event& event)
 const nchar*
 InputFilter::KeystrokeAction::formatName() const
 {
-	return (m_press ? _N("keyDown") : _N("keyUp"));
+	return (m_press ?"keyDown") :"keyUp"));
 }
 
 InputFilter::MouseButtonAction::MouseButtonAction(
@@ -613,8 +613,8 @@ InputFilter::MouseButtonAction::format() const
 	const nchar* type = formatName();
 
 	nstring key = synergy::KeyMap::formatKey(kKeyNone, m_buttonInfo->m_mask);
-	return synergy::string::sprintf(_N("%" _NF "(%" _NF "%" _NF "%d)"), type,
-							key.c_str(), key.empty() ? _N("") : _N("+"),
+	return synergy::string::sprintf(N"%" _NF "(%" _NF "%" _NF "%d)"), type,
+							key.c_str(), key.empty() ?"") :"+"),
 							m_buttonInfo->m_button);
 }
 
@@ -644,7 +644,7 @@ InputFilter::MouseButtonAction::perform(const Event& event)
 const nchar*
 InputFilter::MouseButtonAction::formatName() const
 {
-	return (m_press ? _N("mouseDown") : _N("mouseUp"));
+	return (m_press ?"mouseDown") :"mouseUp"));
 }
 
 //
@@ -801,19 +801,19 @@ InputFilter::Rule::handleEvent(const Event& event)
 
 	case kActivate:
 		actions = &m_activateActions;
-		LOG((CLOG_DEBUG1 _N("activate actions")));
+		LOG((CLOG_DEBUG1"activate actions")));
 		break;
 
 	case kDeactivate:
 		actions = &m_deactivateActions;
-		LOG((CLOG_DEBUG1 _N("deactivate actions")));
+		LOG((CLOG_DEBUG1"deactivate actions")));
 		break;
 	}
 
 	// perform actions
 	for (ActionList::const_iterator i = actions->begin();
 								i != actions->end(); ++i) {
-		LOG((CLOG_DEBUG1 _N("hotkey: %" _NF), (*i)->format().c_str()));
+		LOG((CLOG_DEBUG1"hotkey: %" _NF), (*i)->format().c_str()));
 		(*i)->perform(event);
 	}
 
@@ -827,14 +827,14 @@ InputFilter::Rule::format() const
 	if (m_condition != NULL) {
 		// condition
 		s += m_condition->format();
-		s += _N(" = ");
+		s +=" = ");
 
 		// activate actions
 		ActionList::const_iterator i = m_activateActions.begin();
 		if (i != m_activateActions.end()) {
 			s += (*i)->format();
 			while (++i != m_activateActions.end()) {
-				s += _N(", ");
+				s +=", ");
 				s += (*i)->format();
 			}
 		}

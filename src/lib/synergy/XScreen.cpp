@@ -25,7 +25,7 @@
 nstring
 XScreenOpenFailure::getWhat() const throw()
 {
-	return format(_N("XScreenOpenFailure"), _N("unable to open screen"));
+	return format(N"XScreenOpenFailure"),"unable to open screen"));
 }
 
 
@@ -36,7 +36,7 @@ XScreenOpenFailure::getWhat() const throw()
 nstring
 XScreenXInputFailure::getWhat() const throw()
 {
-	return _N("");
+	return"");
 }
 
 
@@ -64,5 +64,5 @@ XScreenUnavailable::getRetryTime() const
 nstring
 XScreenUnavailable::getWhat() const throw()
 {
-	return format(_N("XScreenUnavailable"), _N("unable to open screen"));
+	return format(N"XScreenUnavailable"),"unable to open screen"));
 }

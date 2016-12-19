@@ -2,11 +2,11 @@
  * synergy -- mouse and keyboard sharing utility
  * Copyright (C) 2012-2016 Symless Ltd.
  * Copyright (C) 2002 Chris Schoeneman
- * 
+ *
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * found in the file LICENSE that should have accompanied this file.
- * 
+ *
  * This package is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -252,7 +252,7 @@ namespace std
     char_type*		stream;
     streamsize		stream_len;
   };
-
+
   class istringstream : public istream {
   public:
     typedef char	char_type;
@@ -289,7 +289,7 @@ namespace std
   private:
     stringbuf sb;
   };
-
+
   class ostringstream : public ostream {
   public:
     typedef char	char_type;
@@ -326,7 +326,7 @@ namespace std
   private:
     stringbuf sb;
   };
-
+
   class stringstream : public iostream {
   public:
     typedef char	char_type;

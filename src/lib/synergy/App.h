@@ -154,47 +154,47 @@ private:
 #endif
 
 #define HELP_COMMON_INFO_1 \
-	_N("  -d, --debug <level>      filter out log messages with priority below level.\n") \
-	_N("                             level may be: FATAL, ERROR, WARNING, NOTE, INFO,\n") \
-	_N("                             DEBUG, DEBUG1, DEBUG2.\n") \
-	_N("  -n, --name <screen-name> use screen-name instead the hostname to identify\n") \
-	_N("                             this screen in the configuration.\n") \
-	_N("  -1, --no-restart         do not try to restart on failure.\n") \
-	_N("*     --restart            restart the server automatically if it fails.\n") \
-	_N("  -l  --log <file>         write log messages to file.\n") \
-	_N("      --no-tray            disable the system tray icon.\n") \
-	_N("      --enable-drag-drop   enable file drag & drop.\n") \
-	_N("      --enable-crypto      enable the crypto (ssl) plugin.\n")
+	N"  -d, --debug <level>      filter out log messages with priority below level.\n") \
+	N"                             level may be: FATAL, ERROR, WARNING, NOTE, INFO,\n") \
+	N"                             DEBUG, DEBUG1, DEBUG2.\n") \
+	N"  -n, --name <screen-name> use screen-name instead the hostname to identify\n") \
+	N"                             this screen in the configuration.\n") \
+	N"  -1, --no-restart         do not try to restart on failure.\n") \
+	N"*     --restart            restart the server automatically if it fails.\n") \
+	N"  -l  --log <file>         write log messages to file.\n") \
+	N"      --no-tray            disable the system tray icon.\n") \
+	N"      --enable-drag-drop   enable file drag & drop.\n") \
+	N"      --enable-crypto      enable the crypto (ssl) plugin.\n")
 
 #define HELP_COMMON_INFO_2 \
-	_N("  -h, --help               display this help and exit.\n") \
-	_N("      --version            display version information and exit.\n")
+	N"  -h, --help               display this help and exit.\n") \
+	N"      --version            display version information and exit.\n")
 
 #define HELP_COMMON_ARGS \
-	_N(" [--name <screen-name>]") \
-	_N(" [--restart|--no-restart]") \
-	_N(" [--debug <level>]")
+	N" [--name <screen-name>]") \
+	N" [--restart|--no-restart]") \
+	N" [--debug <level>]")
 
 // system args (windows/unix)
 #if SYSAPI_UNIX
 
 // unix daemon mode args
 #  define HELP_SYS_ARGS \
-	_N(" [--daemon|--no-daemon]")
+	N" [--daemon|--no-daemon]")
 #  define HELP_SYS_INFO \
-	_N("  -f, --no-daemon          run in the foreground.\n")	\
-	_N("*     --daemon             run as a daemon.\n")
+	N"  -f, --no-daemon          run in the foreground.\n")	\
+	N"*     --daemon             run as a daemon.\n")
 
 #elif SYSAPI_WIN32
 
 // windows args
 #  define HELP_SYS_ARGS \
-	_N(" [--service <action>] [--relaunch] [--exit-pause]")
+	N" [--service <action>] [--relaunch] [--exit-pause]")
 #  define HELP_SYS_INFO \
-	_N("      --service <action>   manage the windows service, valid options are:\n") \
-	_N("                             install/uninstall/start/stop\n") \
-	_N("      --relaunch           persistently relaunches process in current user \n") \
-	_N("                             session (useful for vista and upward).\n") \
-	_N(_N("      --exit-pause         wait for key press on exit, can be useful for\n") \
-	_N("                             reading error messages that occur on exit.\n")
+	N"      --service <action>   manage the windows service, valid options are:\n") \
+	N"                             install/uninstall/start/stop\n") \
+	N"      --relaunch           persistently relaunches process in current user \n") \
+	N"                             session (useful for vista and upward).\n") \
+	NN"      --exit-pause         wait for key press on exit, can be useful for\n") \
+	N"                             reading error messages that occur on exit.\n")
 #endif
